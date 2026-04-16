@@ -1,0 +1,17 @@
+---
+title: "Neighborhood characteristics with Gemini"
+author: "Amanda Silva Magalhães; Alex Quistberg; Nicolás Ayobi Mendoza; Amanda Cristina de Souza Andrade; Waleska Teixeira Caiaffa"
+date: today
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-location: left
+    number-sections: true
+    code-fold: true
+    page-layout: full
+execute:
+  freeze: auto
+  cache: true
+---
+
