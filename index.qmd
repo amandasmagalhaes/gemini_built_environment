@@ -238,7 +238,7 @@ ggplot(plot_data, aes(x = kappa, y = variable, color = lk_cat)) +
 ```
 
 ```{r}
-#| label: Kappa and agreement plot 
+#| label: Kappa and agreement plot
 #| code-summary: Kappa and agreement plot 
 #| fig-width: 12
 #| fig-height: 6
