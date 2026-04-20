@@ -1,6 +1,6 @@
 *.csv
-*.dta
 *.xlsx
+*.dta
 bepidl.py
 index_files/
 index_cache/
