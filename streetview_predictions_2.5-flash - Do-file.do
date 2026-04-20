@@ -72,4 +72,6 @@ merge 1:1 identificador using "C:\Users\amand\Amanda\GitHub\gemini_built_environ
 
 drop _merge
 
+drop if data_imagens_1 == .
+
 save "C:\Users\amand\Amanda\GitHub\gemini_built_environment\streetview_predictions_2.5-flash v3.dta", replace
