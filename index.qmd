@@ -73,6 +73,10 @@ p_load(
 df <- read_dta(here("streetview_predictions_2.5-flash v3.dta"))
 ```
 
+## Results
+
+Agreement levels ranged from poor to almost perfect. Almost perfect agreement was observed for bus stop (n = 1), and substantial agreement for median, pedestrian crossing sign, traffic light, and roundabout (n = 4). Fair agreement was found for crosswalk, speed bumps, potholes, and stop sign (n = 4), while slight and poor agreement were observed for lane markings (n = 1) and sidewalk obstruction (n = 1), respectively. No characteristics showed moderate agreement, and four variables had kappa not estimated due to insufficient variability.
+
 ```{r}
 #| label: Descriptive table
 #| code-summary: Descriptive table
@@ -291,7 +295,3 @@ ggplot(plot_data2, aes(x = agreement, y = kappa)) +
     plot.margin = margin(5.5, 80, 5.5, 5.5)
   )
 ```
-
-## Results
-
-Agreement levels ranged from poor to almost perfect. Almost perfect agreement was observed for bus stop (n = 1), and substantial agreement for median, pedestrian crossing sign, traffic light, and roundabout (n = 4). Fair agreement was found for crosswalk, speed bumps, potholes, and stop sign (n = 4), while slight and poor agreement were observed for lane markings (n = 1) and sidewalk obstruction (n = 1), respectively. No characteristics showed moderate agreement, and four variables had kappa not estimated due to insufficient variability.
