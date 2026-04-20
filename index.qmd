@@ -1,5 +1,5 @@
 ---
-title: "Agreement between virtual audits and gemini"
+title: "Comparison between virtual audits and Gemini"
 date: today
 format:
   html:
