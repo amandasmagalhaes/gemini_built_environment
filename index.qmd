@@ -292,3 +292,10 @@ ggplot(plot_data2, aes(x = agreement, y = kappa)) +
   )
 ```
 
+## Results
+
+Agreement between the virtual audit and the automated assessment varied across characteristics according to Landis and Koch classification. Almost perfect agreement was observed for bus stop (n = 1). Substantial agreement was found for median, pedestrian crossing sign, traffic light, and roundabout (n = 4). No characteristics presented moderate agreement. 
+
+Fair agreement was observed for speed bumps, crosswalk, poor street condition (pothole), and stop sign (n = 4). Slight agreement was observed for lane markings (n = 1), while poor agreement was identified for sidewalk obstruction (n = 1). 
+
+Additionally, kappa was not estimated for four characteristics (sidewalk, trees, bike lane, and bus lane) due to insufficient variability.
