@@ -74,8 +74,10 @@ df <- read_dta(here("streetview_predictions_2.5-flash v3.dta"))
 ```
 
 ```{r}
-#| label: Descriptive frequencies and agreement
-#| code-summary: Descriptive frequencies and agreement
+#| label: Descriptive table
+#| code-summary: Descriptive table
+#| warning: false
+#| message: false
 
 # Variables
 vars_base <- c(
@@ -132,7 +134,7 @@ calc_kappa <- function(var) {
   
   k <- psych::cohen.kappa(cbind(x, y))
   
-  ci <- k$confid[1, ]  # primeira linha = unweighted kappa
+  ci <- k$confid[1, ]
   
   c(
     kappa = unname(ci["estimate"]),
@@ -183,3 +185,110 @@ final_table %>%
     source_note = "Kappa was not estimated (NA) for variables with insufficient variability (i.e., when one or both raters had only one category)."
   )
 ```
+
+```{r}
+#| label: Kappa plot
+#| code-summary: Kappa plot
+#| fig-width: 12
+#| fig-height: 6
+#| out-width: 100%
+
+plot_data <- final_table %>%
+  filter(!is.na(kappa)) %>%
+  mutate(
+    lk_cat = case_when(
+      kappa < 0 ~ "Poor",
+      kappa < 0.21 ~ "Slight",
+      kappa < 0.41 ~ "Fair",
+      kappa < 0.61 ~ "Moderate",
+      kappa < 0.81 ~ "Substantial",
+      TRUE ~ "Almost perfect"
+    ),
+    lk_cat = factor(
+      lk_cat,
+      levels = c("Almost perfect", "Substantial", "Moderate", "Fair", "Slight", "Poor")
+    ),
+    variable = reorder(variable, kappa)
+  )
+
+ggplot(plot_data, aes(x = kappa, y = variable, color = lk_cat)) +
+  geom_point(size = 3.5) +
+  geom_errorbarh(aes(xmin = kappa_lwr, xmax = kappa_upr), height = 0.2) +
+  scale_x_continuous(
+    limits = c(-0.4, 1),
+    breaks = seq(-0.4, 1, by = 0.2)
+  ) +
+  scale_color_manual(
+    values = c(
+      "Almost perfect" = "#1a9850",
+      "Substantial" = "#91cf60",
+      "Moderate" = "#d9ef8b",
+      "Fair" = "#fee08b",
+      "Slight" = "#fc8d59",
+      "Poor" = "#d73027"
+    ),
+    breaks = c("Almost perfect", "Substantial", "Moderate", "Fair", "Slight", "Poor")
+  ) +
+  labs(
+    x = "\n Cohen's kappa (95% CI)",
+    y = "",
+    color = "Agreement level"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+```{r}
+#| label: Kappa and agreement plot 
+#| code-summary: Kappa and agreement plot 
+#| fig-width: 12
+#| fig-height: 6
+#| out-width: 100%
+
+plot_data2 <- final_table %>%
+  filter(!is.na(kappa)) %>%
+  mutate(
+    lk_cat = case_when(
+      kappa < 0 ~ "Poor",
+      kappa < 0.21 ~ "Slight",
+      kappa < 0.41 ~ "Fair",
+      kappa < 0.61 ~ "Moderate",
+      kappa < 0.81 ~ "Substantial",
+      TRUE ~ "Almost perfect"
+    ),
+    lk_cat = factor(
+      lk_cat,
+      levels = c("Almost perfect", "Substantial", "Moderate", "Fair", "Slight", "Poor")
+    )
+  )
+
+ggplot(plot_data2, aes(x = agreement, y = kappa)) +
+  geom_point(aes(color = lk_cat), size = 3.5, alpha = 0.9) +
+  geom_text(aes(label = variable), hjust = -0.1, size = 4) +
+  
+  scale_color_manual(
+    values = c(
+      "Almost perfect" = "#1a9850",
+      "Substantial" = "#91cf60",
+      "Moderate" = "#d9ef8b",
+      "Fair" = "#fee08b",
+      "Slight" = "#fc8d59",
+      "Poor" = "#d73027"
+    ),
+    breaks = c("Almost perfect", "Substantial", "Moderate", "Fair", "Slight", "Poor")
+  ) +
+  
+  labs(
+    x = "\n Observed agreement (%)",
+    y = "Cohen's kappa \n",
+    color = "Agreement level"
+  ) +
+  
+  coord_cartesian(clip = "off") +
+  
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "right",
+    plot.margin = margin(5.5, 80, 5.5, 5.5)
+  )
+```
+

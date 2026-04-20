@@ -170,7 +170,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="cell">
 <details class="code-fold">
-<summary>Descriptive frequencies and agreement</summary>
+<summary>Descriptive table</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Variables</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>vars_base <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"swalk_pres_cat"</span>, <span class="st">"str_cwalk"</span>, <span class="st">"str_scont1"</span>, <span class="st">"str_cond_cat2"</span>,</span>
@@ -226,7 +226,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>  k <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">cohen.kappa</span>(<span class="fu">cbind</span>(x, y))</span>
 <span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>  ci <span class="ot">&lt;-</span> k<span class="sc">$</span>confid[<span class="dv">1</span>, ]  <span class="co"># primeira linha = unweighted kappa</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>  ci <span class="ot">&lt;-</span> k<span class="sc">$</span>confid[<span class="dv">1</span>, ]</span>
 <span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
 <span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa =</span> <span class="fu">unname</span>(ci[<span class="st">"estimate"</span>]),</span>
@@ -249,60 +249,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_lwr =</span> k[<span class="st">"lwr"</span>],</span>
 <span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_upr =</span> k[<span class="st">"upr"</span>]</span>
 <span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in cohen.kappa1(x, w = w, n.obs = n.obs, alpha = alpha, levels =
-levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.
-Warning in cohen.kappa1(x, w = w, n.obs = n.obs, alpha = alpha, levels =
-levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</code></pre>
-</div>
-<details class="code-fold">
-<summary>Descriptive frequencies and agreement</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to %</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>final_table <span class="ot">&lt;-</span> final_table <span class="sc">%&gt;%</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">audit =</span> audit <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">gemini =</span> gemini <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">agreement =</span> agreement <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Display</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>final_table <span class="sc">%&gt;%</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(audit, gemini, agreement), <span class="at">decimals =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(kappa, kappa_lwr, kappa_upr), <span class="at">decimals =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable =</span> <span class="st">"Variable"</span>,</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">audit =</span> <span class="st">"Audit (%)"</span>,</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">gemini =</span> <span class="st">"Gemini (%)"</span>,</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">agreement =</span> <span class="st">"Observed agreement (%)"</span>,</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa =</span> <span class="st">"Kappa"</span>,</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_lwr =</span> <span class="st">"Lower CI"</span>,</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_upr =</span> <span class="st">"Upper CI"</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_source_note</span>(</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">source_note =</span> <span class="st">"Kappa was not estimated (NA) for variables with insufficient variability (i.e., when one or both raters had only one category)."</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to %</span></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>final_table <span class="ot">&lt;-</span> final_table <span class="sc">%&gt;%</span></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">audit =</span> audit <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>    <span class="at">gemini =</span> gemini <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>    <span class="at">agreement =</span> agreement <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a><span class="co"># Display</span></span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>final_table <span class="sc">%&gt;%</span></span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(audit, gemini, agreement), <span class="at">decimals =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(kappa, kappa_lwr, kappa_upr), <span class="at">decimals =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable =</span> <span class="st">"Variable"</span>,</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>    <span class="at">audit =</span> <span class="st">"Audit (%)"</span>,</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>    <span class="at">gemini =</span> <span class="st">"Gemini (%)"</span>,</span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>    <span class="at">agreement =</span> <span class="st">"Observed agreement (%)"</span>,</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa =</span> <span class="st">"Kappa"</span>,</span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_lwr =</span> <span class="st">"Lower CI"</span>,</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_upr =</span> <span class="st">"Upper CI"</span></span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_source_note</span>(</span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>    <span class="at">source_note =</span> <span class="st">"Kappa was not estimated (NA) for variables with insufficient variability (i.e., when one or both raters had only one category)."</span></span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div id="ffrykodynt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#ffrykodynt table {
+<div id="yadfcpptjc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yadfcpptjc table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#ffrykodynt thead, #ffrykodynt tbody, #ffrykodynt tfoot, #ffrykodynt tr, #ffrykodynt td, #ffrykodynt th {
+#yadfcpptjc thead, #yadfcpptjc tbody, #yadfcpptjc tfoot, #yadfcpptjc tr, #yadfcpptjc td, #yadfcpptjc th {
   border-style: none;
 }
 
-#ffrykodynt p {
+#yadfcpptjc p {
   margin: 0;
   padding: 0;
 }
 
-#ffrykodynt .gt_table {
+#yadfcpptjc .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -328,12 +320,12 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   border-left-color: #D3D3D3;
 }
 
-#ffrykodynt .gt_caption {
+#yadfcpptjc .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#ffrykodynt .gt_title {
+#yadfcpptjc .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -345,7 +337,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   border-bottom-width: 0;
 }
 
-#ffrykodynt .gt_subtitle {
+#yadfcpptjc .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -357,7 +349,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   border-top-width: 0;
 }
 
-#ffrykodynt .gt_heading {
+#yadfcpptjc .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -369,13 +361,13 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   border-right-color: #D3D3D3;
 }
 
-#ffrykodynt .gt_bottom_border {
+#yadfcpptjc .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ffrykodynt .gt_col_headings {
+#yadfcpptjc .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -390,7 +382,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   border-right-color: #D3D3D3;
 }
 
-#ffrykodynt .gt_col_heading {
+#yadfcpptjc .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -410,7 +402,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   overflow-x: hidden;
 }
 
-#ffrykodynt .gt_column_spanner_outer {
+#yadfcpptjc .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -422,15 +414,15 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   padding-right: 4px;
 }
 
-#ffrykodynt .gt_column_spanner_outer:first-child {
+#yadfcpptjc .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ffrykodynt .gt_column_spanner_outer:last-child {
+#yadfcpptjc .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ffrykodynt .gt_column_spanner {
+#yadfcpptjc .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -442,11 +434,11 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   width: 100%;
 }
 
-#ffrykodynt .gt_spanner_row {
+#yadfcpptjc .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#ffrykodynt .gt_group_heading {
+#yadfcpptjc .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -472,7 +464,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   text-align: left;
 }
 
-#ffrykodynt .gt_empty_group_heading {
+#yadfcpptjc .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -487,15 +479,15 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   vertical-align: middle;
 }
 
-#ffrykodynt .gt_from_md > :first-child {
+#yadfcpptjc .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ffrykodynt .gt_from_md > :last-child {
+#yadfcpptjc .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ffrykodynt .gt_row {
+#yadfcpptjc .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -514,7 +506,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   overflow-x: hidden;
 }
 
-#ffrykodynt .gt_stub {
+#yadfcpptjc .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -527,7 +519,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   padding-right: 5px;
 }
 
-#ffrykodynt .gt_stub_row_group {
+#yadfcpptjc .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -541,15 +533,15 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   vertical-align: top;
 }
 
-#ffrykodynt .gt_row_group_first td {
+#yadfcpptjc .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#ffrykodynt .gt_row_group_first th {
+#yadfcpptjc .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#ffrykodynt .gt_summary_row {
+#yadfcpptjc .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -559,16 +551,16 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   padding-right: 5px;
 }
 
-#ffrykodynt .gt_first_summary_row {
+#yadfcpptjc .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#ffrykodynt .gt_first_summary_row.thick {
+#yadfcpptjc .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#ffrykodynt .gt_last_summary_row {
+#yadfcpptjc .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -578,7 +570,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   border-bottom-color: #D3D3D3;
 }
 
-#ffrykodynt .gt_grand_summary_row {
+#yadfcpptjc .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -588,7 +580,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   padding-right: 5px;
 }
 
-#ffrykodynt .gt_first_grand_summary_row {
+#yadfcpptjc .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -598,7 +590,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   border-top-color: #D3D3D3;
 }
 
-#ffrykodynt .gt_last_grand_summary_row_top {
+#yadfcpptjc .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -608,11 +600,11 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   border-bottom-color: #D3D3D3;
 }
 
-#ffrykodynt .gt_striped {
+#yadfcpptjc .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#ffrykodynt .gt_table_body {
+#yadfcpptjc .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -621,7 +613,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   border-bottom-color: #D3D3D3;
 }
 
-#ffrykodynt .gt_footnotes {
+#yadfcpptjc .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -635,7 +627,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   border-right-color: #D3D3D3;
 }
 
-#ffrykodynt .gt_footnote {
+#yadfcpptjc .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -644,7 +636,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   padding-right: 5px;
 }
 
-#ffrykodynt .gt_sourcenotes {
+#yadfcpptjc .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -658,7 +650,7 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   border-right-color: #D3D3D3;
 }
 
-#ffrykodynt .gt_sourcenote {
+#yadfcpptjc .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -666,72 +658,72 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
   padding-right: 5px;
 }
 
-#ffrykodynt .gt_left {
+#yadfcpptjc .gt_left {
   text-align: left;
 }
 
-#ffrykodynt .gt_center {
+#yadfcpptjc .gt_center {
   text-align: center;
 }
 
-#ffrykodynt .gt_right {
+#yadfcpptjc .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ffrykodynt .gt_font_normal {
+#yadfcpptjc .gt_font_normal {
   font-weight: normal;
 }
 
-#ffrykodynt .gt_font_bold {
+#yadfcpptjc .gt_font_bold {
   font-weight: bold;
 }
 
-#ffrykodynt .gt_font_italic {
+#yadfcpptjc .gt_font_italic {
   font-style: italic;
 }
 
-#ffrykodynt .gt_super {
+#yadfcpptjc .gt_super {
   font-size: 65%;
 }
 
-#ffrykodynt .gt_footnote_marks {
+#yadfcpptjc .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#ffrykodynt .gt_asterisk {
+#yadfcpptjc .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#ffrykodynt .gt_indent_1 {
+#yadfcpptjc .gt_indent_1 {
   text-indent: 5px;
 }
 
-#ffrykodynt .gt_indent_2 {
+#yadfcpptjc .gt_indent_2 {
   text-indent: 10px;
 }
 
-#ffrykodynt .gt_indent_3 {
+#yadfcpptjc .gt_indent_3 {
   text-indent: 15px;
 }
 
-#ffrykodynt .gt_indent_4 {
+#yadfcpptjc .gt_indent_4 {
   text-indent: 20px;
 }
 
-#ffrykodynt .gt_indent_5 {
+#yadfcpptjc .gt_indent_5 {
   text-indent: 25px;
 }
 
-#ffrykodynt .katex-display {
+#yadfcpptjc .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#ffrykodynt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#yadfcpptjc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -892,6 +884,118 @@ levels, : upper or lower confidence interval exceed abs(1) and set to +/- 1.</co
 
 </table>
 
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Kappa plot</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> final_table <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(kappa)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">lk_cat =</span> <span class="fu">case_when</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>      kappa <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"Poor"</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      kappa <span class="sc">&lt;</span> <span class="fl">0.21</span> <span class="sc">~</span> <span class="st">"Slight"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      kappa <span class="sc">&lt;</span> <span class="fl">0.41</span> <span class="sc">~</span> <span class="st">"Fair"</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>      kappa <span class="sc">&lt;</span> <span class="fl">0.61</span> <span class="sc">~</span> <span class="st">"Moderate"</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>      kappa <span class="sc">&lt;</span> <span class="fl">0.81</span> <span class="sc">~</span> <span class="st">"Substantial"</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Almost perfect"</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">lk_cat =</span> <span class="fu">factor</span>(</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>      lk_cat,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Almost perfect"</span>, <span class="st">"Substantial"</span>, <span class="st">"Moderate"</span>, <span class="st">"Fair"</span>, <span class="st">"Slight"</span>, <span class="st">"Poor"</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable =</span> <span class="fu">reorder</span>(variable, kappa)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">x =</span> kappa, <span class="at">y =</span> variable, <span class="at">color =</span> lk_cat)) <span class="sc">+</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">3.5</span>) <span class="sc">+</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbarh</span>(<span class="fu">aes</span>(<span class="at">xmin =</span> kappa_lwr, <span class="at">xmax =</span> kappa_upr), <span class="at">height =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.4</span>, <span class="dv">1</span>),</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fl">0.4</span>, <span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.2</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Almost perfect"</span> <span class="ot">=</span> <span class="st">"#1a9850"</span>,</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Substantial"</span> <span class="ot">=</span> <span class="st">"#91cf60"</span>,</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Moderate"</span> <span class="ot">=</span> <span class="st">"#d9ef8b"</span>,</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Fair"</span> <span class="ot">=</span> <span class="st">"#fee08b"</span>,</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Slight"</span> <span class="ot">=</span> <span class="st">"#fc8d59"</span>,</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Poor"</span> <span class="ot">=</span> <span class="st">"#d73027"</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="st">"Almost perfect"</span>, <span class="st">"Substantial"</span>, <span class="st">"Moderate"</span>, <span class="st">"Fair"</span>, <span class="st">"Slight"</span>, <span class="st">"Poor"</span>)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"</span><span class="sc">\n</span><span class="st"> Cohen's kappa (95% CI)"</span>,</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">""</span>,</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Agreement level"</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/Kappa%20plot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Kappa and agreement plot</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plot_data2 <span class="ot">&lt;-</span> final_table <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(kappa)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">lk_cat =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      kappa <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"Poor"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>      kappa <span class="sc">&lt;</span> <span class="fl">0.21</span> <span class="sc">~</span> <span class="st">"Slight"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>      kappa <span class="sc">&lt;</span> <span class="fl">0.41</span> <span class="sc">~</span> <span class="st">"Fair"</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>      kappa <span class="sc">&lt;</span> <span class="fl">0.61</span> <span class="sc">~</span> <span class="st">"Moderate"</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>      kappa <span class="sc">&lt;</span> <span class="fl">0.81</span> <span class="sc">~</span> <span class="st">"Substantial"</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Almost perfect"</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">lk_cat =</span> <span class="fu">factor</span>(</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>      lk_cat,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Almost perfect"</span>, <span class="st">"Substantial"</span>, <span class="st">"Moderate"</span>, <span class="st">"Fair"</span>, <span class="st">"Slight"</span>, <span class="st">"Poor"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(plot_data2, <span class="fu">aes</span>(<span class="at">x =</span> agreement, <span class="at">y =</span> kappa)) <span class="sc">+</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> lk_cat), <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> variable), <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Almost perfect"</span> <span class="ot">=</span> <span class="st">"#1a9850"</span>,</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Substantial"</span> <span class="ot">=</span> <span class="st">"#91cf60"</span>,</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Moderate"</span> <span class="ot">=</span> <span class="st">"#d9ef8b"</span>,</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Fair"</span> <span class="ot">=</span> <span class="st">"#fee08b"</span>,</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Slight"</span> <span class="ot">=</span> <span class="st">"#fc8d59"</span>,</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Poor"</span> <span class="ot">=</span> <span class="st">"#d73027"</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="st">"Almost perfect"</span>, <span class="st">"Substantial"</span>, <span class="st">"Moderate"</span>, <span class="st">"Fair"</span>, <span class="st">"Slight"</span>, <span class="st">"Poor"</span>)</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"</span><span class="sc">\n</span><span class="st"> Observed agreement (%)"</span>,</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Cohen's kappa </span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Agreement level"</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">clip =</span> <span class="st">"off"</span>) <span class="sc">+</span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"right"</span>,</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="fl">5.5</span>, <span class="dv">80</span>, <span class="fl">5.5</span>, <span class="fl">5.5</span>)</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/Kappa%20and%20agreement%20plot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
 </div>
 </div>
 </div>
