@@ -1,0 +1,297 @@
+---
+title: "Agreement between virtual audits and gemini"
+date: today
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-location: left
+    number-sections: true
+    code-fold: true
+    page-layout: full
+execute:
+  freeze: auto
+  cache: true
+---
+
+
+## Aim
+
+To compare built environment characteristics collected through virtual audit and automated assessment using Gemini in a subsample of street segments from Belo Horizonte.
+
+## Virtual audit
+
+The ELSI-Urbe Virtual Audit subproject was conducted using a systematic observation method between April and October 2024, based on available Google Street View images. The audit was performed at the street-segment level, considering both sides of the street, and later aggregated into census tracts, which were defined as neighborhoods. The sampling process was carried out in stages, sequentially selecting municipalities (the most populous municipality participating in ELSI-Brazil from each federative unit, with 20 available), census tracts (with ELSI-Brazil interviews), and random street segments. Data collection was conducted by a single trained rater using a multidimensional instrument and a field manual.
+
+In the present analysis, we included only street segments from Belo Horizonte with at least five audited built environment characteristics available (n = 94 segments), namely: sidewalks, crosswalks, speed bumps, potholes, traffic lights, stop signs, sidewalk obstructions, bike lanes, trees, medians, lane markings, crossing signs, bus lanes, bus stops, and roundabouts.
+
+## Gemini
+
+The same street segments included in the virtual audit were automatically processed using Google Street View images and a multimodal large language model (Gemini, Google) through a fully automated pipeline. For each coordinate, the closest panorama within a 10-meter radius and captured from 2015 onwards was selected, and the images were downloaded, preprocessed, and analyzed individually.
+
+A prompt-based approach was used to classify the presence or absence of predefined characteristics. The model was instructed to consider only characteristics in the immediate vicinity of the camera and to account for distortions inherent to panoramic imagery. Outputs were generated as structured JSON objects with binary indicators (1 = present; 0 = absent or only visible at a distance).
+
+In addition to the characteristics comparable to the virtual audit, the automated approach also evaluated a broader set of characteristics, including: curbs, streetlights, parked vehicles, yield signs, pedestrian signals, kiosks, bollards, median barriers, traffic signs, school zones, parking lanes, and BRT stations.
+
+However, for the present analyses, only characteristics comparable to the virtual audit were considered, resulting in a final sample of 60 street segments with complete data from both approaches.
+
+## Statistical analysis
+
+Descriptive frequencies were calculated for each characteristic in both approaches. Agreement between the virtual audit and the automated assessment was evaluated using observed agreement (%) and Cohen’s kappa coefficient, with corresponding 95% confidence intervals.
+
+Kappa values were not estimated for characteristics with insufficient variability (i.e., when one or both approaches classified all observations into a single category), and were therefore reported as not applicable (NA).
+
+The automated assessment using Gemini was implemented in Python. Data management and dataset organization were conducted in Stata, and all statistical analyses were performed in R.
+
+```{r}
+#| label: Packages
+#| code-summary: Packages
+#| warning: false
+#| message: false
+
+rm(list = ls())
+
+library(pacman)
+p_load(
+  # Data manipulation and wrangling
+  tidyverse, dplyr, purrr, here,
+  # Data import (Stata)
+  haven,
+  # Descriptive statistics
+  janitor, gtsummary,
+  # Agreement / reliability
+  irr, psych,
+  # Tables and reporting
+  gt, kableExtra
+)
+```
+
+```{r}
+#| label: Database
+#| code-summary: Database
+
+df <- read_dta(here("streetview_predictions_2.5-flash v3.dta"))
+```
+
+```{r}
+#| label: Descriptive table
+#| code-summary: Descriptive table
+#| warning: false
+#| message: false
+
+# Variables
+vars_base <- c(
+  "swalk_pres_cat", "str_cwalk", "str_scont1", "str_cond_cat2",
+  "str_tcont3", "str_tcont1", "swalk_cont_cat2", "str_blane",
+  "veg_tree_cat2", "str_med_cat2", "str_lanevis_cat2",
+  "str_cstop_cat2", "trans_blane", "trans_stop", "str_tcont2"
+)
+
+# Labels
+var_labels <- c(
+  swalk_pres_cat   = "Sidewalk",
+  str_cwalk        = "Crosswalk",
+  str_scont1       = "Speed bumps",
+  str_cond_cat2    = "Poor street condition (pothole)",
+  str_tcont3       = "Traffic light",
+  str_tcont1       = "Stop sign",
+  swalk_cont_cat2  = "Sidewalk obstruction",
+  str_blane        = "Bike lane",
+  veg_tree_cat2    = "Trees",
+  str_med_cat2     = "Median",
+  str_lanevis_cat2 = "Lane markings",
+  str_cstop_cat2   = "Pedestrian crossing sign",
+  trans_blane      = "Bus lane",
+  trans_stop       = "Bus stop",
+  str_tcont2       = "Roundabout"
+)
+
+# Proportion
+calc_prop <- function(var, suffix) {
+  mean(df[[paste0(var, suffix)]], na.rm = TRUE)
+}
+
+# Observed agreement
+calc_agreement <- function(var) {
+  x <- df[[paste0(var, "_0")]]
+  y <- df[[paste0(var, "_1")]]
+  mean(x == y, na.rm = TRUE)
+}
+
+# Robust kappa with correct CI extraction
+calc_kappa <- function(var) {
+  x <- df[[paste0(var, "_0")]]
+  y <- df[[paste0(var, "_1")]]
+  
+  valid <- !is.na(x) & !is.na(y)
+  x <- x[valid]
+  y <- y[valid]
+  
+  # No variability → kappa undefined
+  if (length(unique(x)) < 2 | length(unique(y)) < 2) {
+    return(c(kappa = NA, lwr = NA, upr = NA))
+  }
+  
+  k <- psych::cohen.kappa(cbind(x, y))
+  
+  ci <- k$confid[1, ]
+  
+  c(
+    kappa = unname(ci["estimate"]),
+    lwr   = unname(ci["lower"]),
+    upr   = unname(ci["upper"])
+  )
+}
+
+# Build table
+final_table <- map_dfr(vars_base, function(v) {
+  
+  k <- calc_kappa(v)
+  
+  tibble(
+    variable = var_labels[v],
+    audit = calc_prop(v, "_0"),
+    gemini = calc_prop(v, "_1"),
+    agreement = calc_agreement(v),
+    kappa = k["kappa"],
+    kappa_lwr = k["lwr"],
+    kappa_upr = k["upr"]
+  )
+})
+
+# Convert to %
+final_table <- final_table %>%
+  mutate(
+    audit = audit * 100,
+    gemini = gemini * 100,
+    agreement = agreement * 100
+  )
+
+# Display
+final_table %>%
+  gt() %>%
+  fmt_number(columns = c(audit, gemini, agreement), decimals = 1) %>%
+  fmt_number(columns = c(kappa, kappa_lwr, kappa_upr), decimals = 2) %>%
+  cols_label(
+    variable = "Variable",
+    audit = "Audit (%)",
+    gemini = "Gemini (%)",
+    agreement = "Observed agreement (%)",
+    kappa = "Kappa",
+    kappa_lwr = "Lower CI",
+    kappa_upr = "Upper CI"
+  ) %>%
+  tab_source_note(
+    source_note = "Kappa was not estimated (NA) for variables with insufficient variability (i.e., when one or both raters had only one category)."
+  )
+```
+
+```{r}
+#| label: Kappa plot
+#| code-summary: Kappa plot
+#| fig-width: 12
+#| fig-height: 6
+#| out-width: 100%
+
+plot_data <- final_table %>%
+  filter(!is.na(kappa)) %>%
+  mutate(
+    lk_cat = case_when(
+      kappa < 0 ~ "Poor",
+      kappa < 0.21 ~ "Slight",
+      kappa < 0.41 ~ "Fair",
+      kappa < 0.61 ~ "Moderate",
+      kappa < 0.81 ~ "Substantial",
+      TRUE ~ "Almost perfect"
+    ),
+    lk_cat = factor(
+      lk_cat,
+      levels = c("Almost perfect", "Substantial", "Moderate", "Fair", "Slight", "Poor")
+    ),
+    variable = reorder(variable, kappa)
+  )
+
+ggplot(plot_data, aes(x = kappa, y = variable, color = lk_cat)) +
+  geom_point(size = 3.5) +
+  geom_errorbarh(aes(xmin = kappa_lwr, xmax = kappa_upr), height = 0.2) +
+  scale_x_continuous(
+    limits = c(-0.4, 1),
+    breaks = seq(-0.4, 1, by = 0.2)
+  ) +
+  scale_color_manual(
+    values = c(
+      "Almost perfect" = "#1a9850",
+      "Substantial" = "#91cf60",
+      "Moderate" = "#d9ef8b",
+      "Fair" = "#fee08b",
+      "Slight" = "#fc8d59",
+      "Poor" = "#d73027"
+    ),
+    breaks = c("Almost perfect", "Substantial", "Moderate", "Fair", "Slight", "Poor")
+  ) +
+  labs(
+    x = "\n Cohen's kappa (95% CI)",
+    y = "",
+    color = "Agreement level"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+```{r}
+#| label: Kappa and agreement plot 
+#| code-summary: Kappa and agreement plot 
+#| fig-width: 12
+#| fig-height: 6
+#| out-width: 100%
+
+plot_data2 <- final_table %>%
+  filter(!is.na(kappa)) %>%
+  mutate(
+    lk_cat = case_when(
+      kappa < 0 ~ "Poor",
+      kappa < 0.21 ~ "Slight",
+      kappa < 0.41 ~ "Fair",
+      kappa < 0.61 ~ "Moderate",
+      kappa < 0.81 ~ "Substantial",
+      TRUE ~ "Almost perfect"
+    ),
+    lk_cat = factor(
+      lk_cat,
+      levels = c("Almost perfect", "Substantial", "Moderate", "Fair", "Slight", "Poor")
+    )
+  )
+
+ggplot(plot_data2, aes(x = agreement, y = kappa)) +
+  geom_point(aes(color = lk_cat), size = 3.5, alpha = 0.9) +
+  geom_text(aes(label = variable), hjust = -0.1, size = 4) +
+  
+  scale_color_manual(
+    values = c(
+      "Almost perfect" = "#1a9850",
+      "Substantial" = "#91cf60",
+      "Moderate" = "#d9ef8b",
+      "Fair" = "#fee08b",
+      "Slight" = "#fc8d59",
+      "Poor" = "#d73027"
+    ),
+    breaks = c("Almost perfect", "Substantial", "Moderate", "Fair", "Slight", "Poor")
+  ) +
+  
+  labs(
+    x = "\n Observed agreement (%)",
+    y = "Cohen's kappa \n",
+    color = "Agreement level"
+  ) +
+  
+  coord_cartesian(clip = "off") +
+  
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "right",
+    plot.margin = margin(5.5, 80, 5.5, 5.5)
+  )
+```
+
+## Results
+
+Agreement levels ranged from poor to almost perfect. Almost perfect agreement was observed for bus stop (n = 1), and substantial agreement for median, pedestrian crossing sign, traffic light, and roundabout (n = 4). Fair agreement was found for crosswalk, speed bumps, potholes, and stop sign (n = 4), while slight and poor agreement were observed for lane markings (n = 1) and sidewalk obstruction (n = 1), respectively. No characteristics showed moderate agreement, and four variables had kappa not estimated due to insufficient variability.
