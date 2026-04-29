@@ -304,7 +304,7 @@ Similarly, F1-score, which summarizes the balance between sensitivity and positi
 #| warning: false
 #| message: false
 #| fig-width: 12
-#| fig-height: 6
+#| fig-height: 12
 #| out-width: 100%
 
 # Function to calculate all metrics
