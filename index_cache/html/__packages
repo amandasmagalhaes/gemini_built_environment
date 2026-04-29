@@ -18,3 +18,5 @@ irr
 psych
 gt
 kableExtra
+pROC
+patchwork

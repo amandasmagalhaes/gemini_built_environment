@@ -60,8 +60,10 @@ p_load(
   janitor, gtsummary,
   # Agreement / reliability
   irr, psych,
+  # Diagnostic performance / ROC
+  pROC,
   # Tables and reporting
-  gt, kableExtra
+  gt, kableExtra, patchwork
 )
 ```
 
@@ -74,7 +76,7 @@ df <- read_dta(here("streetview_predictions_2.5-flash v3.dta"))
 
 ## Results
 
-Agreement levels ranged from poor to almost perfect. Almost perfect agreement was observed for bus stop (n = 1), and substantial agreement for median, pedestrian crossing sign, traffic light, and roundabout (n = 4). Fair agreement was found for crosswalk, speed bumps, potholes, and stop sign (n = 4), while slight and poor agreement were observed for lane markings (n = 1) and sidewalk obstruction (n = 1), respectively. No characteristics showed moderate agreement, and four variables had kappa not estimated due to insufficient variability.
+Agreement levels ranged from poor to almost perfect. Almost perfect agreement was observed for bus stop (n = 1), while substantial agreement was found for median, pedestrian crossing sign, traffic light, and roundabout (n = 4). Fair agreement was identified for crosswalk, speed bumps, potholes, and stop sign (n = 4), whereas slight and poor agreement were observed for lane markings (n = 1) and sidewalk obstruction (n = 1), respectively. No characteristics showed moderate agreement, and four variables had kappa not estimated due to insufficient variability: sidewalk, bike lane, trees, and bus lane.
 
 ```{r}
 #| label: Descriptive table
@@ -134,11 +136,8 @@ calc_kappa <- function(var) {
   if (length(unique(x)) < 2 | length(unique(y)) < 2) {
     return(c(kappa = NA, lwr = NA, upr = NA))
   }
-  
   k <- psych::cohen.kappa(cbind(x, y))
-  
   ci <- k$confid[1, ]
-  
   c(
     kappa = unname(ci["estimate"]),
     lwr   = unname(ci["lower"]),
@@ -148,9 +147,7 @@ calc_kappa <- function(var) {
 
 # Build table
 final_table <- map_dfr(vars_base, function(v) {
-  
   k <- calc_kappa(v)
-  
   tibble(
     variable = var_labels[v],
     audit = calc_prop(v, "_0"),
@@ -196,7 +193,7 @@ final_table %>%
 #| fig-height: 6
 #| out-width: 100%
 
-plot_data <- final_table %>%
+plot <- final_table %>%
   filter(!is.na(kappa)) %>%
   mutate(
     lk_cat = case_when(
@@ -214,7 +211,7 @@ plot_data <- final_table %>%
     variable = reorder(variable, kappa)
   )
 
-ggplot(plot_data, aes(x = kappa, y = variable, color = lk_cat)) +
+ggplot(plot, aes(x = kappa, y = variable, color = lk_cat)) +
   geom_point(size = 3.5) +
   geom_errorbarh(aes(xmin = kappa_lwr, xmax = kappa_upr), height = 0.2) +
   scale_x_continuous(
@@ -247,7 +244,7 @@ ggplot(plot_data, aes(x = kappa, y = variable, color = lk_cat)) +
 #| fig-height: 6
 #| out-width: 100%
 
-plot_data2 <- final_table %>%
+plot <- final_table %>%
   filter(!is.na(kappa)) %>%
   mutate(
     lk_cat = case_when(
@@ -264,7 +261,7 @@ plot_data2 <- final_table %>%
     )
   )
 
-ggplot(plot_data2, aes(x = agreement, y = kappa)) +
+ggplot(plot, aes(x = agreement, y = kappa)) +
   geom_point(aes(color = lk_cat), size = 3.5, alpha = 0.9) +
   geom_text(aes(label = variable), hjust = -0.1, size = 4) +
   
@@ -294,3 +291,176 @@ ggplot(plot_data2, aes(x = agreement, y = kappa)) +
     plot.margin = margin(5.5, 80, 5.5, 5.5)
   )
 ```
+
+Sensitivity and specificity, which reflect the ability to correctly identify the presence or absence of a characteristic using the field audit as the reference, were highest for more visible urban features such as trees, sidewalks, bus lanes, bike lanes, and roundabouts. Good results were also observed for medians, pedestrian crossing signs, bus stops, and traffic lights, whereas lower values were found for subtler attributes, including potholes, speed bumps, lane markings, and sidewalk obstructions.
+
+Positive predictive value (PPV), which indicates the probability that a feature is truly present when classified as present, and negative predictive value (NPV), which indicates the probability that a feature is truly absent when classified as absent, were highest for trees, sidewalks, and bus stops, and lowest for lane markings, bus lanes, bike lanes, and sidewalk obstructions. 
+
+Similarly, F1-score, which summarizes the balance between sensitivity and positive predictive value, was higher for trees, sidewalks, and bus stops, intermediate for medians, traffic lights, pedestrian crossing signs, and crosswalks, and lower for the same lower-performing variables.
+
+```{r}
+#| label: Diagnostic performance plots
+#| code-summary: Diagnostic performance plots
+#| warning: false
+#| message: false
+#| fig-width: 12
+#| fig-height: 6
+#| out-width: 100%
+
+# Function to calculate all metrics
+calc_metrics <- function(var){
+  ref  <- df[[paste0(var, "_0")]]
+  test <- df[[paste0(var, "_1")]]
+  valid <- !is.na(ref) & !is.na(test)
+  ref  <- ref[valid]
+  test <- test[valid]
+  TP <- sum(ref == 1 & test == 1)
+  TN <- sum(ref == 0 & test == 0)
+  FP <- sum(ref == 0 & test == 1)
+  FN <- sum(ref == 1 & test == 0)
+  tibble(
+    variable = var_labels[var],
+    sensitivity = ifelse((TP + FN) == 0, NA, TP / (TP + FN)),
+    specificity = ifelse((TN + FP) == 0, NA, TN / (TN + FP)),
+    ppv         = ifelse((TP + FP) == 0, NA, TP / (TP + FP)),
+    npv         = ifelse((TN + FN) == 0, NA, TN / (TN + FN)),
+    f1_score    = ifelse((2*TP + FP + FN) == 0,
+                         NA,
+                         2*TP / (2*TP + FP + FN))
+  )
+}
+
+# Build dataset
+metrics_results <- map_dfr(vars_base, calc_metrics)
+
+# Shared colors
+metric_colors <- c(
+  "sensitivity" = "#1a9850",
+  "ppv"         = "#1a9850",
+  "specificity" = "#fc8d59",
+  "npv"         = "#fc8d59"
+)
+
+# Plot 1: Sensitivity + Specificity
+plot1_data <- metrics_results %>%
+  select(variable, sensitivity, specificity) %>%
+  pivot_longer(-variable, names_to = "metric", values_to = "value")
+
+p1 <- ggplot(plot1_data,
+             aes(x = value,
+                 y = reorder(variable, value),
+                 color = metric)) +
+  geom_point(size = 3) +
+  scale_color_manual(values = metric_colors) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.2)) +
+  labs(
+    title = "Sensitivity and Specificity",
+    x = "\n",
+    y = "",
+    color = ""
+  ) +
+  theme_minimal(base_size = 14)
+
+# Plot 2: PPV + NPV
+plot2_data <- metrics_results %>%
+  select(variable, ppv, npv) %>%
+  pivot_longer(-variable, names_to = "metric", values_to = "value") %>%
+  mutate(metric = factor(metric, levels = c("ppv", "npv")))
+
+p2 <- ggplot(plot2_data,
+             aes(x = value,
+                 y = reorder(variable, value),
+                 color = metric)) +
+  geom_point(size = 3) +
+  scale_color_manual(values = metric_colors) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.2)) +
+  labs(
+    title = "PPV and NPV",
+    x = "\n",
+    y = "",
+    color = ""
+  ) +
+  theme_minimal(base_size = 14)
+
+# Plot 3: F1-score
+p3 <- ggplot(metrics_results,
+             aes(x = f1_score,
+                 y = reorder(variable, f1_score))) +
+  geom_point(size = 3, color = "#2C7FB8") +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.2)) +
+  labs(
+    title = "F1-score",
+    x = "\nValue",
+    y = ""
+  ) +
+  theme_minimal(base_size = 14)
+
+# Combine vertically
+p1 / p2 / p3
+```
+
+Receiver operating characteristic (ROC) analyses, which evaluate discriminatory ability by comparing sensitivity with the false positive rate, confirmed these patterns. Higher area under the curve (AUC) values were observed for roundabouts, medians, pedestrian crossing signs, bus stops, and traffic lights, whereas crosswalks, stop signs, potholes, and speed bumps showed intermediate performance. Lane markings and sidewalk obstructions presented the weakest discrimination.
+
+```{r}
+#| label: ROC panel
+#| code-summary: ROC panel
+#| warning: false
+#| message: false
+#| fig-width: 12
+#| fig-height: 6
+#| out-width: 100%
+
+# Function to calculate ROC object + AUC
+calc_roc_data <- function(var){
+  ref  <- df[[paste0(var, "_0")]]
+  pred <- df[[paste0(var, "_1")]]
+  valid <- !is.na(ref) & !is.na(pred)
+  ref  <- ref[valid]
+  pred <- pred[valid]
+  if(length(unique(ref)) < 2){
+    return(NULL)
+  }
+  roc_obj <- roc(ref, pred, quiet = TRUE)
+  coords_df <- tibble(
+    specificity = roc_obj$specificities,
+    sensitivity = roc_obj$sensitivities
+  ) %>%
+    mutate(
+      fpr = 1 - specificity,
+      variable = var_labels[var],
+      auc = as.numeric(auc(roc_obj))
+    )
+  coords_df
+}
+
+# Build dataset
+roc_panel <- map_dfr(vars_base, calc_roc_data)
+
+# Plot
+ggplot(roc_panel, aes(x = fpr, y = sensitivity)) +
+  geom_line(color = "#2C7FB8", linewidth = 1) +
+  geom_abline(
+    slope = 1, intercept = 0,
+    linetype = 2, color = "gray60"
+  ) +
+  facet_wrap(~ variable, ncol = 4) +
+  coord_equal() +
+  scale_x_continuous(
+    limits = c(0,1),
+    breaks = seq(0,1,0.5)
+  ) +
+  scale_y_continuous(
+    limits = c(0,1),
+    breaks = seq(0,1,0.5)
+  ) +
+  labs(
+    x = "\n False Positive Rate",
+    y = "True Positive Rate \n"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.grid.minor = element_blank()
+  )
+```
+
+Overall, across all agreement and diagnostic metrics, Gemini consistently performed better for larger, permanent, and visually salient urban features, while lower performance was observed for subtle, linear, or condition-dependent characteristics. These findings suggest that multimodal artificial intelligence may be a useful tool for automated urban audits of clearly visible built-environment features, although caution is warranted for more ambiguous street attributes.
