@@ -526,7 +526,7 @@ In this step, discrepancies between human and AI assessments are examined for fe
 df <- df %>%
   mutate(identificador = as.character(identificador))
 
-# Function: capture BOTH discrepancy types
+# Function: capture both discrepancy types
 get_ids_discrepancy <- function(data, base_var) {
   var0 <- paste0(base_var, "_0")  # human
   var1 <- paste0(base_var, "_1")  # AI
