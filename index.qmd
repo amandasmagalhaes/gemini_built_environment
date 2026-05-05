@@ -47,30 +47,36 @@ The automated assessment using Gemini was implemented in Python. Data management
 #| code-summary: Packages
 #| warning: false
 #| message: false
-
 rm(list = ls())
 
 library(pacman)
 p_load(
   # Data manipulation and wrangling
-  tidyverse, dplyr, purrr, here,
-  # Data import (Stata)
+  tidyverse,
+  dplyr,
+  purrr,
+  here,
+  # Data import
   haven,
+  readxl,
   # Descriptive statistics
-  janitor, gtsummary,
+  janitor,
+  gtsummary,
   # Agreement / reliability
-  irr, psych,
+  irr,
+  psych,
   # Diagnostic performance / ROC
   pROC,
   # Tables and reporting
-  gt, kableExtra, patchwork
+  gt,
+  kableExtra,
+  patchwork
 )
 ```
 
 ```{r}
 #| label: Database
 #| code-summary: Database
-
 df <- read_dta(here("streetview_predictions_2.5-flash v3.dta"))
 ```
 
@@ -83,32 +89,42 @@ Agreement levels ranged from poor to almost perfect. Almost perfect agreement wa
 #| code-summary: Descriptive table
 #| warning: false
 #| message: false
-
 # Variables
 vars_base <- c(
-  "swalk_pres_cat", "str_cwalk", "str_scont1", "str_cond_cat2",
-  "str_tcont3", "str_tcont1", "swalk_cont_cat2", "str_blane",
-  "veg_tree_cat2", "str_med_cat2", "str_lanevis_cat2",
-  "str_cstop_cat2", "trans_blane", "trans_stop", "str_tcont2"
+  "swalk_pres_cat",
+  "str_cwalk",
+  "str_scont1",
+  "str_cond_cat2",
+  "str_tcont3",
+  "str_tcont1",
+  "swalk_cont_cat2",
+  "str_blane",
+  "veg_tree_cat2",
+  "str_med_cat2",
+  "str_lanevis_cat2",
+  "str_cstop_cat2",
+  "trans_blane",
+  "trans_stop",
+  "str_tcont2"
 )
 
 # Labels
 var_labels <- c(
-  swalk_pres_cat   = "Sidewalk",
-  str_cwalk        = "Crosswalk",
-  str_scont1       = "Speed bumps",
-  str_cond_cat2    = "Poor street condition (pothole)",
-  str_tcont3       = "Traffic light",
-  str_tcont1       = "Stop sign",
-  swalk_cont_cat2  = "Sidewalk obstruction",
-  str_blane        = "Bike lane",
-  veg_tree_cat2    = "Trees",
-  str_med_cat2     = "Median",
+  swalk_pres_cat = "Sidewalk",
+  str_cwalk = "Crosswalk",
+  str_scont1 = "Speed bumps",
+  str_cond_cat2 = "Poor street condition (pothole)",
+  str_tcont3 = "Traffic light",
+  str_tcont1 = "Stop sign",
+  swalk_cont_cat2 = "Sidewalk obstruction",
+  str_blane = "Bike lane",
+  veg_tree_cat2 = "Trees",
+  str_med_cat2 = "Median",
   str_lanevis_cat2 = "Lane markings",
-  str_cstop_cat2   = "Pedestrian crossing sign",
-  trans_blane      = "Bus lane",
-  trans_stop       = "Bus stop",
-  str_tcont2       = "Roundabout"
+  str_cstop_cat2 = "Pedestrian crossing sign",
+  trans_blane = "Bus lane",
+  trans_stop = "Bus stop",
+  str_tcont2 = "Roundabout"
 )
 
 # Proportion
@@ -127,11 +143,11 @@ calc_agreement <- function(var) {
 calc_kappa <- function(var) {
   x <- df[[paste0(var, "_0")]]
   y <- df[[paste0(var, "_1")]]
-  
+
   valid <- !is.na(x) & !is.na(y)
   x <- x[valid]
   y <- y[valid]
-  
+
   # No variability → kappa undefined
   if (length(unique(x)) < 2 | length(unique(y)) < 2) {
     return(c(kappa = NA, lwr = NA, upr = NA))
@@ -140,8 +156,8 @@ calc_kappa <- function(var) {
   ci <- k$confid[1, ]
   c(
     kappa = unname(ci["estimate"]),
-    lwr   = unname(ci["lower"]),
-    upr   = unname(ci["upper"])
+    lwr = unname(ci["lower"]),
+    upr = unname(ci["upper"])
   )
 }
 
@@ -192,7 +208,6 @@ final_table %>%
 #| fig-width: 12
 #| fig-height: 6
 #| out-width: 100%
-
 plot <- final_table %>%
   filter(!is.na(kappa)) %>%
   mutate(
@@ -206,7 +221,14 @@ plot <- final_table %>%
     ),
     lk_cat = factor(
       lk_cat,
-      levels = c("Almost perfect", "Substantial", "Moderate", "Fair", "Slight", "Poor")
+      levels = c(
+        "Almost perfect",
+        "Substantial",
+        "Moderate",
+        "Fair",
+        "Slight",
+        "Poor"
+      )
     ),
     variable = reorder(variable, kappa)
   )
@@ -227,7 +249,14 @@ ggplot(plot, aes(x = kappa, y = variable, color = lk_cat)) +
       "Slight" = "#fc8d59",
       "Poor" = "#d73027"
     ),
-    breaks = c("Almost perfect", "Substantial", "Moderate", "Fair", "Slight", "Poor")
+    breaks = c(
+      "Almost perfect",
+      "Substantial",
+      "Moderate",
+      "Fair",
+      "Slight",
+      "Poor"
+    )
   ) +
   labs(
     x = "\n Cohen's kappa (95% CI)",
@@ -243,7 +272,6 @@ ggplot(plot, aes(x = kappa, y = variable, color = lk_cat)) +
 #| fig-width: 12
 #| fig-height: 6
 #| out-width: 100%
-
 plot <- final_table %>%
   filter(!is.na(kappa)) %>%
   mutate(
@@ -257,14 +285,21 @@ plot <- final_table %>%
     ),
     lk_cat = factor(
       lk_cat,
-      levels = c("Almost perfect", "Substantial", "Moderate", "Fair", "Slight", "Poor")
+      levels = c(
+        "Almost perfect",
+        "Substantial",
+        "Moderate",
+        "Fair",
+        "Slight",
+        "Poor"
+      )
     )
   )
 
 ggplot(plot, aes(x = agreement, y = kappa)) +
   geom_point(aes(color = lk_cat), size = 3.5, alpha = 0.9) +
   geom_text(aes(label = variable), hjust = -0.1, size = 4) +
-  
+
   scale_color_manual(
     values = c(
       "Almost perfect" = "#1a9850",
@@ -274,17 +309,24 @@ ggplot(plot, aes(x = agreement, y = kappa)) +
       "Slight" = "#fc8d59",
       "Poor" = "#d73027"
     ),
-    breaks = c("Almost perfect", "Substantial", "Moderate", "Fair", "Slight", "Poor")
+    breaks = c(
+      "Almost perfect",
+      "Substantial",
+      "Moderate",
+      "Fair",
+      "Slight",
+      "Poor"
+    )
   ) +
-  
+
   labs(
     x = "\n Observed agreement (%)",
     y = "Cohen's kappa \n",
     color = "Agreement level"
   ) +
-  
+
   coord_cartesian(clip = "off") +
-  
+
   theme_minimal(base_size = 14) +
   theme(
     legend.position = "right",
@@ -306,13 +348,12 @@ Similarly, F1-score, which summarizes the balance between sensitivity and positi
 #| fig-width: 12
 #| fig-height: 12
 #| out-width: 100%
-
 # Function to calculate all metrics
-calc_metrics <- function(var){
-  ref  <- df[[paste0(var, "_0")]]
+calc_metrics <- function(var) {
+  ref <- df[[paste0(var, "_0")]]
   test <- df[[paste0(var, "_1")]]
   valid <- !is.na(ref) & !is.na(test)
-  ref  <- ref[valid]
+  ref <- ref[valid]
   test <- test[valid]
   TP <- sum(ref == 1 & test == 1)
   TN <- sum(ref == 0 & test == 0)
@@ -322,11 +363,9 @@ calc_metrics <- function(var){
     variable = var_labels[var],
     sensitivity = ifelse((TP + FN) == 0, NA, TP / (TP + FN)),
     specificity = ifelse((TN + FP) == 0, NA, TN / (TN + FP)),
-    ppv         = ifelse((TP + FP) == 0, NA, TP / (TP + FP)),
-    npv         = ifelse((TN + FN) == 0, NA, TN / (TN + FN)),
-    f1_score    = ifelse((2*TP + FP + FN) == 0,
-                         NA,
-                         2*TP / (2*TP + FP + FN))
+    ppv = ifelse((TP + FP) == 0, NA, TP / (TP + FP)),
+    npv = ifelse((TN + FN) == 0, NA, TN / (TN + FN)),
+    f1_score = ifelse((2 * TP + FP + FN) == 0, NA, 2 * TP / (2 * TP + FP + FN))
   )
 }
 
@@ -336,9 +375,9 @@ metrics_results <- map_dfr(vars_base, calc_metrics)
 # Shared colors
 metric_colors <- c(
   "sensitivity" = "#1a9850",
-  "ppv"         = "#1a9850",
+  "ppv" = "#1a9850",
   "specificity" = "#fc8d59",
-  "npv"         = "#fc8d59"
+  "npv" = "#fc8d59"
 )
 
 # Plot 1: Sensitivity + Specificity
@@ -346,13 +385,13 @@ plot1_data <- metrics_results %>%
   select(variable, sensitivity, specificity) %>%
   pivot_longer(-variable, names_to = "metric", values_to = "value")
 
-p1 <- ggplot(plot1_data,
-             aes(x = value,
-                 y = reorder(variable, value),
-                 color = metric)) +
+p1 <- ggplot(
+  plot1_data,
+  aes(x = value, y = reorder(variable, value), color = metric)
+) +
   geom_point(size = 3) +
   scale_color_manual(values = metric_colors) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.2)) +
+  scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
   labs(
     title = "Sensitivity and Specificity",
     x = "\n",
@@ -367,13 +406,13 @@ plot2_data <- metrics_results %>%
   pivot_longer(-variable, names_to = "metric", values_to = "value") %>%
   mutate(metric = factor(metric, levels = c("ppv", "npv")))
 
-p2 <- ggplot(plot2_data,
-             aes(x = value,
-                 y = reorder(variable, value),
-                 color = metric)) +
+p2 <- ggplot(
+  plot2_data,
+  aes(x = value, y = reorder(variable, value), color = metric)
+) +
   geom_point(size = 3) +
   scale_color_manual(values = metric_colors) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.2)) +
+  scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
   labs(
     title = "PPV and NPV",
     x = "\n",
@@ -383,11 +422,12 @@ p2 <- ggplot(plot2_data,
   theme_minimal(base_size = 14)
 
 # Plot 3: F1-score
-p3 <- ggplot(metrics_results,
-             aes(x = f1_score,
-                 y = reorder(variable, f1_score))) +
+p3 <- ggplot(
+  metrics_results,
+  aes(x = f1_score, y = reorder(variable, f1_score))
+) +
   geom_point(size = 3, color = "#2C7FB8") +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.2)) +
+  scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
   labs(
     title = "F1-score",
     x = "\nValue",
@@ -407,17 +447,16 @@ Receiver operating characteristic (ROC) analyses, which evaluate discriminatory 
 #| warning: false
 #| message: false
 #| fig-width: 12
-#| fig-height: 6
+#| fig-height: 12
 #| out-width: 100%
-
 # Function to calculate ROC object + AUC
-calc_roc_data <- function(var){
-  ref  <- df[[paste0(var, "_0")]]
+calc_roc_data <- function(var) {
+  ref <- df[[paste0(var, "_0")]]
   pred <- df[[paste0(var, "_1")]]
   valid <- !is.na(ref) & !is.na(pred)
-  ref  <- ref[valid]
+  ref <- ref[valid]
   pred <- pred[valid]
-  if(length(unique(ref)) < 2){
+  if (length(unique(ref)) < 2) {
     return(NULL)
   }
   roc_obj <- roc(ref, pred, quiet = TRUE)
@@ -440,18 +479,20 @@ roc_panel <- map_dfr(vars_base, calc_roc_data)
 ggplot(roc_panel, aes(x = fpr, y = sensitivity)) +
   geom_line(color = "#2C7FB8", linewidth = 1) +
   geom_abline(
-    slope = 1, intercept = 0,
-    linetype = 2, color = "gray60"
+    slope = 1,
+    intercept = 0,
+    linetype = 2,
+    color = "gray60"
   ) +
-  facet_wrap(~ variable, ncol = 4) +
+  facet_wrap(~variable, ncol = 4) +
   coord_equal() +
   scale_x_continuous(
-    limits = c(0,1),
-    breaks = seq(0,1,0.5)
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.5)
   ) +
   scale_y_continuous(
-    limits = c(0,1),
-    breaks = seq(0,1,0.5)
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.5)
   ) +
   labs(
     x = "\n False Positive Rate",
@@ -463,4 +504,166 @@ ggplot(roc_panel, aes(x = fpr, y = sensitivity)) +
   )
 ```
 
-Overall, across all agreement and diagnostic metrics, Gemini consistently performed better for larger, permanent, and visually salient urban features, while lower performance was observed for subtle, linear, or condition-dependent characteristics. These findings suggest that multimodal artificial intelligence may be a useful tool for automated urban audits of clearly visible built-environment features, although caution is warranted for more ambiguous street attributes.
+Overall, across all agreement and diagnostic metrics, Gemini consistently performed better for larger, permanent, and visually salient urban features, such as bus stops, medians, pedestrian crossing signs, traffic lights, and roundabouts. Intermediate performance was observed for features like crosswalks, stop signs, speed bumps, and poor street condition (potholes). In contrast, lower performance was found for more subtle, linear, or condition-dependent characteristics, including lane markings and sidewalk obstructions. These findings suggest that multimodal artificial intelligence may be a useful tool for automated urban audits of clearly visible built-environment features, although caution is warranted for more ambiguous street attributes.
+
+## Discrepancy analysis
+
+In this step, discrepancies between human and AI assessments are examined for features selected due to their intermediate and lower performance in agreement and diagnostic metrics. For each variable, segments with disagreement are identified, the type of discrepancy is classified (human = 1 and AI = 0; or human = 0 and AI = 1), and these cases are linked to geographic coordinates and Google Street View links, enabling visual inspection and interpretation of the differences.
+
+```{r}
+#| label: Extract identifiers and create Street View tables with discrepancies
+#| code-summary: Extract identifiers and create Street View tables with discrepancies
+#| warning: false
+#| message: false
+ 
+df <- df %>%
+  mutate(identificador = as.character(identificador))
+
+# Function: capture BOTH discrepancy types
+get_ids_discrepancy <- function(data, base_var) {
+  var0 <- paste0(base_var, "_0")  # human
+  var1 <- paste0(base_var, "_1")  # AI
+  
+  data %>%
+    dplyr::filter(!is.na(.data[[var0]]),
+                  !is.na(.data[[var1]]),
+                  .data[[var0]] != .data[[var1]]) %>%
+    dplyr::mutate(
+      discrepancy_type = dplyr::case_when(
+        .data[[var0]] == 1 & .data[[var1]] == 0 ~ "human_1_ai_0",
+        .data[[var0]] == 0 & .data[[var1]] == 1 ~ "human_0_ai_1"
+      )
+    ) %>%
+    dplyr::select(identificador, discrepancy_type) %>%
+    distinct()
+}
+
+vars_to_use <- c(
+  "swalk_cont_cat2",
+  "str_lanevis_cat2",
+  "str_cond_cat2",
+  "str_scont1",
+  "str_tcont1",
+  "str_cwalk"
+)
+
+# Apply function
+ids_list <- lapply(vars_to_use, function(v) {
+  get_ids_discrepancy(df, v)
+})
+
+names(ids_list) <- var_labels[vars_to_use]
+
+# Load coordinates
+coords <- read_excel("items_coordinates_belo_horizonte 5more.xlsx") %>%
+  mutate(
+    identificador = as.character(id),
+    lat = as.numeric(lat),
+    lon = as.numeric(lon)
+  )
+
+# Create final tables
+views <- list()
+
+for (var_name in names(ids_list)) {
+
+  df_view <- coords %>%
+    dplyr::inner_join(ids_list[[var_name]], by = "identificador") %>%
+    dplyr::mutate(
+      lat_lon = paste0(lat, ", ", lon),
+      streetview_url = paste0(
+        "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=",
+        lat, ",", lon
+      )
+    ) %>%
+    dplyr::select(identificador, discrepancy_type, lat_lon, streetview_url) %>%
+    dplyr::arrange(discrepancy_type, as.numeric(identificador))
+
+  views[[var_name]] <- df_view
+}
+```
+
+```{r}
+#| label: Sidewalk obstructions 
+#| code-summary: Sidewalk obstructions
+#| warning: false
+#| message: false
+
+# View results
+View(views[["Sidewalk obstruction"]])
+```
+
+Items marked as present by the AI but absent by human raters are likely due to obstructions that still allow pedestrian passage along the sidewalk. Conversely, cases marked as absent by the AI but present by human raters were often due to obstructions caused by trees or vegetation.
+
+```{r}
+#| echo: false
+#| results: asis
+
+cat(
+  '[![](31062001071_2.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.9353500964683,-43.9310052796472)<br>
+  <span>human_0_ai_1</span><br><br>'
+)
+
+cat(
+  '[![](31062009283_148.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.8674806605816,-43.9333105108766)<br>
+  <span>human_1_ai_0</span><br><br>'
+)
+```
+
+```{r}
+#| label: Lane markings 
+#| code-summary: Lane markings
+#| warning: false
+#| message: false
+
+# View results
+View(views[["Lane markings"]])
+```
+
+Are items marked as present by the AI but absent by human raters due to crosswalk markings or differences in pavement color? Conversely, cases marked as absent by the AI but present by human raters were likely due to the markings being clearly visible in the images.
+
+```{r}
+#| echo: false
+#| results: asis
+
+cat(
+  '[![](310620013483_6.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.8704599360962,-43.9841267008323)<br>
+  <span>human_0_ai_1</span><br><br>'
+)
+
+cat(
+  '[![](310620017937_37.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.9153131,-43.8919484)<br>
+  <span>human_1_ai_0</span><br><br>'
+)
+```
+
+```{r}
+#| label: Poor street condition (potholes)
+#| code-summary: Poor street condition (potholes)
+#| warning: false
+#| message: false
+
+# View results
+View(views[["Poor street condition (pothole)"]])
+```
+
+Are items marked as present by the AI but absent by human raters due to crosswalk markings or differences in pavement color? Conversely, cases marked as absent by the AI but present by human raters were likely due to the markings being clearly visible in the images.
+
+```{r}
+#| echo: false
+#| results: asis
+
+cat(
+  '[![](310620013483_6.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.8704599360962,-43.9841267008323)<br>
+  <span>human_0_ai_1</span><br><br>'
+)
+
+cat(
+  '[![](310620017937_37.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.9153131,-43.8919484)<br>
+  <span>human_1_ai_0</span><br><br>'
+)
+```
+
+## Speed bumps
+## Stop signs
+## Crosswalks
