@@ -89,12 +89,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#virtual-audit" id="toc-virtual-audit" class="nav-link" data-scroll-target="#virtual-audit"><span class="header-section-number">2</span> Virtual audit</a></li>
   <li><a href="#gemini" id="toc-gemini" class="nav-link" data-scroll-target="#gemini"><span class="header-section-number">3</span> Gemini</a></li>
   <li><a href="#statistical-analysis" id="toc-statistical-analysis" class="nav-link" data-scroll-target="#statistical-analysis"><span class="header-section-number">4</span> Statistical analysis</a></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">5</span> Results</a></li>
-  <li><a href="#discrepancy-analysis" id="toc-discrepancy-analysis" class="nav-link" data-scroll-target="#discrepancy-analysis"><span class="header-section-number">6</span> Discrepancy analysis</a></li>
-  <li><a href="#poor-street-condition-potholes" id="toc-poor-street-condition-potholes" class="nav-link" data-scroll-target="#poor-street-condition-potholes"><span class="header-section-number">7</span> Poor street condition (potholes)</a></li>
-  <li><a href="#speed-bumps" id="toc-speed-bumps" class="nav-link" data-scroll-target="#speed-bumps"><span class="header-section-number">8</span> Speed bumps</a></li>
-  <li><a href="#stop-signs" id="toc-stop-signs" class="nav-link" data-scroll-target="#stop-signs"><span class="header-section-number">9</span> Stop signs</a></li>
-  <li><a href="#crosswalks" id="toc-crosswalks" class="nav-link" data-scroll-target="#crosswalks"><span class="header-section-number">10</span> Crosswalks</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">5</span> Results</a>
+  <ul class="collapse">
+  <li><a href="#descriptive" id="toc-descriptive" class="nav-link" data-scroll-target="#descriptive"><span class="header-section-number">5.1</span> Descriptive</a></li>
+  <li><a href="#kappa" id="toc-kappa" class="nav-link" data-scroll-target="#kappa"><span class="header-section-number">5.2</span> Kappa</a></li>
+  <li><a href="#diagnostic-performance" id="toc-diagnostic-performance" class="nav-link" data-scroll-target="#diagnostic-performance"><span class="header-section-number">5.3</span> Diagnostic performance</a></li>
+  <li><a href="#roc" id="toc-roc" class="nav-link" data-scroll-target="#roc"><span class="header-section-number">5.4</span> ROC</a></li>
+  </ul></li>
+  <li><a href="#discrepancy-analysis" id="toc-discrepancy-analysis" class="nav-link" data-scroll-target="#discrepancy-analysis"><span class="header-section-number">6</span> Discrepancy analysis</a>
+  <ul class="collapse">
+  <li><a href="#sidewalk-obstructions" id="toc-sidewalk-obstructions" class="nav-link" data-scroll-target="#sidewalk-obstructions"><span class="header-section-number">6.1</span> Sidewalk obstructions</a></li>
+  <li><a href="#lane-markings" id="toc-lane-markings" class="nav-link" data-scroll-target="#lane-markings"><span class="header-section-number">6.2</span> Lane markings</a></li>
+  <li><a href="#poor-street-condition-potholes" id="toc-poor-street-condition-potholes" class="nav-link" data-scroll-target="#poor-street-condition-potholes"><span class="header-section-number">6.3</span> Poor street condition (potholes)</a></li>
+  <li><a href="#speed-bumps" id="toc-speed-bumps" class="nav-link" data-scroll-target="#speed-bumps"><span class="header-section-number">6.4</span> Speed bumps</a></li>
+  <li><a href="#stop-signs" id="toc-stop-signs" class="nav-link" data-scroll-target="#stop-signs"><span class="header-section-number">6.5</span> Stop signs</a></li>
+  <li><a href="#crosswalks" id="toc-crosswalks" class="nav-link" data-scroll-target="#crosswalks"><span class="header-section-number">6.6</span> Crosswalks</a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -156,26 +166,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pacman)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load</span>(</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Data manipulation and wrangling</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  tidyverse,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  dplyr,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  purrr,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  here,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Data import</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  haven,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  readxl,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Descriptive statistics</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  janitor,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  gtsummary,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Agreement / reliability</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  irr,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  psych,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Diagnostic performance / ROC</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  pROC,</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Tables and reporting</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  gt,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  kableExtra,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  patchwork</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  tidyverse, dplyr, purrr, here,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Data import</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  haven, readxl,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Descriptive statistics</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  janitor, gtsummary,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Agreement / reliability</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  irr, psych,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Diagnostic performance / ROC</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  pROC,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Tables and reporting</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  gt, kableExtra, patchwork</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
@@ -188,139 +190,142 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="results" class="level2" data-number="5">
 <h2 data-number="5" class="anchored" data-anchor-id="results"><span class="header-section-number">5</span> Results</h2>
 <p>Agreement levels ranged from poor to almost perfect. Almost perfect agreement was observed for bus stop (n = 1), while substantial agreement was found for median, pedestrian crossing sign, traffic light, and roundabout (n = 4). Fair agreement was identified for crosswalk, speed bumps, potholes, and stop sign (n = 4), whereas slight and poor agreement were observed for lane markings (n = 1) and sidewalk obstruction (n = 1), respectively. No characteristics showed moderate agreement, and four variables had kappa not estimated due to insufficient variability: sidewalk, bike lane, trees, and bus lane.</p>
+<section id="descriptive" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="descriptive"><span class="header-section-number">5.1</span> Descriptive</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Descriptive table</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Variables</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>vars_base <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"swalk_pres_cat"</span>,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_cwalk"</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_scont1"</span>,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_cond_cat2"</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_tcont3"</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_tcont1"</span>,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"swalk_cont_cat2"</span>,</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_blane"</span>,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"veg_tree_cat2"</span>,</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_med_cat2"</span>,</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_lanevis_cat2"</span>,</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_cstop_cat2"</span>,</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"trans_blane"</span>,</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"trans_stop"</span>,</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_tcont2"</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Labels</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>var_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">swalk_pres_cat =</span> <span class="st">"Sidewalk"</span>,</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_cwalk =</span> <span class="st">"Crosswalk"</span>,</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_scont1 =</span> <span class="st">"Speed bumps"</span>,</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_cond_cat2 =</span> <span class="st">"Poor street condition (pothole)"</span>,</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_tcont3 =</span> <span class="st">"Traffic light"</span>,</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_tcont1 =</span> <span class="st">"Stop sign"</span>,</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">swalk_cont_cat2 =</span> <span class="st">"Sidewalk obstruction"</span>,</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_blane =</span> <span class="st">"Bike lane"</span>,</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">veg_tree_cat2 =</span> <span class="st">"Trees"</span>,</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_med_cat2 =</span> <span class="st">"Median"</span>,</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_lanevis_cat2 =</span> <span class="st">"Lane markings"</span>,</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_cstop_cat2 =</span> <span class="st">"Pedestrian crossing sign"</span>,</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">trans_blane =</span> <span class="st">"Bus lane"</span>,</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">trans_stop =</span> <span class="st">"Bus stop"</span>,</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_tcont2 =</span> <span class="st">"Roundabout"</span></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Proportion</span></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>calc_prop <span class="ot">&lt;-</span> <span class="cf">function</span>(var, suffix) {</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(df[[<span class="fu">paste0</span>(var, suffix)]], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed agreement</span></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>calc_agreement <span class="ot">&lt;-</span> <span class="cf">function</span>(var) {</span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> df[[<span class="fu">paste0</span>(var, <span class="st">"_0"</span>)]]</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> df[[<span class="fu">paste0</span>(var, <span class="st">"_1"</span>)]]</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(x <span class="sc">==</span> y, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Robust kappa with correct CI extraction</span></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>calc_kappa <span class="ot">&lt;-</span> <span class="cf">function</span>(var) {</span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> df[[<span class="fu">paste0</span>(var, <span class="st">"_0"</span>)]]</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> df[[<span class="fu">paste0</span>(var, <span class="st">"_1"</span>)]]</span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>  valid <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">is.na</span>(x) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(y)</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> x[valid]</span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> y[valid]</span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>  <span class="co"># No variability → kappa undefined</span></span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(<span class="fu">unique</span>(x)) <span class="sc">&lt;</span> <span class="dv">2</span> <span class="sc">|</span> <span class="fu">length</span>(<span class="fu">unique</span>(y)) <span class="sc">&lt;</span> <span class="dv">2</span>) {</span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">c</span>(<span class="at">kappa =</span> <span class="cn">NA</span>, <span class="at">lwr =</span> <span class="cn">NA</span>, <span class="at">upr =</span> <span class="cn">NA</span>))</span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>  k <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">cohen.kappa</span>(<span class="fu">cbind</span>(x, y))</span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>  ci <span class="ot">&lt;-</span> k<span class="sc">$</span>confid[<span class="dv">1</span>, ]</span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa =</span> <span class="fu">unname</span>(ci[<span class="st">"estimate"</span>]),</span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwr =</span> <span class="fu">unname</span>(ci[<span class="st">"lower"</span>]),</span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">upr =</span> <span class="fu">unname</span>(ci[<span class="st">"upper"</span>])</span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a><span class="co"># Build table</span></span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>final_table <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(vars_base, <span class="cf">function</span>(v) {</span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>  k <span class="ot">&lt;-</span> <span class="fu">calc_kappa</span>(v)</span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable =</span> var_labels[v],</span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">audit =</span> <span class="fu">calc_prop</span>(v, <span class="st">"_0"</span>),</span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">gemini =</span> <span class="fu">calc_prop</span>(v, <span class="st">"_1"</span>),</span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">agreement =</span> <span class="fu">calc_agreement</span>(v),</span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa =</span> k[<span class="st">"kappa"</span>],</span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_lwr =</span> k[<span class="st">"lwr"</span>],</span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_upr =</span> k[<span class="st">"upr"</span>]</span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to %</span></span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>final_table <span class="ot">&lt;-</span> final_table <span class="sc">%&gt;%</span></span>
-<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>    <span class="at">audit =</span> audit <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">gemini =</span> gemini <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">agreement =</span> agreement <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a><span class="co"># Display</span></span>
-<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>final_table <span class="sc">%&gt;%</span></span>
-<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(audit, gemini, agreement), <span class="at">decimals =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(kappa, kappa_lwr, kappa_upr), <span class="at">decimals =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
-<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable =</span> <span class="st">"Variable"</span>,</span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>    <span class="at">audit =</span> <span class="st">"Audit (%)"</span>,</span>
-<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>    <span class="at">gemini =</span> <span class="st">"Gemini (%)"</span>,</span>
-<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>    <span class="at">agreement =</span> <span class="st">"Observed agreement (%)"</span>,</span>
-<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa =</span> <span class="st">"Kappa"</span>,</span>
-<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_lwr =</span> <span class="st">"Lower CI"</span>,</span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_upr =</span> <span class="st">"Upper CI"</span></span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_source_note</span>(</span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>    <span class="at">source_note =</span> <span class="st">"Kappa was not estimated (NA) for variables with insufficient variability (i.e., when one or both raters had only one category)."</span></span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>vars_base <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"swalk_pres_cat"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_cwalk"</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_scont1"</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_cond_cat2"</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_tcont3"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_tcont1"</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"swalk_cont_cat2"</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_blane"</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"veg_tree_cat2"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_med_cat2"</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_lanevis_cat2"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_cstop_cat2"</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"trans_blane"</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"trans_stop"</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_tcont2"</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Labels</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>var_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">swalk_pres_cat =</span> <span class="st">"Sidewalk"</span>,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_cwalk =</span> <span class="st">"Crosswalk"</span>,</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_scont1 =</span> <span class="st">"Speed bumps"</span>,</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_cond_cat2 =</span> <span class="st">"Poor street condition (pothole)"</span>,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_tcont3 =</span> <span class="st">"Traffic light"</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_tcont1 =</span> <span class="st">"Stop sign"</span>,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">swalk_cont_cat2 =</span> <span class="st">"Sidewalk obstruction"</span>,</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_blane =</span> <span class="st">"Bike lane"</span>,</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">veg_tree_cat2 =</span> <span class="st">"Trees"</span>,</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_med_cat2 =</span> <span class="st">"Median"</span>,</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_lanevis_cat2 =</span> <span class="st">"Lane markings"</span>,</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_cstop_cat2 =</span> <span class="st">"Pedestrian crossing sign"</span>,</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">trans_blane =</span> <span class="st">"Bus lane"</span>,</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">trans_stop =</span> <span class="st">"Bus stop"</span>,</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">str_tcont2 =</span> <span class="st">"Roundabout"</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Proportion</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>calc_prop <span class="ot">&lt;-</span> <span class="cf">function</span>(var, suffix) {</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(df[[<span class="fu">paste0</span>(var, suffix)]], <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed agreement</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>calc_agreement <span class="ot">&lt;-</span> <span class="cf">function</span>(var) {</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> df[[<span class="fu">paste0</span>(var, <span class="st">"_0"</span>)]]</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> df[[<span class="fu">paste0</span>(var, <span class="st">"_1"</span>)]]</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(x <span class="sc">==</span> y, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Robust kappa with correct CI extraction</span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>calc_kappa <span class="ot">&lt;-</span> <span class="cf">function</span>(var) {</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> df[[<span class="fu">paste0</span>(var, <span class="st">"_0"</span>)]]</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> df[[<span class="fu">paste0</span>(var, <span class="st">"_1"</span>)]]</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>  valid <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">is.na</span>(x) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(y)</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> x[valid]</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> y[valid]</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>  <span class="co"># No variability → kappa undefined</span></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(<span class="fu">unique</span>(x)) <span class="sc">&lt;</span> <span class="dv">2</span> <span class="sc">|</span> <span class="fu">length</span>(<span class="fu">unique</span>(y)) <span class="sc">&lt;</span> <span class="dv">2</span>) {</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">c</span>(<span class="at">kappa =</span> <span class="cn">NA</span>, <span class="at">lwr =</span> <span class="cn">NA</span>, <span class="at">upr =</span> <span class="cn">NA</span>))</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>  k <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">cohen.kappa</span>(<span class="fu">cbind</span>(x, y))</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>  ci <span class="ot">&lt;-</span> k<span class="sc">$</span>confid[<span class="dv">1</span>, ]</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa =</span> <span class="fu">unname</span>(ci[<span class="st">"estimate"</span>]),</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">lwr =</span> <span class="fu">unname</span>(ci[<span class="st">"lower"</span>]),</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">upr =</span> <span class="fu">unname</span>(ci[<span class="st">"upper"</span>])</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a><span class="co"># Build table</span></span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>final_table <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(vars_base, <span class="cf">function</span>(v) {</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>  k <span class="ot">&lt;-</span> <span class="fu">calc_kappa</span>(v)</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable =</span> var_labels[v],</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">audit =</span> <span class="fu">calc_prop</span>(v, <span class="st">"_0"</span>),</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">gemini =</span> <span class="fu">calc_prop</span>(v, <span class="st">"_1"</span>),</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>    <span class="at">agreement =</span> <span class="fu">calc_agreement</span>(v),</span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa =</span> k[<span class="st">"kappa"</span>],</span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_lwr =</span> k[<span class="st">"lwr"</span>],</span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_upr =</span> k[<span class="st">"upr"</span>]</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to %</span></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>final_table <span class="ot">&lt;-</span> final_table <span class="sc">%&gt;%</span></span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">audit =</span> audit <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">gemini =</span> gemini <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>    <span class="at">agreement =</span> agreement <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a><span class="co"># Display</span></span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>final_table <span class="sc">%&gt;%</span></span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(audit, gemini, agreement), <span class="at">decimals =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(kappa, kappa_lwr, kappa_upr), <span class="at">decimals =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_label</span>(</span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable =</span> <span class="st">"Variable"</span>,</span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>    <span class="at">audit =</span> <span class="st">"Audit (%)"</span>,</span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>    <span class="at">gemini =</span> <span class="st">"Gemini (%)"</span>,</span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>    <span class="at">agreement =</span> <span class="st">"Observed agreement (%)"</span>,</span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa =</span> <span class="st">"Kappa"</span>,</span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_lwr =</span> <span class="st">"Lower CI"</span>,</span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>    <span class="at">kappa_upr =</span> <span class="st">"Upper CI"</span></span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_source_note</span>(</span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>    <span class="at">source_note =</span> <span class="st">"Kappa was not estimated (NA) for variables with insufficient variability (i.e., when one or both raters had only one category)."</span></span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div id="etdmxzzzpk" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#etdmxzzzpk table {
+<div id="kkvtzkiaqg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#kkvtzkiaqg table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#etdmxzzzpk thead, #etdmxzzzpk tbody, #etdmxzzzpk tfoot, #etdmxzzzpk tr, #etdmxzzzpk td, #etdmxzzzpk th {
+#kkvtzkiaqg thead, #kkvtzkiaqg tbody, #kkvtzkiaqg tfoot, #kkvtzkiaqg tr, #kkvtzkiaqg td, #kkvtzkiaqg th {
   border-style: none;
 }
 
-#etdmxzzzpk p {
+#kkvtzkiaqg p {
   margin: 0;
   padding: 0;
 }
 
-#etdmxzzzpk .gt_table {
+#kkvtzkiaqg .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -346,12 +351,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-left-color: #D3D3D3;
 }
 
-#etdmxzzzpk .gt_caption {
+#kkvtzkiaqg .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#etdmxzzzpk .gt_title {
+#kkvtzkiaqg .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -363,7 +368,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-width: 0;
 }
 
-#etdmxzzzpk .gt_subtitle {
+#kkvtzkiaqg .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -375,7 +380,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-width: 0;
 }
 
-#etdmxzzzpk .gt_heading {
+#kkvtzkiaqg .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -387,13 +392,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#etdmxzzzpk .gt_bottom_border {
+#kkvtzkiaqg .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#etdmxzzzpk .gt_col_headings {
+#kkvtzkiaqg .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -408,7 +413,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#etdmxzzzpk .gt_col_heading {
+#kkvtzkiaqg .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -428,7 +433,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#etdmxzzzpk .gt_column_spanner_outer {
+#kkvtzkiaqg .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -440,15 +445,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 4px;
 }
 
-#etdmxzzzpk .gt_column_spanner_outer:first-child {
+#kkvtzkiaqg .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#etdmxzzzpk .gt_column_spanner_outer:last-child {
+#kkvtzkiaqg .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#etdmxzzzpk .gt_column_spanner {
+#kkvtzkiaqg .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -460,11 +465,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   width: 100%;
 }
 
-#etdmxzzzpk .gt_spanner_row {
+#kkvtzkiaqg .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#etdmxzzzpk .gt_group_heading {
+#kkvtzkiaqg .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -490,7 +495,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
 }
 
-#etdmxzzzpk .gt_empty_group_heading {
+#kkvtzkiaqg .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -505,15 +510,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: middle;
 }
 
-#etdmxzzzpk .gt_from_md > :first-child {
+#kkvtzkiaqg .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#etdmxzzzpk .gt_from_md > :last-child {
+#kkvtzkiaqg .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#etdmxzzzpk .gt_row {
+#kkvtzkiaqg .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -532,7 +537,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#etdmxzzzpk .gt_stub {
+#kkvtzkiaqg .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -545,7 +550,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#etdmxzzzpk .gt_stub_row_group {
+#kkvtzkiaqg .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -559,15 +564,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: top;
 }
 
-#etdmxzzzpk .gt_row_group_first td {
+#kkvtzkiaqg .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#etdmxzzzpk .gt_row_group_first th {
+#kkvtzkiaqg .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#etdmxzzzpk .gt_summary_row {
+#kkvtzkiaqg .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -577,16 +582,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#etdmxzzzpk .gt_first_summary_row {
+#kkvtzkiaqg .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#etdmxzzzpk .gt_first_summary_row.thick {
+#kkvtzkiaqg .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#etdmxzzzpk .gt_last_summary_row {
+#kkvtzkiaqg .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -596,7 +601,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#etdmxzzzpk .gt_grand_summary_row {
+#kkvtzkiaqg .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -606,7 +611,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#etdmxzzzpk .gt_first_grand_summary_row {
+#kkvtzkiaqg .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -616,7 +621,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-color: #D3D3D3;
 }
 
-#etdmxzzzpk .gt_last_grand_summary_row_top {
+#kkvtzkiaqg .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -626,11 +631,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#etdmxzzzpk .gt_striped {
+#kkvtzkiaqg .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#etdmxzzzpk .gt_table_body {
+#kkvtzkiaqg .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -639,7 +644,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#etdmxzzzpk .gt_footnotes {
+#kkvtzkiaqg .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -653,7 +658,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#etdmxzzzpk .gt_footnote {
+#kkvtzkiaqg .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -662,7 +667,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#etdmxzzzpk .gt_sourcenotes {
+#kkvtzkiaqg .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -676,7 +681,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#etdmxzzzpk .gt_sourcenote {
+#kkvtzkiaqg .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -684,72 +689,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#etdmxzzzpk .gt_left {
+#kkvtzkiaqg .gt_left {
   text-align: left;
 }
 
-#etdmxzzzpk .gt_center {
+#kkvtzkiaqg .gt_center {
   text-align: center;
 }
 
-#etdmxzzzpk .gt_right {
+#kkvtzkiaqg .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#etdmxzzzpk .gt_font_normal {
+#kkvtzkiaqg .gt_font_normal {
   font-weight: normal;
 }
 
-#etdmxzzzpk .gt_font_bold {
+#kkvtzkiaqg .gt_font_bold {
   font-weight: bold;
 }
 
-#etdmxzzzpk .gt_font_italic {
+#kkvtzkiaqg .gt_font_italic {
   font-style: italic;
 }
 
-#etdmxzzzpk .gt_super {
+#kkvtzkiaqg .gt_super {
   font-size: 65%;
 }
 
-#etdmxzzzpk .gt_footnote_marks {
+#kkvtzkiaqg .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#etdmxzzzpk .gt_asterisk {
+#kkvtzkiaqg .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#etdmxzzzpk .gt_indent_1 {
+#kkvtzkiaqg .gt_indent_1 {
   text-indent: 5px;
 }
 
-#etdmxzzzpk .gt_indent_2 {
+#kkvtzkiaqg .gt_indent_2 {
   text-indent: 10px;
 }
 
-#etdmxzzzpk .gt_indent_3 {
+#kkvtzkiaqg .gt_indent_3 {
   text-indent: 15px;
 }
 
-#etdmxzzzpk .gt_indent_4 {
+#kkvtzkiaqg .gt_indent_4 {
   text-indent: 20px;
 }
 
-#etdmxzzzpk .gt_indent_5 {
+#kkvtzkiaqg .gt_indent_5 {
   text-indent: 25px;
 }
 
-#etdmxzzzpk .katex-display {
+#kkvtzkiaqg .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#etdmxzzzpk div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#kkvtzkiaqg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -913,6 +918,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
+<section id="kappa" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="kappa"><span class="header-section-number">5.2</span> Kappa</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Kappa plot</summary>
@@ -1053,6 +1061,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
+<section id="diagnostic-performance" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="diagnostic-performance"><span class="header-section-number">5.3</span> Diagnostic performance</h3>
 <p>Sensitivity and specificity, which reflect the ability to correctly identify the presence or absence of a characteristic using the field audit as the reference, were highest for more visible urban features such as trees, sidewalks, bus lanes, bike lanes, and roundabouts. Good results were also observed for medians, pedestrian crossing signs, bus stops, and traffic lights, whereas lower values were found for subtler attributes, including potholes, speed bumps, lane markings, and sidewalk obstructions.</p>
 <p>Positive predictive value (PPV), which indicates the probability that a feature is truly present when classified as present, and negative predictive value (NPV), which indicates the probability that a feature is truly absent when classified as absent, were highest for trees, sidewalks, and bus stops, and lowest for lane markings, bus lanes, bike lanes, and sidewalk obstructions.</p>
 <p>Similarly, F1-score, which summarizes the balance between sensitivity and positive predictive value, was higher for trees, sidewalks, and bus stops, intermediate for medians, traffic lights, pedestrian crossing signs, and crosswalks, and lower for the same lower-performing variables.</p>
@@ -1060,94 +1071,95 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <details class="code-fold">
 <summary>Diagnostic performance plots</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to calculate all metrics</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>calc_metrics <span class="ot">&lt;-</span> <span class="cf">function</span>(var) {</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  ref <span class="ot">&lt;-</span> df[[<span class="fu">paste0</span>(var, <span class="st">"_0"</span>)]]</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  test <span class="ot">&lt;-</span> df[[<span class="fu">paste0</span>(var, <span class="st">"_1"</span>)]]</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  valid <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">is.na</span>(ref) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(test)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  ref <span class="ot">&lt;-</span> ref[valid]</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  test <span class="ot">&lt;-</span> test[valid]</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  TP <span class="ot">&lt;-</span> <span class="fu">sum</span>(ref <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> test <span class="sc">==</span> <span class="dv">1</span>)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  TN <span class="ot">&lt;-</span> <span class="fu">sum</span>(ref <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> test <span class="sc">==</span> <span class="dv">0</span>)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  FP <span class="ot">&lt;-</span> <span class="fu">sum</span>(ref <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> test <span class="sc">==</span> <span class="dv">1</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  FN <span class="ot">&lt;-</span> <span class="fu">sum</span>(ref <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> test <span class="sc">==</span> <span class="dv">0</span>)</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable =</span> var_labels[var],</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">sensitivity =</span> <span class="fu">ifelse</span>((TP <span class="sc">+</span> FN) <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA</span>, TP <span class="sc">/</span> (TP <span class="sc">+</span> FN)),</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">specificity =</span> <span class="fu">ifelse</span>((TN <span class="sc">+</span> FP) <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA</span>, TN <span class="sc">/</span> (TN <span class="sc">+</span> FP)),</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">ppv =</span> <span class="fu">ifelse</span>((TP <span class="sc">+</span> FP) <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA</span>, TP <span class="sc">/</span> (TP <span class="sc">+</span> FP)),</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">npv =</span> <span class="fu">ifelse</span>((TN <span class="sc">+</span> FN) <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA</span>, TN <span class="sc">/</span> (TN <span class="sc">+</span> FN)),</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">f1_score =</span> <span class="fu">ifelse</span>((<span class="dv">2</span> <span class="sc">*</span> TP <span class="sc">+</span> FP <span class="sc">+</span> FN) <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA</span>, <span class="dv">2</span> <span class="sc">*</span> TP <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> TP <span class="sc">+</span> FP <span class="sc">+</span> FN))</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Build dataset</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>metrics_results <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(vars_base, calc_metrics)</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Shared colors</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>metric_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sensitivity"</span> <span class="ot">=</span> <span class="st">"#1a9850"</span>,</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ppv"</span> <span class="ot">=</span> <span class="st">"#1a9850"</span>,</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  <span class="st">"specificity"</span> <span class="ot">=</span> <span class="st">"#fc8d59"</span>,</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"npv"</span> <span class="ot">=</span> <span class="st">"#fc8d59"</span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot 1: Sensitivity + Specificity</span></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>plot1_data <span class="ot">&lt;-</span> metrics_results <span class="sc">%&gt;%</span></span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(variable, sensitivity, specificity) <span class="sc">%&gt;%</span></span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>variable, <span class="at">names_to =</span> <span class="st">"metric"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>)</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  plot1_data,</span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> <span class="fu">reorder</span>(variable, value), <span class="at">color =</span> metric)</span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> metric_colors) <span class="sc">+</span></span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.2</span>)) <span class="sc">+</span></span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Sensitivity and Specificity"</span>,</span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">""</span>,</span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">""</span></span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot 2: PPV + NPV</span></span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>plot2_data <span class="ot">&lt;-</span> metrics_results <span class="sc">%&gt;%</span></span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(variable, ppv, npv) <span class="sc">%&gt;%</span></span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>variable, <span class="at">names_to =</span> <span class="st">"metric"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">metric =</span> <span class="fu">factor</span>(metric, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"ppv"</span>, <span class="st">"npv"</span>)))</span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>  plot2_data,</span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> <span class="fu">reorder</span>(variable, value), <span class="at">color =</span> metric)</span>
-<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> metric_colors) <span class="sc">+</span></span>
-<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.2</span>)) <span class="sc">+</span></span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"PPV and NPV"</span>,</span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">""</span>,</span>
-<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">""</span></span>
-<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
-<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot 3: F1-score</span></span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>  metrics_results,</span>
-<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> f1_score, <span class="at">y =</span> <span class="fu">reorder</span>(variable, f1_score))</span>
-<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">"#2C7FB8"</span>) <span class="sc">+</span></span>
-<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.2</span>)) <span class="sc">+</span></span>
-<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"F1-score"</span>,</span>
-<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">Value"</span>,</span>
-<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">""</span></span>
-<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
-<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine vertically</span></span>
-<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">/</span> p2 <span class="sc">/</span> p3</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>calc_metrics <span class="ot">&lt;-</span> <span class="cf">function</span>(var) {</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  ref <span class="ot">&lt;-</span> df[[<span class="fu">paste0</span>(var, <span class="st">"_0"</span>)]]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  test <span class="ot">&lt;-</span> df[[<span class="fu">paste0</span>(var, <span class="st">"_1"</span>)]]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  valid <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">is.na</span>(ref) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(test)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  ref <span class="ot">&lt;-</span> ref[valid]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  test <span class="ot">&lt;-</span> test[valid]</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  TP <span class="ot">&lt;-</span> <span class="fu">sum</span>(ref <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> test <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  TN <span class="ot">&lt;-</span> <span class="fu">sum</span>(ref <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> test <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  FP <span class="ot">&lt;-</span> <span class="fu">sum</span>(ref <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> test <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  FN <span class="ot">&lt;-</span> <span class="fu">sum</span>(ref <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> test <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">variable =</span> var_labels[var],</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">sensitivity =</span> <span class="fu">ifelse</span>((TP <span class="sc">+</span> FN) <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA</span>, TP <span class="sc">/</span> (TP <span class="sc">+</span> FN)),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">specificity =</span> <span class="fu">ifelse</span>((TN <span class="sc">+</span> FP) <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA</span>, TN <span class="sc">/</span> (TN <span class="sc">+</span> FP)),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">ppv =</span> <span class="fu">ifelse</span>((TP <span class="sc">+</span> FP) <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA</span>, TP <span class="sc">/</span> (TP <span class="sc">+</span> FP)),</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">npv =</span> <span class="fu">ifelse</span>((TN <span class="sc">+</span> FN) <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA</span>, TN <span class="sc">/</span> (TN <span class="sc">+</span> FN)),</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">f1_score =</span> <span class="fu">ifelse</span>((<span class="dv">2</span> <span class="sc">*</span> TP <span class="sc">+</span> FP <span class="sc">+</span> FN) <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA</span>, <span class="dv">2</span> <span class="sc">*</span> TP <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> TP <span class="sc">+</span> FP <span class="sc">+</span> FN))</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Build dataset</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>metrics_results <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(vars_base, calc_metrics)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Shared colors</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>metric_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sensitivity"</span> <span class="ot">=</span> <span class="st">"#1a9850"</span>,</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ppv"</span> <span class="ot">=</span> <span class="st">"#1a9850"</span>,</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"specificity"</span> <span class="ot">=</span> <span class="st">"#fc8d59"</span>,</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  <span class="st">"npv"</span> <span class="ot">=</span> <span class="st">"#fc8d59"</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot 1: Sensitivity + Specificity</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>plot1_data <span class="ot">&lt;-</span> metrics_results <span class="sc">%&gt;%</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(variable, sensitivity, specificity) <span class="sc">%&gt;%</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>variable, <span class="at">names_to =</span> <span class="st">"metric"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>)</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  plot1_data,</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> <span class="fu">reorder</span>(variable, value), <span class="at">color =</span> metric)</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> metric_colors) <span class="sc">+</span></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Sensitivity and Specificity"</span>,</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">""</span>,</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">""</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot 2: PPV + NPV</span></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>plot2_data <span class="ot">&lt;-</span> metrics_results <span class="sc">%&gt;%</span></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(variable, ppv, npv) <span class="sc">%&gt;%</span></span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>variable, <span class="at">names_to =</span> <span class="st">"metric"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">metric =</span> <span class="fu">factor</span>(metric, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"ppv"</span>, <span class="st">"npv"</span>)))</span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>  plot2_data,</span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> <span class="fu">reorder</span>(variable, value), <span class="at">color =</span> metric)</span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> metric_colors) <span class="sc">+</span></span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"PPV and NPV"</span>,</span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">""</span>,</span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">""</span></span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot 3: F1-score</span></span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>  metrics_results,</span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> f1_score, <span class="at">y =</span> <span class="fu">reorder</span>(variable, f1_score))</span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">"#2C7FB8"</span>) <span class="sc">+</span></span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"F1-score"</span>,</span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">Value"</span>,</span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">""</span></span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>)</span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine vertically</span></span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">/</span> p2 <span class="sc">/</span> p3</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -1157,6 +1169,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
+<section id="roc" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="roc"><span class="header-section-number">5.4</span> ROC</h3>
 <p>Receiver operating characteristic (ROC) analyses, which evaluate discriminatory ability by comparing sensitivity with the false positive rate, confirmed these patterns. Higher area under the curve (AUC) values were observed for roundabouts, medians, pedestrian crossing signs, bus stops, and traffic lights, whereas crosswalks, stop signs, potholes, and speed bumps showed intermediate performance. Lane markings and sidewalk obstructions presented the weakest discrimination.</p>
 <div class="cell">
 <details class="code-fold">
@@ -1225,6 +1240,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Overall, across all agreement and diagnostic metrics, Gemini consistently performed better for larger, permanent, and visually salient urban features, such as bus stops, medians, pedestrian crossing signs, traffic lights, and roundabouts. Intermediate performance was observed for features like crosswalks, stop signs, speed bumps, and poor street condition (potholes). In contrast, lower performance was found for more subtle, linear, or condition-dependent characteristics, including lane markings and sidewalk obstructions. These findings suggest that multimodal artificial intelligence may be a useful tool for automated urban audits of clearly visible built-environment features, although caution is warranted for more ambiguous street attributes.</p>
 </section>
+</section>
 <section id="discrepancy-analysis" class="level2" data-number="6">
 <h2 data-number="6" class="anchored" data-anchor-id="discrepancy-analysis"><span class="header-section-number">6</span> Discrepancy analysis</h2>
 <p>In this step, discrepancies between human and AI assessments are examined for features selected due to their intermediate and lower performance in agreement and diagnostic metrics. For each variable, segments with disagreement are identified, the type of discrepancy is classified (human = 1 and AI = 0; or human = 0 and AI = 1), and these cases are linked to geographic coordinates and Google Street View links, enabling visual inspection and interpretation of the differences.</p>
@@ -1278,56 +1294,56 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Create final tables</span></span>
-<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (var_name <span class="cf">in</span> <span class="fu">names</span>(ids_list)) {</span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>views <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
 <span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>  df_view <span class="ot">&lt;-</span> coords <span class="sc">%&gt;%</span></span>
-<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">inner_join</span>(ids_list[[var_name]], <span class="at">by =</span> <span class="st">"identificador"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>      <span class="at">lat_lon =</span> <span class="fu">paste0</span>(lat, <span class="st">", "</span>, lon),</span>
-<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>      <span class="at">streetview_url =</span> <span class="fu">paste0</span>(</span>
-<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://www.google.com/maps/@?api=1&amp;map_action=pano&amp;viewpoint="</span>,</span>
-<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>        lat, <span class="st">","</span>, lon</span>
-<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(identificador, discrepancy_type, lat_lon, streetview_url) <span class="sc">%&gt;%</span></span>
-<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">arrange</span>(discrepancy_type, <span class="fu">as.numeric</span>(identificador))</span>
-<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>  obj_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"view_"</span>, <span class="fu">gsub</span>(<span class="st">" "</span>, <span class="st">"_"</span>, var_name))</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (var_name <span class="cf">in</span> <span class="fu">names</span>(ids_list)) {</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>  df_view <span class="ot">&lt;-</span> coords <span class="sc">%&gt;%</span></span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">inner_join</span>(ids_list[[var_name]], <span class="at">by =</span> <span class="st">"identificador"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>      <span class="at">lat_lon =</span> <span class="fu">paste0</span>(lat, <span class="st">", "</span>, lon),</span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>      <span class="at">streetview_url =</span> <span class="fu">paste0</span>(</span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://www.google.com/maps/@?api=1&amp;map_action=pano&amp;viewpoint="</span>,</span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>        lat, <span class="st">","</span>, lon</span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(identificador, discrepancy_type, lat_lon, streetview_url) <span class="sc">%&gt;%</span></span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">arrange</span>(discrepancy_type, <span class="fu">as.numeric</span>(identificador))</span>
 <span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(obj_name, df_view)</span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>  views[[var_name]] <span class="ot">&lt;-</span> df_view</span>
 <span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div class="cell">
-<details class="code-fold">
-<summary>Sidewalk obstructions</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View results</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(view_Sidewalk_obstruction)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-</div>
+<section id="sidewalk-obstructions" class="level3" data-number="6.1">
+<h3 data-number="6.1" class="anchored" data-anchor-id="sidewalk-obstructions"><span class="header-section-number">6.1</span> Sidewalk obstructions</h3>
 <p>Items marked as present by the AI but absent by human raters are likely due to obstructions that still allow pedestrian passage along the sidewalk. Conversely, cases marked as absent by the AI but present by human raters were often due to obstructions caused by trees or vegetation.</p>
 <p><a href="https://www.google.com/maps/@?api=1&amp;map_action=pano&amp;viewpoint=-19.9353500964683,-43.9310052796472"><img src="31062001071_2.png" class="img-fluid"></a><br> <span>human_0_ai_1</span><br><br><a href="https://www.google.com/maps/@?api=1&amp;map_action=pano&amp;viewpoint=-19.8674806605816,-43.9333105108766"><img src="31062009283_148.png" class="img-fluid"></a><br> <span>human_1_ai_0</span><br><br></p>
-<div class="cell">
-<details class="code-fold">
-<summary>Lane markings</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View results</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(view_Lane_markings)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-</div>
+</section>
+<section id="lane-markings" class="level3" data-number="6.2">
+<h3 data-number="6.2" class="anchored" data-anchor-id="lane-markings"><span class="header-section-number">6.2</span> Lane markings</h3>
 <p>Are items marked as present by the AI but absent by human raters due to crosswalk markings or differences in pavement color? Conversely, cases marked as absent by the AI but present by human raters were likely due to the markings being clearly visible in the images.</p>
 <p><a href="https://www.google.com/maps/@?api=1&amp;map_action=pano&amp;viewpoint=-19.8704599360962,-43.9841267008323"><img src="310620013483_6.png" class="img-fluid"></a><br> <span>human_0_ai_1</span><br><br><a href="https://www.google.com/maps/@?api=1&amp;map_action=pano&amp;viewpoint=-19.9153131,-43.8919484"><img src="310620017937_37.png" class="img-fluid"></a><br> <span>human_1_ai_0</span><br><br></p>
 </section>
-<section id="poor-street-condition-potholes" class="level2" data-number="7">
-<h2 data-number="7" class="anchored" data-anchor-id="poor-street-condition-potholes"><span class="header-section-number">7</span> Poor street condition (potholes)</h2>
+<section id="poor-street-condition-potholes" class="level3" data-number="6.3">
+<h3 data-number="6.3" class="anchored" data-anchor-id="poor-street-condition-potholes"><span class="header-section-number">6.3</span> Poor street condition (potholes)</h3>
+<p>We assessed “What is the apparent condition of the roadway?” and, for this analysis, categorized it as 1 (“Bad,” “Poor,” and “Fair”) and 0 (“Good” and “Very good”). This classification approach may influence discrepancies in responses. In addition, perceptions of roadway quality based on lived experience may differ from how the AI identifies potholes.</p>
+<p><a href="https://www.google.com/maps/@?api=1&amp;map_action=pano&amp;viewpoint=-19.893311404363,-43.9940116495973"><img src="310620023101_10.png" class="img-fluid"></a><br> <span>human_0_ai_1</span><br><br><a href="https://www.google.com/maps/@?api=1&amp;map_action=pano&amp;viewpoint=-19.9151113,-43.908211"><img src="31062001674_63.png" class="img-fluid"></a><br> <span>human_1_ai_0</span><br><br></p>
 </section>
-<section id="speed-bumps" class="level2" data-number="8">
-<h2 data-number="8" class="anchored" data-anchor-id="speed-bumps"><span class="header-section-number">8</span> Speed bumps</h2>
+<section id="speed-bumps" class="level3" data-number="6.4">
+<h3 data-number="6.4" class="anchored" data-anchor-id="speed-bumps"><span class="header-section-number">6.4</span> Speed bumps</h3>
+<p>The discrepancies observed were only cases in which the human rater identified the feature while the AI did not, likely due to differences in speed bump structures in Brazil.</p>
+<p><a href="https://www.google.com/maps/@?api=1&amp;map_action=pano&amp;viewpoint=-19.8704599360962,-43.9841267008323"><img src="310620013483_10.png" class="img-fluid"></a><br> <span>human_1_ai_0</span><br><br><a href="https://www.google.com/maps/@?api=1&amp;map_action=pano&amp;viewpoint=-19.9439631009899,-43.9697897363183"><img src="310620015453_21.png" class="img-fluid"></a><br> <span>human_1_ai_0</span><br><br></p>
 </section>
-<section id="stop-signs" class="level2" data-number="9">
-<h2 data-number="9" class="anchored" data-anchor-id="stop-signs"><span class="header-section-number">9</span> Stop signs</h2>
+<section id="stop-signs" class="level3" data-number="6.5">
+<h3 data-number="6.5" class="anchored" data-anchor-id="stop-signs"><span class="header-section-number">6.5</span> Stop signs</h3>
+<p>“CANVAS Instructions: Indicate the presence of a device to direct or control traffic with regard to the intersection closest to the green marker. The traffic control device may be located outside the segment as long as it controls the green marker intersection—for example, a stop sign that controls entry into a one-way segment may be on the opposite side of the intersection as the segment but would still be indicated by this item.”</p>
+<p>The observed discrepancies are likely due to differences in how the measure was applied, as we considered the stop sign only at the starting point of the segment.</p>
 </section>
-<section id="crosswalks" class="level2" data-number="10">
-<h2 data-number="10" class="anchored" data-anchor-id="crosswalks"><span class="header-section-number">10</span> Crosswalks</h2>
+<section id="crosswalks" class="level3" data-number="6.6">
+<h3 data-number="6.6" class="anchored" data-anchor-id="crosswalks"><span class="header-section-number">6.6</span> Crosswalks</h3>
+<p>“CANVAS Instructions: Indicate the presence of a crosswalk in the segment. Consider only crosswalks that are at the intersection closest to the green marker or in the midblock.”</p>
+<p>The observed discrepancies are likely due to differences in how the measure was applied, as we considered the crosswalk only at the starting point of the segment.</p>
+</section>
 </section>
 
 </main>

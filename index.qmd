@@ -47,36 +47,30 @@ The automated assessment using Gemini was implemented in Python. Data management
 #| code-summary: Packages
 #| warning: false
 #| message: false
+
 rm(list = ls())
 
 library(pacman)
 p_load(
   # Data manipulation and wrangling
-  tidyverse,
-  dplyr,
-  purrr,
-  here,
+  tidyverse, dplyr, purrr, here,
   # Data import
-  haven,
-  readxl,
+  haven, readxl,
   # Descriptive statistics
-  janitor,
-  gtsummary,
+  janitor, gtsummary,
   # Agreement / reliability
-  irr,
-  psych,
+  irr, psych,
   # Diagnostic performance / ROC
   pROC,
   # Tables and reporting
-  gt,
-  kableExtra,
-  patchwork
+  gt, kableExtra, patchwork
 )
 ```
 
 ```{r}
 #| label: Database
 #| code-summary: Database
+
 df <- read_dta(here("streetview_predictions_2.5-flash v3.dta"))
 ```
 
@@ -84,12 +78,15 @@ df <- read_dta(here("streetview_predictions_2.5-flash v3.dta"))
 
 Agreement levels ranged from poor to almost perfect. Almost perfect agreement was observed for bus stop (n = 1), while substantial agreement was found for median, pedestrian crossing sign, traffic light, and roundabout (n = 4). Fair agreement was identified for crosswalk, speed bumps, potholes, and stop sign (n = 4), whereas slight and poor agreement were observed for lane markings (n = 1) and sidewalk obstruction (n = 1), respectively. No characteristics showed moderate agreement, and four variables had kappa not estimated due to insufficient variability: sidewalk, bike lane, trees, and bus lane.
 
+### Descriptive
+
 ```{r}
 #| label: Descriptive table
 #| code-summary: Descriptive table
 #| warning: false
 #| message: false
 # Variables
+
 vars_base <- c(
   "swalk_pres_cat",
   "str_cwalk",
@@ -202,12 +199,15 @@ final_table %>%
   )
 ```
 
+### Kappa
+
 ```{r}
 #| label: Kappa plot
 #| code-summary: Kappa plot
 #| fig-width: 12
 #| fig-height: 6
 #| out-width: 100%
+
 plot <- final_table %>%
   filter(!is.na(kappa)) %>%
   mutate(
@@ -272,6 +272,7 @@ ggplot(plot, aes(x = kappa, y = variable, color = lk_cat)) +
 #| fig-width: 12
 #| fig-height: 6
 #| out-width: 100%
+
 plot <- final_table %>%
   filter(!is.na(kappa)) %>%
   mutate(
@@ -334,6 +335,8 @@ ggplot(plot, aes(x = agreement, y = kappa)) +
   )
 ```
 
+### Diagnostic performance
+
 Sensitivity and specificity, which reflect the ability to correctly identify the presence or absence of a characteristic using the field audit as the reference, were highest for more visible urban features such as trees, sidewalks, bus lanes, bike lanes, and roundabouts. Good results were also observed for medians, pedestrian crossing signs, bus stops, and traffic lights, whereas lower values were found for subtler attributes, including potholes, speed bumps, lane markings, and sidewalk obstructions.
 
 Positive predictive value (PPV), which indicates the probability that a feature is truly present when classified as present, and negative predictive value (NPV), which indicates the probability that a feature is truly absent when classified as absent, were highest for trees, sidewalks, and bus stops, and lowest for lane markings, bus lanes, bike lanes, and sidewalk obstructions. 
@@ -349,6 +352,7 @@ Similarly, F1-score, which summarizes the balance between sensitivity and positi
 #| fig-height: 12
 #| out-width: 100%
 # Function to calculate all metrics
+
 calc_metrics <- function(var) {
   ref <- df[[paste0(var, "_0")]]
   test <- df[[paste0(var, "_1")]]
@@ -439,6 +443,8 @@ p3 <- ggplot(
 p1 / p2 / p3
 ```
 
+### ROC
+
 Receiver operating characteristic (ROC) analyses, which evaluate discriminatory ability by comparing sensitivity with the false positive rate, confirmed these patterns. Higher area under the curve (AUC) values were observed for roundabouts, medians, pedestrian crossing signs, bus stops, and traffic lights, whereas crosswalks, stop signs, potholes, and speed bumps showed intermediate performance. Lane markings and sidewalk obstructions presented the weakest discrimination.
 
 ```{r}
@@ -449,6 +455,7 @@ Receiver operating characteristic (ROC) analyses, which evaluate discriminatory 
 #| fig-width: 12
 #| fig-height: 12
 #| out-width: 100%
+
 # Function to calculate ROC object + AUC
 calc_roc_data <- function(var) {
   ref <- df[[paste0(var, "_0")]]
@@ -583,17 +590,16 @@ for (var_name in names(ids_list)) {
 }
 ```
 
-```{r}
-#| label: Sidewalk obstructions 
-#| code-summary: Sidewalk obstructions
-#| warning: false
-#| message: false
-
-# View results
-View(views[["Sidewalk obstruction"]])
-```
+### Sidewalk obstructions 
 
 Items marked as present by the AI but absent by human raters are likely due to obstructions that still allow pedestrian passage along the sidewalk. Conversely, cases marked as absent by the AI but present by human raters were often due to obstructions caused by trees or vegetation.
+
+```{r}
+#| echo: false
+#| results: asis
+
+View(views[["Sidewalk obstruction"]])
+```
 
 ```{r}
 #| echo: false
@@ -610,18 +616,17 @@ cat(
 )
 ```
 
-```{r}
-#| label: Lane markings 
-#| code-summary: Lane markings
-#| warning: false
-#| message: false
+### Lane markings 
 
-# View results
+Are items marked as present by the AI but absent by human raters due to crosswalk markings or differences in pavement color? Conversely, cases marked as absent by the AI but present by human raters were likely due to the markings being clearly visible in the images.
+
+```{r}
+#| echo: false
+#| results: asis
+
 View(views[["Lane markings"]])
 ```
 
-Are items marked as present by the AI but absent by human raters due to crosswalk markings or differences in pavement color? Conversely, cases marked as absent by the AI but present by human raters were likely due to the markings being clearly visible in the images.
-
 ```{r}
 #| echo: false
 #| results: asis
@@ -637,33 +642,73 @@ cat(
 )
 ```
 
-```{r}
-#| label: Poor street condition (potholes)
-#| code-summary: Poor street condition (potholes)
-#| warning: false
-#| message: false
+### Poor street condition (potholes)
 
-# View results
+We assessed “What is the apparent condition of the roadway?” and, for this analysis, categorized it as 1 (“Bad,” “Poor,” and “Fair”) and 0 (“Good” and “Very good”). This classification approach may influence discrepancies in responses. In addition, perceptions of roadway quality based on lived experience may differ from how the AI identifies potholes.
+
+```{r}
+#| echo: false
+#| results: asis
+
 View(views[["Poor street condition (pothole)"]])
 ```
 
-Are items marked as present by the AI but absent by human raters due to crosswalk markings or differences in pavement color? Conversely, cases marked as absent by the AI but present by human raters were likely due to the markings being clearly visible in the images.
+```{r}
+#| echo: false
+#| results: asis
+
+cat(
+  '[![](310620023101_10.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.893311404363,-43.9940116495973)<br>
+  <span>human_0_ai_1</span><br><br>'
+)
+
+cat(
+  '[![](31062001674_63.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.9151113,-43.908211)<br>
+  <span>human_1_ai_0</span><br><br>'
+)
+```
+
+### Speed bumps
+
+The discrepancies observed were only cases in which the human rater identified the feature while the AI did not, likely due to differences in speed bump structures in Brazil.
+
+```{r}
+#| echo: false
+#| results: asis
+
+View(views[["Speed bumps"]])
+```
 
 ```{r}
 #| echo: false
 #| results: asis
 
 cat(
-  '[![](310620013483_6.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.8704599360962,-43.9841267008323)<br>
-  <span>human_0_ai_1</span><br><br>'
+  '[![](310620013483_10.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.8704599360962,-43.9841267008323)<br>
+  <span>human_1_ai_0</span><br><br>'
 )
 
 cat(
-  '[![](310620017937_37.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.9153131,-43.8919484)<br>
+  '[![](310620015453_21.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.9439631009899,-43.9697897363183)<br>
   <span>human_1_ai_0</span><br><br>'
 )
 ```
 
-## Speed bumps
-## Stop signs
-## Crosswalks
+### Stop signs
+
+“CANVAS Instructions: Indicate the presence of a device to direct or control traffic with regard to the intersection closest to the green marker. The traffic control device may be located outside the segment as long as it controls the green marker intersection—for example, a stop sign that controls entry into a one-way segment may be on the opposite side of the intersection as the segment but would still be indicated by this item.”
+
+The observed discrepancies are likely due to differences in how the measure was applied, as we considered the stop sign only at the starting point of the segment.
+
+```{r}
+#| echo: false
+#| results: asis
+
+View(views[["Stop sign"]])
+```
+
+### Crosswalks
+
+“CANVAS Instructions: Indicate the presence of a crosswalk in the segment. Consider only crosswalks that are at the intersection closest to the green marker or in the midblock.”
+
+The observed discrepancies are likely due to differences in how the measure was applied, as we considered the crosswalk only at the starting point of the segment.
