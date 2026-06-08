@@ -26,7 +26,7 @@ In the present analysis, we included only street segments from Belo Horizonte wi
 
 ## Gemini
 
-The same street segments and image dates included in the virtual audit were automatically processed using Google Street View images and a multimodal large language model (Gemini, Google) through a fully automated pipeline. For each coordinate, eight static images covering the full 360° view were selected within a 10-meter radius. These images were downloaded, preprocessed, and analyzed individually, and all measures were derived from this set of eight images.
+The same street segments and image dates included in the virtual audit were automatically processed using Google Street View images and a multimodal large language model (Gemini, Google) through a fully automated pipeline. For each coordinate, eight static images covering the full 360° view were selected within a 10-meter radius. These images were downloaded, preprocessed, and analyzed.
 
 A prompt-based approach was used to classify built environment characteristics under two classification schemes (binary and categorical) and with two multimodal large language models (Gemini 2.5 Flash and Gemini 2.5 Pro).
 
@@ -70,8 +70,8 @@ p_load(
 ```
 
 ```{r}
-#| label: Database
-#| code-summary: Database
+#| label: Databases
+#| code-summary: Databases
 
 df_legacy_2_5_flash <- read_dta(here("streetview_predictions_dates_legacy_2.5-flash v3.dta"))
 df_legacy_2_5_pro <- read_dta(here("streetview_predictions_dates_legacy_2.5-pro v3.dta"))
@@ -79,7 +79,9 @@ df_legacy_2_5_pro <- read_dta(here("streetview_predictions_dates_legacy_2.5-pro 
 
 ## Results
 
-Agreement levels ranged from poor to almost perfect. Almost perfect agreement was observed for bus stop (n = 1), while substantial agreement was found for median, pedestrian crossing sign, traffic light, and roundabout (n = 4). Fair agreement was identified for crosswalk, speed bumps, potholes, and stop sign (n = 4), whereas slight and poor agreement were observed for lane markings (n = 1) and sidewalk obstruction (n = 1), respectively. No characteristics showed moderate agreement, and four variables had kappa not estimated due to insufficient variability: sidewalk, bike lane, trees, and bus lane.
+Agreement between the audit and the Gemini models ranged from slight to substantial. Gemini 2.5 Flash generally outperformed Gemini 2.5 Pro, yielding higher kappa values for most variables with estimable agreement. Substantial agreement was observed for median, traffic light, and bus stop in both models, although kappa values were consistently higher for Gemini 2.5 Flash. Moderate agreement was found for poor street condition (pothole), while fair agreement was observed for crosswalk, speed bumps, stop sign, lane markings, pedestrian crossing sign, and roundabout. Sidewalk obstruction showed slight agreement in Gemini 2.5 Flash and non-estimable kappa in Gemini 2.5 Pro.
+
+Kappa could not be estimated for sidewalk, bike lane, bus lane, and trees because of insufficient variability in ratings. Although observed agreement was generally high (>80% for most variables), kappa values were substantially lower for several characteristics, indicating that part of the agreement was attributable to chance and to the highly imbalanced prevalence of some features.
 
 ### Descriptive
 
@@ -360,7 +362,7 @@ ggplot(plot_data) +
 #| label: Kappa and agreement plot
 #| code-summary: Kappa and agreement plot 
 #| fig-width: 12
-#| fig-height: 6
+#| fig-height: 7
 #| out-width: 100%
 ggplot(
   plot_data,
@@ -371,22 +373,22 @@ ggplot(
 ) +
   geom_point(
     aes(color = lk_cat),
-    size = 3.5,
-    alpha = 0.9
+    size = 4
   ) +
   geom_text_repel(
     aes(label = variable),
-    size = 3.5,
-    direction = "both",
-    box.padding = 0.5,
-    point.padding = 0.3,
-    force = 2,
+    size = 3.8,
+    box.padding = 0.25,
+    point.padding = 0.15,
+    force = 1,
     max.overlaps = Inf,
-    segment.alpha = 0.5
+    segment.alpha = 0.4,
+    min.segment.length = 0
   ) +
   facet_wrap(
     ~model,
-    ncol = 2
+    ncol = 2,
+    scales = "free"
   ) +
   scale_color_manual(
     values = c(
@@ -399,32 +401,34 @@ ggplot(
       "Not estimable" = "#7F7F7F"
     )
   ) +
-  coord_cartesian(
-    xlim = c(0, 100),
-    ylim = c(-0.45, 1),
-    clip = "off"
+  scale_x_continuous(
+    expand = expansion(mult = c(0.02, 0.08))
+  ) +
+  scale_y_continuous(
+    expand = expansion(mult = c(0.05, 0.10))
   ) +
   labs(
     x = "\nObserved agreement (%)",
     y = "Cohen's kappa\n",
     color = "Agreement level"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 15) +
   theme(
     panel.grid.minor = element_blank(),
     legend.position = "right",
-    panel.spacing = unit(2, "cm"),
-    plot.margin = margin(10, 120, 10, 10)
+    panel.spacing = unit(1, "cm"),
+    plot.margin = margin(5, 20, 5, 5),
+    strip.text = element_text(size = 14, face = "bold")
   )
 ```
 
 ### Diagnostic performance
 
-Sensitivity and specificity, which reflect the ability to correctly identify the presence or absence of a characteristic using the field audit as the reference, were highest for more visible urban features such as trees, sidewalks, bus lanes, bike lanes, and roundabouts. Good results were also observed for medians, pedestrian crossing signs, bus stops, and traffic lights, whereas lower values were found for subtler attributes, including potholes, speed bumps, lane markings, and sidewalk obstructions.
+Sensitivity and specificity, which reflect the ability to correctly identify the presence or absence of a characteristic using the field audit as the reference, were generally high for more visually distinctive features, including trees, sidewalks, traffic lights, roundabouts, medians, and bus stops. Both Gemini models achieved perfect or near-perfect sensitivity for sidewalks, trees, medians, and roundabouts, while specificity was particularly high for trees, traffic lights, speed bumps, and roundabouts. In contrast, lower sensitivity and/or specificity values were observed for speed bumps, stop signs, crosswalks, lane markings, and poor street condition (pothole), indicating greater difficulty in detecting or distinguishing these features consistently.
 
-Positive predictive value (PPV), which indicates the probability that a feature is truly present when classified as present, and negative predictive value (NPV), which indicates the probability that a feature is truly absent when classified as absent, were highest for trees, sidewalks, and bus stops, and lowest for lane markings, bus lanes, bike lanes, and sidewalk obstructions. 
+Positive predictive value (PPV), which indicates the probability that a feature is truly present when classified as present, was highest for trees and sidewalks (PPV = 1.00), followed by lane markings, potholes, and bus stops. Lower PPV values were observed for roundabouts, crosswalks, pedestrian crossing signs, and traffic lights, suggesting a higher proportion of false-positive classifications for these characteristics. Negative predictive value (NPV), which indicates the probability that a feature is truly absent when classified as absent, was generally high across most variables, reaching 1.00 for trees, sidewalks, medians, and roundabouts. However, NPV was substantially lower for lane markings, stop signs, potholes, and sidewalk obstructions, particularly for Gemini 2.5 Pro.
 
-Similarly, F1-score, which summarizes the balance between sensitivity and positive predictive value, was higher for trees, sidewalks, and bus stops, intermediate for medians, traffic lights, pedestrian crossing signs, and crosswalks, and lower for the same lower-performing variables.
+Similarly, F1-scores, which summarize the balance between sensitivity and PPV, were highest for trees and sidewalks (F1 = 1.00), followed by lane markings, potholes, medians, bus stops, traffic lights, and sidewalk obstructions. Lower F1-scores were observed for crosswalks, pedestrian crossing signs, stop signs, speed bumps, and roundabouts, reflecting the challenges in achieving both high detection rates and high classification precision for these features. Overall, performance was broadly similar between Gemini 2.5 Flash and Gemini 2.5 Pro, with Gemini 2.5 Flash showing slightly higher F1-scores for several variables, including medians, traffic lights, lane markings, bus stops, and stop signs.
 
 ```{r}
 #| label: Diagnostic performance data preparation
@@ -527,6 +531,8 @@ plot_metric <- function(metric_name, title_text) {
 ```{r}
 #| label: Sensitivity plot
 #| code-summary: Sensitivity plot
+#| warning: false
+#| message: false
 #| fig-width: 16
 #| fig-height: 8
 
@@ -539,6 +545,8 @@ plot_metric(
 ```{r}
 #| label: Specificity plot
 #| code-summary: Specificity plot
+#| warning: false
+#| message: false
 #| fig-width: 16
 #| fig-height: 8
 
@@ -551,6 +559,8 @@ plot_metric(
 ```{r}
 #| label: PPV plot
 #| code-summary: PPV plot
+#| warning: false
+#| message: false
 #| fig-width: 16
 #| fig-height: 8
 
@@ -563,6 +573,8 @@ plot_metric(
 ```{r}
 #| label: NPV plot
 #| code-summary: NPV plot
+#| warning: false
+#| message: false
 #| fig-width: 16
 #| fig-height: 8
 
@@ -575,6 +587,8 @@ plot_metric(
 ```{r}
 #| label: F1-score plot
 #| code-summary: F1-score plot
+#| warning: false
+#| message: false
 #| fig-width: 16
 #| fig-height: 8
 
@@ -586,7 +600,7 @@ plot_metric(
 
 ### ROC
 
-Receiver operating characteristic (ROC) analyses, which evaluate discriminatory ability by comparing sensitivity with the false positive rate, confirmed these patterns. Higher area under the curve (AUC) values were observed for roundabouts, medians, pedestrian crossing signs, bus stops, and traffic lights, whereas crosswalks, stop signs, potholes, and speed bumps showed intermediate performance. Lane markings and sidewalk obstructions presented the weakest discrimination.
+Receiver operating characteristic (ROC) analyses, which evaluate discriminatory ability by comparing sensitivity with the false positive rate, generally supported the findings from the agreement and classification metrics. The highest discriminatory performance was observed for roundabouts, medians, traffic lights, bus stops, and pedestrian crossing signs. Crosswalks, lane markings, potholes, and stop signs showed moderate discrimination, while speed bumps and particularly sidewalk obstruction exhibited the weakest performance. Differences between Gemini 2.5 Flash and Gemini 2.5 Pro were generally small; Gemini 2.5 Flash showed slightly better discrimination for crosswalks, lane markings, stop signs, and potholes, whereas Gemini 2.5 Pro performed marginally better for speed bumps.
 
 ```{r}
 #| label: ROC panel
@@ -596,28 +610,21 @@ Receiver operating characteristic (ROC) analyses, which evaluate discriminatory 
 #| fig-width: 12
 #| fig-height: 12
 #| out-width: 100%
-
 # Function to calculate ROC object + AUC
 calc_roc_data <- function(data, var, model_name) {
-
   ref <- data[[paste0(var, "_0")]]
   pred <- data[[paste0(var, "_1")]]
-
   valid <- !is.na(ref) & !is.na(pred)
-
   ref <- ref[valid]
   pred <- pred[valid]
-
   if (length(unique(ref)) < 2) {
     return(NULL)
   }
-
   roc_obj <- roc(
     ref,
     pred,
     quiet = TRUE
   )
-
   tibble(
     specificity = roc_obj$specificities,
     sensitivity = roc_obj$sensitivities
@@ -629,7 +636,6 @@ calc_roc_data <- function(data, var, model_name) {
       model = model_name
     )
 }
-
 # Gemini 2.5 Flash
 roc_flash <- map_dfr(
   vars_base,
@@ -639,7 +645,6 @@ roc_flash <- map_dfr(
       "Gemini 2.5 Flash"
     )
 )
-
 # Gemini 2.5 Pro
 roc_pro <- map_dfr(
   vars_base,
@@ -649,13 +654,11 @@ roc_pro <- map_dfr(
       "Gemini 2.5 Pro"
     )
 )
-
 # Combined dataset
 roc_panel <- bind_rows(
   roc_flash,
   roc_pro
 )
-
 # Plot
 ggplot(
   roc_panel,
@@ -705,7 +708,7 @@ ggplot(
   )
 ```
 
-Overall, across all agreement and diagnostic metrics, Gemini consistently performed better for larger, permanent, and visually salient urban features, such as bus stops, medians, pedestrian crossing signs, traffic lights, and roundabouts. Intermediate performance was observed for features like crosswalks, stop signs, speed bumps, and poor street condition (potholes). In contrast, lower performance was found for more subtle, linear, or condition-dependent characteristics, including lane markings and sidewalk obstructions. These findings suggest that multimodal artificial intelligence may be a useful tool for automated urban audits of clearly visible built-environment features, although caution is warranted for more ambiguous street attributes.
+Overall, across agreement, classification, and discrimination metrics, Gemini 2.5 Flash generally performed slightly better than Gemini 2.5 Pro, although differences were modest. Both models achieved their best results for larger, permanent, and visually distinctive urban features, such as bus stops, medians, traffic lights, trees, and roundabouts. Performance was more variable for crosswalks, pedestrian crossing signs, stop signs, lane markings, potholes, and speed bumps, while sidewalk obstruction consistently showed the weakest results. These findings suggest that multimodal artificial intelligence may be a useful tool for automated urban audits of clearly visible built-environment characteristics, although caution is warranted when evaluating more ambiguous, context-dependent, or less visually salient street features.
 
 ## Discrepancy analysis
 
