@@ -62,27 +62,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="index_files/libs/clipboard/clipboard.min.js"></script>
-<script src="index_files/libs/quarto-html/quarto.js" type="module"></script>
-<script src="index_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="index_files/libs/quarto-html/popper.min.js"></script>
-<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="index_files/libs/quarto-html/anchor.min.js"></script>
-<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="index_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="index_files/libs/bootstrap/bootstrap-67270d1595a62d14f123c043d4fb2f18.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
 
 
 </head>
 
-<body class="quarto-light">
+<body class="floating quarto-light">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-full toc-left">
-<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
-  <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
    
   <ul>
   <li><a href="#aim" id="toc-aim" class="nav-link active" data-scroll-target="#aim"><span class="header-section-number">1</span> Aim</a></li>
@@ -107,9 +143,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   </ul>
 </nav>
-</div>
-<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-</div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
 <main class="content column-page-right" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -166,27 +205,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pacman)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load</span>(</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Data manipulation and wrangling</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  tidyverse, dplyr, purrr, here,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Data import</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  haven, readxl,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Descriptive statistics</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  janitor, gtsummary,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Agreement / reliability</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  irr, psych,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Diagnostic performance / ROC</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  pROC,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Tables and reporting</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  gt, kableExtra, patchwork,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Label repulsion</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  ggrepel</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  tidyverse,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  dplyr,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  purrr,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  here,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Data import</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  haven,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  readxl,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Descriptive statistics</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  janitor,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  gtsummary,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Agreement / reliability</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  irr,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  psych,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Diagnostic performance / ROC</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  pROC,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Tables and reporting</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  gt,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  kableExtra,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  patchwork,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Label repulsion</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  ggrepel</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Databases</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_legacy_2_5_flash <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="fu">here</span>(<span class="st">"streetview_predictions_dates_legacy_2.5-flash v3.dta"</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_legacy_2_5_pro <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="fu">here</span>(<span class="st">"streetview_predictions_dates_legacy_2.5-pro v3.dta"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_legacy_2_5_flash <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="fu">here</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"streetview_predictions_dates_legacy_2.5-flash v3.dta"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_legacy_2_5_pro <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="fu">here</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"streetview_predictions_dates_legacy_2.5-pro v3.dta"</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
@@ -285,7 +336,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a><span class="co"># Create results</span></span>
 <span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>table_legacy_2_5_flash <span class="ot">&lt;-</span> <span class="fu">build_table</span>(df_legacy_2_5_flash)</span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>table_legacy_2_5_pro   <span class="ot">&lt;-</span> <span class="fu">build_table</span>(df_legacy_2_5_pro)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>table_legacy_2_5_pro <span class="ot">&lt;-</span> <span class="fu">build_table</span>(df_legacy_2_5_pro)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
@@ -313,23 +364,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div id="qvltiptepe" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#qvltiptepe table {
+<div id="wlzcitabqd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#wlzcitabqd table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#qvltiptepe thead, #qvltiptepe tbody, #qvltiptepe tfoot, #qvltiptepe tr, #qvltiptepe td, #qvltiptepe th {
+#wlzcitabqd thead, #wlzcitabqd tbody, #wlzcitabqd tfoot, #wlzcitabqd tr, #wlzcitabqd td, #wlzcitabqd th {
   border-style: none;
 }
 
-#qvltiptepe p {
+#wlzcitabqd p {
   margin: 0;
   padding: 0;
 }
 
-#qvltiptepe .gt_table {
+#wlzcitabqd .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -355,12 +406,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-left-color: #D3D3D3;
 }
 
-#qvltiptepe .gt_caption {
+#wlzcitabqd .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#qvltiptepe .gt_title {
+#wlzcitabqd .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -372,7 +423,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-width: 0;
 }
 
-#qvltiptepe .gt_subtitle {
+#wlzcitabqd .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -384,7 +435,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-width: 0;
 }
 
-#qvltiptepe .gt_heading {
+#wlzcitabqd .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -396,13 +447,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#qvltiptepe .gt_bottom_border {
+#wlzcitabqd .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#qvltiptepe .gt_col_headings {
+#wlzcitabqd .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -417,7 +468,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#qvltiptepe .gt_col_heading {
+#wlzcitabqd .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -437,7 +488,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#qvltiptepe .gt_column_spanner_outer {
+#wlzcitabqd .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -449,15 +500,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 4px;
 }
 
-#qvltiptepe .gt_column_spanner_outer:first-child {
+#wlzcitabqd .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#qvltiptepe .gt_column_spanner_outer:last-child {
+#wlzcitabqd .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#qvltiptepe .gt_column_spanner {
+#wlzcitabqd .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -469,11 +520,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   width: 100%;
 }
 
-#qvltiptepe .gt_spanner_row {
+#wlzcitabqd .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#qvltiptepe .gt_group_heading {
+#wlzcitabqd .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -499,7 +550,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
 }
 
-#qvltiptepe .gt_empty_group_heading {
+#wlzcitabqd .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -514,15 +565,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: middle;
 }
 
-#qvltiptepe .gt_from_md > :first-child {
+#wlzcitabqd .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#qvltiptepe .gt_from_md > :last-child {
+#wlzcitabqd .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#qvltiptepe .gt_row {
+#wlzcitabqd .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -541,7 +592,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#qvltiptepe .gt_stub {
+#wlzcitabqd .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -554,7 +605,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#qvltiptepe .gt_stub_row_group {
+#wlzcitabqd .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -568,15 +619,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: top;
 }
 
-#qvltiptepe .gt_row_group_first td {
+#wlzcitabqd .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#qvltiptepe .gt_row_group_first th {
+#wlzcitabqd .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#qvltiptepe .gt_summary_row {
+#wlzcitabqd .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -586,16 +637,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#qvltiptepe .gt_first_summary_row {
+#wlzcitabqd .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#qvltiptepe .gt_first_summary_row.thick {
+#wlzcitabqd .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#qvltiptepe .gt_last_summary_row {
+#wlzcitabqd .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -605,7 +656,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#qvltiptepe .gt_grand_summary_row {
+#wlzcitabqd .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -615,7 +666,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#qvltiptepe .gt_first_grand_summary_row {
+#wlzcitabqd .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -625,7 +676,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-color: #D3D3D3;
 }
 
-#qvltiptepe .gt_last_grand_summary_row_top {
+#wlzcitabqd .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -635,11 +686,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#qvltiptepe .gt_striped {
+#wlzcitabqd .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#qvltiptepe .gt_table_body {
+#wlzcitabqd .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -648,7 +699,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#qvltiptepe .gt_footnotes {
+#wlzcitabqd .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -662,7 +713,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#qvltiptepe .gt_footnote {
+#wlzcitabqd .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -671,7 +722,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#qvltiptepe .gt_sourcenotes {
+#wlzcitabqd .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -685,7 +736,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#qvltiptepe .gt_sourcenote {
+#wlzcitabqd .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -693,72 +744,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#qvltiptepe .gt_left {
+#wlzcitabqd .gt_left {
   text-align: left;
 }
 
-#qvltiptepe .gt_center {
+#wlzcitabqd .gt_center {
   text-align: center;
 }
 
-#qvltiptepe .gt_right {
+#wlzcitabqd .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#qvltiptepe .gt_font_normal {
+#wlzcitabqd .gt_font_normal {
   font-weight: normal;
 }
 
-#qvltiptepe .gt_font_bold {
+#wlzcitabqd .gt_font_bold {
   font-weight: bold;
 }
 
-#qvltiptepe .gt_font_italic {
+#wlzcitabqd .gt_font_italic {
   font-style: italic;
 }
 
-#qvltiptepe .gt_super {
+#wlzcitabqd .gt_super {
   font-size: 65%;
 }
 
-#qvltiptepe .gt_footnote_marks {
+#wlzcitabqd .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#qvltiptepe .gt_asterisk {
+#wlzcitabqd .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#qvltiptepe .gt_indent_1 {
+#wlzcitabqd .gt_indent_1 {
   text-indent: 5px;
 }
 
-#qvltiptepe .gt_indent_2 {
+#wlzcitabqd .gt_indent_2 {
   text-indent: 10px;
 }
 
-#qvltiptepe .gt_indent_3 {
+#wlzcitabqd .gt_indent_3 {
   text-indent: 15px;
 }
 
-#qvltiptepe .gt_indent_4 {
+#wlzcitabqd .gt_indent_4 {
   text-indent: 20px;
 }
 
-#qvltiptepe .gt_indent_5 {
+#wlzcitabqd .gt_indent_5 {
   text-indent: 25px;
 }
 
-#qvltiptepe .katex-display {
+#wlzcitabqd .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#qvltiptepe div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#wlzcitabqd div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -929,7 +980,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <details class="code-fold">
 <summary>Descriptive table legacy 2.5 pro</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pro table</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>table_legacy_2_5_pro  <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>table_legacy_2_5_pro <span class="sc">%&gt;%</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(audit, gemini, agreement), <span class="at">decimals =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">c</span>(kappa, kappa_lwr, kappa_upr), <span class="at">decimals =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
@@ -950,23 +1001,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div id="swltyppbhg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#swltyppbhg table {
+<div id="zcnbznhhnt" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#zcnbznhhnt table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#swltyppbhg thead, #swltyppbhg tbody, #swltyppbhg tfoot, #swltyppbhg tr, #swltyppbhg td, #swltyppbhg th {
+#zcnbznhhnt thead, #zcnbznhhnt tbody, #zcnbznhhnt tfoot, #zcnbznhhnt tr, #zcnbznhhnt td, #zcnbznhhnt th {
   border-style: none;
 }
 
-#swltyppbhg p {
+#zcnbznhhnt p {
   margin: 0;
   padding: 0;
 }
 
-#swltyppbhg .gt_table {
+#zcnbznhhnt .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -992,12 +1043,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-left-color: #D3D3D3;
 }
 
-#swltyppbhg .gt_caption {
+#zcnbznhhnt .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#swltyppbhg .gt_title {
+#zcnbznhhnt .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1009,7 +1060,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-width: 0;
 }
 
-#swltyppbhg .gt_subtitle {
+#zcnbznhhnt .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1021,7 +1072,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-width: 0;
 }
 
-#swltyppbhg .gt_heading {
+#zcnbznhhnt .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1033,13 +1084,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#swltyppbhg .gt_bottom_border {
+#zcnbznhhnt .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#swltyppbhg .gt_col_headings {
+#zcnbznhhnt .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1054,7 +1105,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#swltyppbhg .gt_col_heading {
+#zcnbznhhnt .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1074,7 +1125,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#swltyppbhg .gt_column_spanner_outer {
+#zcnbznhhnt .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1086,15 +1137,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 4px;
 }
 
-#swltyppbhg .gt_column_spanner_outer:first-child {
+#zcnbznhhnt .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#swltyppbhg .gt_column_spanner_outer:last-child {
+#zcnbznhhnt .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#swltyppbhg .gt_column_spanner {
+#zcnbznhhnt .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1106,11 +1157,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   width: 100%;
 }
 
-#swltyppbhg .gt_spanner_row {
+#zcnbznhhnt .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#swltyppbhg .gt_group_heading {
+#zcnbznhhnt .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1136,7 +1187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
 }
 
-#swltyppbhg .gt_empty_group_heading {
+#zcnbznhhnt .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1151,15 +1202,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: middle;
 }
 
-#swltyppbhg .gt_from_md > :first-child {
+#zcnbznhhnt .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#swltyppbhg .gt_from_md > :last-child {
+#zcnbznhhnt .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#swltyppbhg .gt_row {
+#zcnbznhhnt .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1178,7 +1229,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#swltyppbhg .gt_stub {
+#zcnbznhhnt .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1191,7 +1242,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#swltyppbhg .gt_stub_row_group {
+#zcnbznhhnt .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1205,15 +1256,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: top;
 }
 
-#swltyppbhg .gt_row_group_first td {
+#zcnbznhhnt .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#swltyppbhg .gt_row_group_first th {
+#zcnbznhhnt .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#swltyppbhg .gt_summary_row {
+#zcnbznhhnt .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1223,16 +1274,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#swltyppbhg .gt_first_summary_row {
+#zcnbznhhnt .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#swltyppbhg .gt_first_summary_row.thick {
+#zcnbznhhnt .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#swltyppbhg .gt_last_summary_row {
+#zcnbznhhnt .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1242,7 +1293,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#swltyppbhg .gt_grand_summary_row {
+#zcnbznhhnt .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1252,7 +1303,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#swltyppbhg .gt_first_grand_summary_row {
+#zcnbznhhnt .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1262,7 +1313,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-color: #D3D3D3;
 }
 
-#swltyppbhg .gt_last_grand_summary_row_top {
+#zcnbznhhnt .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1272,11 +1323,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#swltyppbhg .gt_striped {
+#zcnbznhhnt .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#swltyppbhg .gt_table_body {
+#zcnbznhhnt .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1285,7 +1336,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#swltyppbhg .gt_footnotes {
+#zcnbznhhnt .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1299,7 +1350,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#swltyppbhg .gt_footnote {
+#zcnbznhhnt .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1308,7 +1359,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#swltyppbhg .gt_sourcenotes {
+#zcnbznhhnt .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1322,7 +1373,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#swltyppbhg .gt_sourcenote {
+#zcnbznhhnt .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1330,72 +1381,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#swltyppbhg .gt_left {
+#zcnbznhhnt .gt_left {
   text-align: left;
 }
 
-#swltyppbhg .gt_center {
+#zcnbznhhnt .gt_center {
   text-align: center;
 }
 
-#swltyppbhg .gt_right {
+#zcnbznhhnt .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#swltyppbhg .gt_font_normal {
+#zcnbznhhnt .gt_font_normal {
   font-weight: normal;
 }
 
-#swltyppbhg .gt_font_bold {
+#zcnbznhhnt .gt_font_bold {
   font-weight: bold;
 }
 
-#swltyppbhg .gt_font_italic {
+#zcnbznhhnt .gt_font_italic {
   font-style: italic;
 }
 
-#swltyppbhg .gt_super {
+#zcnbznhhnt .gt_super {
   font-size: 65%;
 }
 
-#swltyppbhg .gt_footnote_marks {
+#zcnbznhhnt .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#swltyppbhg .gt_asterisk {
+#zcnbznhhnt .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#swltyppbhg .gt_indent_1 {
+#zcnbznhhnt .gt_indent_1 {
   text-indent: 5px;
 }
 
-#swltyppbhg .gt_indent_2 {
+#zcnbznhhnt .gt_indent_2 {
   text-indent: 10px;
 }
 
-#swltyppbhg .gt_indent_3 {
+#zcnbznhhnt .gt_indent_3 {
   text-indent: 15px;
 }
 
-#swltyppbhg .gt_indent_4 {
+#zcnbznhhnt .gt_indent_4 {
   text-indent: 20px;
 }
 
-#swltyppbhg .gt_indent_5 {
+#zcnbznhhnt .gt_indent_5 {
   text-indent: 25px;
 }
 
-#swltyppbhg .katex-display {
+#zcnbznhhnt .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#swltyppbhg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#zcnbznhhnt div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1686,7 +1737,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/Kappa%20plot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="index_files/figure-html/Kappa plot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
@@ -1754,7 +1805,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/Kappa%20and%20agreement%20plot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="index_files/figure-html/Kappa and agreement plot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
@@ -1795,13 +1846,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Gemini 2.5 Flash</span></span>
 <span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>metrics_flash <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(</span>
 <span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>  vars_base,</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span><span class="fu">calc_metrics</span>(df_legacy_2_5_flash, .x)</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span> <span class="fu">calc_metrics</span>(df_legacy_2_5_flash, .x)</span>
 <span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
 <span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model =</span> <span class="st">"Gemini 2.5 Flash"</span>)</span>
 <span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Gemini 2.5 Pro</span></span>
 <span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>metrics_pro <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(</span>
 <span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>  vars_base,</span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span><span class="fu">calc_metrics</span>(df_legacy_2_5_pro, .x)</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span> <span class="fu">calc_metrics</span>(df_legacy_2_5_pro, .x)</span>
 <span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
 <span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model =</span> <span class="st">"Gemini 2.5 Pro"</span>)</span>
 <span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Combined dataset</span></span>
@@ -1874,7 +1925,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/Sensitivity%20plot-1.png" class="img-fluid figure-img" width="1536"></p>
+<p><img src="index_files/figure-html/Sensitivity plot-1.png" class="img-fluid figure-img" width="1536"></p>
 </figure>
 </div>
 </div>
@@ -1890,7 +1941,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/Specificity%20plot-1.png" class="img-fluid figure-img" width="1536"></p>
+<p><img src="index_files/figure-html/Specificity plot-1.png" class="img-fluid figure-img" width="1536"></p>
 </figure>
 </div>
 </div>
@@ -1906,7 +1957,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/PPV%20plot-1.png" class="img-fluid figure-img" width="1536"></p>
+<p><img src="index_files/figure-html/PPV plot-1.png" class="img-fluid figure-img" width="1536"></p>
 </figure>
 </div>
 </div>
@@ -1922,7 +1973,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/NPV%20plot-1.png" class="img-fluid figure-img" width="1536"></p>
+<p><img src="index_files/figure-html/NPV plot-1.png" class="img-fluid figure-img" width="1536"></p>
 </figure>
 </div>
 </div>
@@ -1938,7 +1989,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/F1-score%20plot-1.png" class="img-fluid figure-img" width="1536"></p>
+<p><img src="index_files/figure-html/F1-score plot-1.png" class="img-fluid figure-img" width="1536"></p>
 </figure>
 </div>
 </div>
@@ -1949,7 +2000,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Receiver operating characteristic (ROC) analyses, which evaluate discriminatory ability by comparing sensitivity with the false positive rate, generally supported the findings from the agreement and classification metrics. The highest discriminatory performance was observed for roundabouts, medians, traffic lights, bus stops, and pedestrian crossing signs. Crosswalks, lane markings, potholes, and stop signs showed moderate discrimination, while speed bumps and particularly sidewalk obstruction exhibited the weakest performance. Differences between Gemini 2.5 Flash and Gemini 2.5 Pro were generally small; Gemini 2.5 Flash showed slightly better discrimination for crosswalks, lane markings, stop signs, and potholes, whereas Gemini 2.5 Pro performed marginally better for speed bumps.</p>
 <div class="cell">
 <details class="code-fold">
-<summary>ROC panel comparing Gemini 2.5 Flash and Gemini 2.5 Pro</summary>
+<summary>ROC panel</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to calculate ROC object + AUC</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>calc_roc_data <span class="ot">&lt;-</span> <span class="cf">function</span>(data, var, model_name) {</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  ref <span class="ot">&lt;-</span> data[[<span class="fu">paste0</span>(var, <span class="st">"_0"</span>)]]</span>
@@ -1980,19 +2031,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>roc_flash <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(</span>
 <span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>  vars_base,</span>
 <span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span> <span class="fu">calc_roc_data</span>(</span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>      df_legacy_2_5_flash,</span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>      .x,</span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Gemini 2.5 Flash"</span></span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    df_legacy_2_5_flash,</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    .x,</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Gemini 2.5 Flash"</span></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Gemini 2.5 Pro</span></span>
 <span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>roc_pro <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(</span>
 <span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>  vars_base,</span>
 <span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span> <span class="fu">calc_roc_data</span>(</span>
-<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>      df_legacy_2_5_pro,</span>
-<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>      .x,</span>
-<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Gemini 2.5 Pro"</span></span>
-<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>    df_legacy_2_5_pro,</span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>    .x,</span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Gemini 2.5 Pro"</span></span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Combined dataset</span></span>
 <span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>roc_panel <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
@@ -2050,7 +2101,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/ROC%20panel-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="index_files/figure-html/ROC panel-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
@@ -2063,102 +2114,91 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>In this step, discrepancies between human and AI assessments are examined for features selected due to their intermediate and lower performance in agreement and diagnostic metrics. For each variable, segments with disagreement are identified, the type of discrepancy is classified (human = 1 and AI = 0; or human = 0 and AI = 1), and these cases are linked to geographic coordinates and Google Street View links, enabling visual inspection and interpretation of the differences.</p>
 <div class="cell">
 <details class="code-fold">
-<summary>Extract identifiers and create Street View tables with discrepancies for Gemini 2.5 Flash</summary>
+<summary>Extract identifiers and create Street View tables with discrepancies</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_flash <span class="ot">&lt;-</span> df_legacy_2_5_flash <span class="sc">%&gt;%</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">identificador =</span> <span class="fu">as.character</span>(identificador)</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Function: capture both discrepancy types</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>get_ids_discrepancy <span class="ot">&lt;-</span> <span class="cf">function</span>(data, base_var) {</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  var0 <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_var, <span class="st">"_0"</span>)  <span class="co"># human</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  var1 <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_var, <span class="st">"_1"</span>)  <span class="co"># AI</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">%&gt;%</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span><span class="fu">is.na</span>(.data[[var0]]),</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span><span class="fu">is.na</span>(.data[[var1]]),</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>      .data[[var0]] <span class="sc">!=</span> .data[[var1]]</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">discrepancy_type =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>        .data[[var0]] <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> .data[[var1]] <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"human_1_ai_0"</span>,</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>        .data[[var0]] <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> .data[[var1]] <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"human_0_ai_1"</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>      identificador,</span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>      discrepancy_type</span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>()</span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>vars_to_use <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>  <span class="st">"swalk_cont_cat2"</span>,</span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_lanevis_cat2"</span>,</span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_cond_cat2"</span>,</span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_scont1"</span>,</span>
-<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_tcont1"</span>,</span>
-<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_cwalk"</span></span>
-<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply function</span></span>
-<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>ids_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(</span>
-<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>  vars_to_use,</span>
-<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(v) {</span>
-<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">get_ids_discrepancy</span>(df_flash, v)</span>
-<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ids_list) <span class="ot">&lt;-</span> var_labels[vars_to_use]</span>
-<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Load coordinates</span></span>
-<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a>coords <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(</span>
-<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>  <span class="st">"items_coordinates_belo_horizonte 5more.xlsx"</span></span>
-<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">identificador =</span> <span class="fu">as.character</span>(id),</span>
-<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">lat =</span> <span class="fu">as.numeric</span>(lat),</span>
-<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">lon =</span> <span class="fu">as.numeric</span>(lon)</span>
-<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a><span class="co"># Create final tables</span></span>
-<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a>views <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (var_name <span class="cf">in</span> <span class="fu">names</span>(ids_list)) {</span>
-<span id="cb15-64"><a href="#cb15-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-65"><a href="#cb15-65" aria-hidden="true" tabindex="-1"></a>  df_view <span class="ot">&lt;-</span> coords <span class="sc">%&gt;%</span></span>
-<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">inner_join</span>(</span>
-<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a>      ids_list[[var_name]],</span>
-<span id="cb15-68"><a href="#cb15-68" aria-hidden="true" tabindex="-1"></a>      <span class="at">by =</span> <span class="st">"identificador"</span></span>
-<span id="cb15-69"><a href="#cb15-69" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb15-70"><a href="#cb15-70" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a>      <span class="at">lat_lon =</span> <span class="fu">paste0</span>(</span>
-<span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a>        lat,</span>
-<span id="cb15-73"><a href="#cb15-73" aria-hidden="true" tabindex="-1"></a>        <span class="st">", "</span>,</span>
-<span id="cb15-74"><a href="#cb15-74" aria-hidden="true" tabindex="-1"></a>        lon</span>
-<span id="cb15-75"><a href="#cb15-75" aria-hidden="true" tabindex="-1"></a>      ),</span>
-<span id="cb15-76"><a href="#cb15-76" aria-hidden="true" tabindex="-1"></a>      <span class="at">streetview_url =</span> <span class="fu">paste0</span>(</span>
-<span id="cb15-77"><a href="#cb15-77" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://www.google.com/maps/@?api=1&amp;map_action=pano&amp;viewpoint="</span>,</span>
-<span id="cb15-78"><a href="#cb15-78" aria-hidden="true" tabindex="-1"></a>        lat,</span>
-<span id="cb15-79"><a href="#cb15-79" aria-hidden="true" tabindex="-1"></a>        <span class="st">","</span>,</span>
-<span id="cb15-80"><a href="#cb15-80" aria-hidden="true" tabindex="-1"></a>        lon</span>
-<span id="cb15-81"><a href="#cb15-81" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb15-82"><a href="#cb15-82" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb15-83"><a href="#cb15-83" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
-<span id="cb15-84"><a href="#cb15-84" aria-hidden="true" tabindex="-1"></a>      identificador,</span>
-<span id="cb15-85"><a href="#cb15-85" aria-hidden="true" tabindex="-1"></a>      discrepancy_type,</span>
-<span id="cb15-86"><a href="#cb15-86" aria-hidden="true" tabindex="-1"></a>      lat_lon,</span>
-<span id="cb15-87"><a href="#cb15-87" aria-hidden="true" tabindex="-1"></a>      streetview_url</span>
-<span id="cb15-88"><a href="#cb15-88" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
-<span id="cb15-89"><a href="#cb15-89" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">arrange</span>(</span>
-<span id="cb15-90"><a href="#cb15-90" aria-hidden="true" tabindex="-1"></a>      discrepancy_type,</span>
-<span id="cb15-91"><a href="#cb15-91" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.numeric</span>(identificador)</span>
-<span id="cb15-92"><a href="#cb15-92" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-93"><a href="#cb15-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-94"><a href="#cb15-94" aria-hidden="true" tabindex="-1"></a>  views[[var_name]] <span class="ot">&lt;-</span> df_view</span>
-<span id="cb15-95"><a href="#cb15-95" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Function: capture both discrepancy types</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>get_ids_discrepancy <span class="ot">&lt;-</span> <span class="cf">function</span>(data, base_var) {</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  var0 <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_var, <span class="st">"_0"</span>) <span class="co"># human</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  var1 <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_var, <span class="st">"_1"</span>) <span class="co"># AI</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">%&gt;%</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span><span class="fu">is.na</span>(.data[[var0]]),</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span><span class="fu">is.na</span>(.data[[var1]]),</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>      .data[[var0]] <span class="sc">!=</span> .data[[var1]]</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">discrepancy_type =</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>        .data[[var0]] <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> .data[[var1]] <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"human_1_ai_0"</span>,</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>        .data[[var0]] <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> .data[[var1]] <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"human_0_ai_1"</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>      identificador,</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>      discrepancy_type</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>()</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>vars_to_use <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"swalk_cont_cat2"</span>,</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_lanevis_cat2"</span>,</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_cond_cat2"</span>,</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_scont1"</span>,</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_tcont1"</span>,</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>  <span class="st">"str_cwalk"</span></span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply function</span></span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>ids_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>  vars_to_use,</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(v) {</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">get_ids_discrepancy</span>(df_flash, v)</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(ids_list) <span class="ot">&lt;-</span> var_labels[vars_to_use]</span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Load coordinates</span></span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>coords <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(</span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>  <span class="st">"items_coordinates_belo_horizonte 5more.xlsx"</span></span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">identificador =</span> <span class="fu">as.character</span>(id),</span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">lat =</span> <span class="fu">as.numeric</span>(lat),</span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">lon =</span> <span class="fu">as.numeric</span>(lon)</span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Create final tables</span></span>
+<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a>views <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (var_name <span class="cf">in</span> <span class="fu">names</span>(ids_list)) {</span>
+<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a>  df_view <span class="ot">&lt;-</span> coords <span class="sc">%&gt;%</span></span>
+<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">inner_join</span>(</span>
+<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a>      ids_list[[var_name]],</span>
+<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a>      <span class="at">by =</span> <span class="st">"identificador"</span></span>
+<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a>      <span class="at">lat_lon =</span> <span class="fu">paste0</span>(</span>
+<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a>        lat,</span>
+<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a>        <span class="st">", "</span>,</span>
+<span id="cb15-64"><a href="#cb15-64" aria-hidden="true" tabindex="-1"></a>        lon</span>
+<span id="cb15-65"><a href="#cb15-65" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a>      <span class="at">streetview_url =</span> <span class="fu">paste0</span>(</span>
+<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://www.google.com/maps/@?api=1&amp;map_action=pano&amp;viewpoint="</span>,</span>
+<span id="cb15-68"><a href="#cb15-68" aria-hidden="true" tabindex="-1"></a>        lat,</span>
+<span id="cb15-69"><a href="#cb15-69" aria-hidden="true" tabindex="-1"></a>        <span class="st">","</span>,</span>
+<span id="cb15-70"><a href="#cb15-70" aria-hidden="true" tabindex="-1"></a>        lon</span>
+<span id="cb15-71"><a href="#cb15-71" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb15-72"><a href="#cb15-72" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb15-73"><a href="#cb15-73" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(</span>
+<span id="cb15-74"><a href="#cb15-74" aria-hidden="true" tabindex="-1"></a>      identificador,</span>
+<span id="cb15-75"><a href="#cb15-75" aria-hidden="true" tabindex="-1"></a>      discrepancy_type,</span>
+<span id="cb15-76"><a href="#cb15-76" aria-hidden="true" tabindex="-1"></a>      lat_lon,</span>
+<span id="cb15-77"><a href="#cb15-77" aria-hidden="true" tabindex="-1"></a>      streetview_url</span>
+<span id="cb15-78"><a href="#cb15-78" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb15-79"><a href="#cb15-79" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">arrange</span>(</span>
+<span id="cb15-80"><a href="#cb15-80" aria-hidden="true" tabindex="-1"></a>      discrepancy_type,</span>
+<span id="cb15-81"><a href="#cb15-81" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.numeric</span>(identificador)</span>
+<span id="cb15-82"><a href="#cb15-82" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-83"><a href="#cb15-83" aria-hidden="true" tabindex="-1"></a>  views[[var_name]] <span class="ot">&lt;-</span> df_view</span>
+<span id="cb15-84"><a href="#cb15-84" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <section id="sidewalk-obstructions" class="level3" data-number="6.1">
@@ -2190,11 +2230,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 data-number="6.6" class="anchored" data-anchor-id="crosswalks"><span class="header-section-number">6.6</span> Crosswalks</h3>
 <p>“CANVAS Instructions: Indicate the presence of a crosswalk in the segment. Consider only crosswalks that are at the intersection closest to the green marker or in the midblock.”</p>
 <p>The observed discrepancies are likely due to differences in how the measure was applied, as we considered the crosswalk only at the starting point of the segment.</p>
+
+
 </section>
 </section>
 
-</main>
-<!-- /main column -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -2600,4 +2641,5 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>

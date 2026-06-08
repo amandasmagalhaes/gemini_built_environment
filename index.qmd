@@ -1,17 +1,6 @@
 ---
 title: "Comparison between virtual audits and Gemini"
 date: today
-format:
-  html:
-    theme: cosmo
-    toc: true
-    toc-location: left
-    number-sections: true
-    code-fold: true
-    page-layout: full
-execute:
-  freeze: auto
-  cache: true
 ---
 
 ## Aim
@@ -45,25 +34,30 @@ The automated assessment using Gemini was implemented in Python. Data management
 ```{r}
 #| label: Packages
 #| code-summary: Packages
-#| warning: false
-#| message: false
-
 rm(list = ls())
 
 library(pacman)
 p_load(
   # Data manipulation and wrangling
-  tidyverse, dplyr, purrr, here,
+  tidyverse,
+  dplyr,
+  purrr,
+  here,
   # Data import
-  haven, readxl,
+  haven,
+  readxl,
   # Descriptive statistics
-  janitor, gtsummary,
+  janitor,
+  gtsummary,
   # Agreement / reliability
-  irr, psych,
+  irr,
+  psych,
   # Diagnostic performance / ROC
   pROC,
   # Tables and reporting
-  gt, kableExtra, patchwork,
+  gt,
+  kableExtra,
+  patchwork,
   # Label repulsion
   ggrepel
 )
@@ -72,9 +66,12 @@ p_load(
 ```{r}
 #| label: Databases
 #| code-summary: Databases
-
-df_legacy_2_5_flash <- read_dta(here("streetview_predictions_dates_legacy_2.5-flash v3.dta"))
-df_legacy_2_5_pro <- read_dta(here("streetview_predictions_dates_legacy_2.5-pro v3.dta"))
+df_legacy_2_5_flash <- read_dta(here(
+  "streetview_predictions_dates_legacy_2.5-flash v3.dta"
+))
+df_legacy_2_5_pro <- read_dta(here(
+  "streetview_predictions_dates_legacy_2.5-pro v3.dta"
+))
 ```
 
 ## Results
@@ -88,9 +85,6 @@ Kappa could not be estimated for sidewalk, bike lane, bus lane, and trees becaus
 ```{r}
 #| label: Descriptive table function
 #| code-summary: Descriptive table function
-#| warning: false
-#| message: false
-
 # Variables
 vars_base <- c(
   "swalk_pres_cat",
@@ -177,14 +171,12 @@ build_table <- function(data) {
 }
 # Create results
 table_legacy_2_5_flash <- build_table(df_legacy_2_5_flash)
-table_legacy_2_5_pro   <- build_table(df_legacy_2_5_pro)
+table_legacy_2_5_pro <- build_table(df_legacy_2_5_pro)
 ```
 
 ```{r}
 #| label: Descriptive table legacy 2.5 flash
 #| code-summary: Descriptive table legacy 2.5 flash
-#| warning: false
-#| message: false
 # Flash table
 table_legacy_2_5_flash %>%
   gt() %>%
@@ -210,10 +202,8 @@ table_legacy_2_5_flash %>%
 ```{r}
 #| label: Descriptive table legacy 2.5 pro
 #| code-summary: Descriptive table legacy 2.5 pro
-#| warning: false
-#| message: false
 # Pro table
-table_legacy_2_5_pro  %>%
+table_legacy_2_5_pro %>%
   gt() %>%
   fmt_number(columns = c(audit, gemini, agreement), decimals = 1) %>%
   fmt_number(columns = c(kappa, kappa_lwr, kappa_upr), decimals = 2) %>%
@@ -460,13 +450,13 @@ calc_metrics <- function(data, var) {
 # Gemini 2.5 Flash
 metrics_flash <- map_dfr(
   vars_base,
-  ~calc_metrics(df_legacy_2_5_flash, .x)
+  ~ calc_metrics(df_legacy_2_5_flash, .x)
 ) %>%
   mutate(model = "Gemini 2.5 Flash")
 # Gemini 2.5 Pro
 metrics_pro <- map_dfr(
   vars_base,
-  ~calc_metrics(df_legacy_2_5_pro, .x)
+  ~ calc_metrics(df_legacy_2_5_pro, .x)
 ) %>%
   mutate(model = "Gemini 2.5 Pro")
 # Combined dataset
@@ -535,7 +525,6 @@ plot_metric <- function(metric_name, title_text) {
 #| message: false
 #| fig-width: 16
 #| fig-height: 8
-
 plot_metric(
   "sensitivity",
   "Sensitivity"
@@ -549,7 +538,6 @@ plot_metric(
 #| message: false
 #| fig-width: 16
 #| fig-height: 8
-
 plot_metric(
   "specificity",
   "Specificity"
@@ -563,7 +551,6 @@ plot_metric(
 #| message: false
 #| fig-width: 16
 #| fig-height: 8
-
 plot_metric(
   "ppv",
   "Positive Predictive Value (PPV)"
@@ -577,7 +564,6 @@ plot_metric(
 #| message: false
 #| fig-width: 16
 #| fig-height: 8
-
 plot_metric(
   "npv",
   "Negative Predictive Value (NPV)"
@@ -591,7 +577,6 @@ plot_metric(
 #| message: false
 #| fig-width: 16
 #| fig-height: 8
-
 plot_metric(
   "f1_score",
   "F1-score"
@@ -604,7 +589,7 @@ Receiver operating characteristic (ROC) analyses, which evaluate discriminatory 
 
 ```{r}
 #| label: ROC panel
-#| code-summary: ROC panel comparing Gemini 2.5 Flash and Gemini 2.5 Pro
+#| code-summary: ROC panel
 #| warning: false
 #| message: false
 #| fig-width: 12
@@ -640,19 +625,19 @@ calc_roc_data <- function(data, var, model_name) {
 roc_flash <- map_dfr(
   vars_base,
   ~ calc_roc_data(
-      df_legacy_2_5_flash,
-      .x,
-      "Gemini 2.5 Flash"
-    )
+    df_legacy_2_5_flash,
+    .x,
+    "Gemini 2.5 Flash"
+  )
 )
 # Gemini 2.5 Pro
 roc_pro <- map_dfr(
   vars_base,
   ~ calc_roc_data(
-      df_legacy_2_5_pro,
-      .x,
-      "Gemini 2.5 Pro"
-    )
+    df_legacy_2_5_pro,
+    .x,
+    "Gemini 2.5 Pro"
+  )
 )
 # Combined dataset
 roc_panel <- bind_rows(
@@ -716,21 +701,15 @@ In this step, discrepancies between human and AI assessments are examined for fe
 
 ```{r}
 #| label: Extract identifiers and create Street View tables with discrepancies
-#| code-summary: Extract identifiers and create Street View tables with discrepancies for Gemini 2.5 Flash
-#| warning: false
-#| message: false
-
+#| code-summary: Extract identifiers and create Street View tables with discrepancies
 df_flash <- df_legacy_2_5_flash %>%
   mutate(
     identificador = as.character(identificador)
   )
-
 # Function: capture both discrepancy types
 get_ids_discrepancy <- function(data, base_var) {
-
-  var0 <- paste0(base_var, "_0")  # human
-  var1 <- paste0(base_var, "_1")  # AI
-
+  var0 <- paste0(base_var, "_0") # human
+  var1 <- paste0(base_var, "_1") # AI
   data %>%
     dplyr::filter(
       !is.na(.data[[var0]]),
@@ -749,7 +728,6 @@ get_ids_discrepancy <- function(data, base_var) {
     ) %>%
     distinct()
 }
-
 vars_to_use <- c(
   "swalk_cont_cat2",
   "str_lanevis_cat2",
@@ -758,7 +736,6 @@ vars_to_use <- c(
   "str_tcont1",
   "str_cwalk"
 )
-
 # Apply function
 ids_list <- lapply(
   vars_to_use,
@@ -766,9 +743,7 @@ ids_list <- lapply(
     get_ids_discrepancy(df_flash, v)
   }
 )
-
 names(ids_list) <- var_labels[vars_to_use]
-
 # Load coordinates
 coords <- read_excel(
   "items_coordinates_belo_horizonte 5more.xlsx"
@@ -778,12 +753,9 @@ coords <- read_excel(
     lat = as.numeric(lat),
     lon = as.numeric(lon)
   )
-
 # Create final tables
 views <- list()
-
 for (var_name in names(ids_list)) {
-
   df_view <- coords %>%
     dplyr::inner_join(
       ids_list[[var_name]],
@@ -812,7 +784,6 @@ for (var_name in names(ids_list)) {
       discrepancy_type,
       as.numeric(identificador)
     )
-
   views[[var_name]] <- df_view
 }
 ```
@@ -824,14 +795,12 @@ Items marked as present by the AI but absent by human raters are likely due to o
 ```{r}
 #| echo: false
 #| results: asis
-
 View(views[["Sidewalk obstruction"]])
 ```
 
 ```{r}
 #| echo: false
 #| results: asis
-
 cat(
   '[![](31062001071_2.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.9353500964683,-43.9310052796472)<br>
   <span>human_0_ai_1</span><br><br>'
@@ -850,14 +819,12 @@ Are items marked as present by the AI but absent by human raters due to crosswal
 ```{r}
 #| echo: false
 #| results: asis
-
 View(views[["Lane markings"]])
 ```
 
 ```{r}
 #| echo: false
 #| results: asis
-
 cat(
   '[![](310620013483_6.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.8704599360962,-43.9841267008323)<br>
   <span>human_0_ai_1</span><br><br>'
@@ -876,14 +843,12 @@ We assessed “What is the apparent condition of the roadway?” and, for this a
 ```{r}
 #| echo: false
 #| results: asis
-
 View(views[["Poor street condition (pothole)"]])
 ```
 
 ```{r}
 #| echo: false
 #| results: asis
-
 cat(
   '[![](310620023101_10.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.893311404363,-43.9940116495973)<br>
   <span>human_0_ai_1</span><br><br>'
@@ -902,14 +867,12 @@ The discrepancies observed were only cases in which the human rater identified t
 ```{r}
 #| echo: false
 #| results: asis
-
 View(views[["Speed bumps"]])
 ```
 
 ```{r}
 #| echo: false
 #| results: asis
-
 cat(
   '[![](310620013483_10.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.8704599360962,-43.9841267008323)<br>
   <span>human_1_ai_0</span><br><br>'
@@ -930,7 +893,6 @@ The observed discrepancies are likely due to differences in how the measure was 
 ```{r}
 #| echo: false
 #| results: asis
-
 View(views[["Stop sign"]])
 ```
 
