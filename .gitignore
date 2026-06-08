@@ -5,8 +5,6 @@
 _freeze
 .quarto/
 \index_cache
-\index_files
 bepidl.py
 **/*.quarto_ipynb
-
 /.quarto/
