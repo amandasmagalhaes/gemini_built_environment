@@ -1,10 +1,10 @@
 clear
 
 * Import CSV file
-import delimited "C:\Users\amand\Amanda\GitHub\gemini_built_environment\streetview_predictions_2.5-flash.csv"
+import delimited "C:\Users\amand\Amanda\GitHub\gemini_built_environment\streetview_predictions_dates_legacy_2.5-pro.csv"
 
 * Save as Stata dataset
-save "C:\Users\amand\Amanda\GitHub\gemini_built_environment\streetview_predictions_2.5-flash.dta", replace
+save "C:\Users\amand\Amanda\GitHub\gemini_built_environment\streetview_predictions_dates_legacy_2.5-pro.dta", replace
 
 
 * Keep only valid observations
@@ -12,14 +12,16 @@ keep if status == "ok"
 
 * Standardize ID variable
 rename id identificador
+replace identificador = substr(identificador, 1, strpos(identificador, "_p") - 1)
+destring identificador, replace
 format %20.0g identificador
 
-* ---- Date handling ----
+* Date handling
 rename pano_date data_imagens
 gen data_imagens_m = monthly(data_imagens, "YM")
 format data_imagens_m %tm
 
-* ---- Rename variables to standardized names ----
+* Rename variables to standardized names
 rename sidewalks swalk_pres_cat
 rename crosswalks str_cwalk
 rename speed_bumps str_scont1
@@ -38,7 +40,7 @@ rename roundabout str_tcont2
 
 duplicates report identificador
 
-* ---- Collapse ----
+* Collapse
 collapse (max) data_imagens_m ///
                swalk_pres_cat str_cwalk str_scont1 str_cond_cat2 ///
                str_tcont3 str_tcont1 swalk_cont_cat2 str_blane ///
@@ -46,7 +48,7 @@ collapse (max) data_imagens_m ///
                str_cstop_cat2 trans_blane trans_stop str_tcont2, ///
                by(identificador)
 
-* ---- Convert date ----
+* Convert date
 gen data_imagens_d = dofm(data_imagens_m)
 format data_imagens_d %tdCCYY-NN-DD
 
@@ -58,20 +60,20 @@ duplicates report identificador
 move data_imagens identificador
 move data_imagens identificador
 
-* ---- Add suffix _1 ----
+* Add suffix _1
 ds identificador, not
 foreach var in `r(varlist)' {
     rename `var' `var'_1
 }
 
-save "C:\Users\amand\Amanda\GitHub\gemini_built_environment\streetview_predictions_2.5-flash v2.dta", replace
+save "C:\Users\amand\Amanda\GitHub\gemini_built_environment\streetview_predictions_dates_legacy_2.5-pro v2.dta", replace
 
 
-* ---- Merge ----
+* Merge
 merge 1:1 identificador using "C:\Users\amand\Amanda\GitHub\gemini_built_environment\Auditoria Virtual Amostra Total - Belo Horizonte v2.dta"
 
 drop _merge
 
 drop if data_imagens_1 == .
 
-save "C:\Users\amand\Amanda\GitHub\gemini_built_environment\streetview_predictions_2.5-flash v3.dta", replace
+save "C:\Users\amand\Amanda\GitHub\gemini_built_environment\streetview_predictions_dates_legacy_2.5-pro v3.dta", replace

@@ -26,9 +26,9 @@ In the present analysis, we included only street segments from Belo Horizonte wi
 
 ## Gemini
 
-The same street segments included in the virtual audit were automatically processed using Google Street View images and a multimodal large language model (Gemini, Google) through a fully automated pipeline. For each coordinate, the closest panorama within a 10-meter radius and captured from 2015 onwards was selected, and the images were downloaded, preprocessed, and analyzed individually.
+The same street segments and image dates included in the virtual audit were automatically processed using Google Street View images and a multimodal large language model (Gemini, Google) through a fully automated pipeline. For each coordinate, eight static images covering the full 360° view were selected within a 10-meter radius. These images were downloaded, preprocessed, and analyzed individually, and all measures were derived from this set of eight images.
 
-A prompt-based approach was used to classify the presence or absence of predefined characteristics. The model was instructed to consider only characteristics in the immediate vicinity of the camera and to account for distortions inherent to panoramic imagery. Outputs were generated as structured JSON objects with binary indicators (1 = present; 0 = absent or only visible at a distance).
+A prompt-based approach was used to classify built environment characteristics under two classification schemes (binary and categorical) and with two multimodal large language models (Gemini 2.5 Flash and Gemini 2.5 Pro).
 
 In addition to the characteristics comparable to the virtual audit, the automated approach also evaluated a broader set of characteristics, including: curbs, streetlights, parked vehicles, yield signs, pedestrian signals, kiosks, bollards, median barriers, traffic signs, school zones, parking lanes, and BRT stations.
 
@@ -63,7 +63,9 @@ p_load(
   # Diagnostic performance / ROC
   pROC,
   # Tables and reporting
-  gt, kableExtra, patchwork
+  gt, kableExtra, patchwork,
+  # Label repulsion
+  ggrepel
 )
 ```
 
@@ -71,7 +73,8 @@ p_load(
 #| label: Database
 #| code-summary: Database
 
-df <- read_dta(here("streetview_predictions_2.5-flash v3.dta"))
+df_legacy_2_5_flash <- read_dta(here("streetview_predictions_dates_legacy_2.5-flash v3.dta"))
+df_legacy_2_5_pro <- read_dta(here("streetview_predictions_dates_legacy_2.5-pro v3.dta"))
 ```
 
 ## Results
@@ -81,12 +84,12 @@ Agreement levels ranged from poor to almost perfect. Almost perfect agreement wa
 ### Descriptive
 
 ```{r}
-#| label: Descriptive table
-#| code-summary: Descriptive table
+#| label: Descriptive table function
+#| code-summary: Descriptive table function
 #| warning: false
 #| message: false
-# Variables
 
+# Variables
 vars_base <- c(
   "swalk_pres_cat",
   "str_cwalk",
@@ -104,7 +107,6 @@ vars_base <- c(
   "trans_stop",
   "str_tcont2"
 )
-
 # Labels
 var_labels <- c(
   swalk_pres_cat = "Sidewalk",
@@ -123,29 +125,23 @@ var_labels <- c(
   trans_stop = "Bus stop",
   str_tcont2 = "Roundabout"
 )
-
 # Proportion
-calc_prop <- function(var, suffix) {
-  mean(df[[paste0(var, suffix)]], na.rm = TRUE)
+calc_prop <- function(data, var, suffix) {
+  mean(data[[paste0(var, suffix)]], na.rm = TRUE)
 }
-
 # Observed agreement
-calc_agreement <- function(var) {
-  x <- df[[paste0(var, "_0")]]
-  y <- df[[paste0(var, "_1")]]
+calc_agreement <- function(data, var) {
+  x <- data[[paste0(var, "_0")]]
+  y <- data[[paste0(var, "_1")]]
   mean(x == y, na.rm = TRUE)
 }
-
-# Robust kappa with correct CI extraction
-calc_kappa <- function(var) {
-  x <- df[[paste0(var, "_0")]]
-  y <- df[[paste0(var, "_1")]]
-
+# Kappa with CI
+calc_kappa <- function(data, var) {
+  x <- data[[paste0(var, "_0")]]
+  y <- data[[paste0(var, "_1")]]
   valid <- !is.na(x) & !is.na(y)
   x <- x[valid]
   y <- y[valid]
-
-  # No variability → kappa undefined
   if (length(unique(x)) < 2 | length(unique(y)) < 2) {
     return(c(kappa = NA, lwr = NA, upr = NA))
   }
@@ -157,31 +153,38 @@ calc_kappa <- function(var) {
     upr = unname(ci["upper"])
   )
 }
+# Function to build table
+build_table <- function(data) {
+  map_dfr(vars_base, function(v) {
+    k <- calc_kappa(data, v)
+    tibble(
+      variable = var_labels[v],
+      audit = calc_prop(data, v, "_0"),
+      gemini = calc_prop(data, v, "_1"),
+      agreement = calc_agreement(data, v),
+      kappa = k["kappa"],
+      kappa_lwr = k["lwr"],
+      kappa_upr = k["upr"]
+    )
+  }) %>%
+    mutate(
+      audit = audit * 100,
+      gemini = gemini * 100,
+      agreement = agreement * 100
+    )
+}
+# Create results
+table_legacy_2_5_flash <- build_table(df_legacy_2_5_flash)
+table_legacy_2_5_pro   <- build_table(df_legacy_2_5_pro)
+```
 
-# Build table
-final_table <- map_dfr(vars_base, function(v) {
-  k <- calc_kappa(v)
-  tibble(
-    variable = var_labels[v],
-    audit = calc_prop(v, "_0"),
-    gemini = calc_prop(v, "_1"),
-    agreement = calc_agreement(v),
-    kappa = k["kappa"],
-    kappa_lwr = k["lwr"],
-    kappa_upr = k["upr"]
-  )
-})
-
-# Convert to %
-final_table <- final_table %>%
-  mutate(
-    audit = audit * 100,
-    gemini = gemini * 100,
-    agreement = agreement * 100
-  )
-
-# Display
-final_table %>%
+```{r}
+#| label: Descriptive table legacy 2.5 flash
+#| code-summary: Descriptive table legacy 2.5 flash
+#| warning: false
+#| message: false
+# Flash table
+table_legacy_2_5_flash %>%
   gt() %>%
   fmt_number(columns = c(audit, gemini, agreement), decimals = 1) %>%
   fmt_number(columns = c(kappa, kappa_lwr, kappa_upr), decimals = 2) %>%
@@ -194,6 +197,36 @@ final_table %>%
     kappa_lwr = "Lower CI",
     kappa_upr = "Upper CI"
   ) %>%
+  tab_header(
+    title = "Gemini 2.5 Flash"
+  ) %>%
+  tab_source_note(
+    source_note = "Kappa was not estimated (NA) for variables with insufficient variability (i.e., when one or both raters had only one category)."
+  )
+```
+
+```{r}
+#| label: Descriptive table legacy 2.5 pro
+#| code-summary: Descriptive table legacy 2.5 pro
+#| warning: false
+#| message: false
+# Pro table
+table_legacy_2_5_pro  %>%
+  gt() %>%
+  fmt_number(columns = c(audit, gemini, agreement), decimals = 1) %>%
+  fmt_number(columns = c(kappa, kappa_lwr, kappa_upr), decimals = 2) %>%
+  cols_label(
+    variable = "Variable",
+    audit = "Audit (%)",
+    gemini = "Gemini (%)",
+    agreement = "Observed agreement (%)",
+    kappa = "Kappa",
+    kappa_lwr = "Lower CI",
+    kappa_upr = "Upper CI"
+  ) %>%
+  tab_header(
+    title = "Gemini 2.5 Pro"
+  ) %>%
   tab_source_note(
     source_note = "Kappa was not estimated (NA) for variables with insufficient variability (i.e., when one or both raters had only one category)."
   )
@@ -205,13 +238,19 @@ final_table %>%
 #| label: Kappa plot
 #| code-summary: Kappa plot
 #| fig-width: 12
-#| fig-height: 6
+#| fig-height: 7
 #| out-width: 100%
-
-plot <- final_table %>%
-  filter(!is.na(kappa)) %>%
+# Combine results from both models
+plot_data <- bind_rows(
+  table_legacy_2_5_flash %>%
+    mutate(model = "Gemini 2.5 Flash"),
+  table_legacy_2_5_pro %>%
+    mutate(model = "Gemini 2.5 Pro")
+) %>%
   mutate(
+    kappa_plot = ifelse(is.na(kappa), -0.35, kappa),
     lk_cat = case_when(
+      is.na(kappa) ~ "Not estimable",
       kappa < 0 ~ "Poor",
       kappa < 0.21 ~ "Slight",
       kappa < 0.41 ~ "Fair",
@@ -227,27 +266,68 @@ plot <- final_table %>%
         "Moderate",
         "Fair",
         "Slight",
-        "Poor"
+        "Poor",
+        "Not estimable"
       )
-    ),
-    variable = reorder(variable, kappa)
+    )
   )
-
-ggplot(plot, aes(x = kappa, y = variable, color = lk_cat)) +
-  geom_point(size = 3.5) +
-  geom_errorbarh(aes(xmin = kappa_lwr, xmax = kappa_upr), height = 0.2) +
-  scale_x_continuous(
-    limits = c(-0.4, 1),
-    breaks = seq(-0.4, 1, by = 0.2)
+# Order variables by mean kappa across models
+var_order <- plot_data %>%
+  group_by(variable) %>%
+  summarise(
+    mean_kappa = mean(kappa, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(mean_kappa) %>%
+  pull(variable)
+plot_data <- plot_data %>%
+  mutate(
+    variable = factor(variable, levels = var_order),
+    y = case_when(
+      model == "Gemini 2.5 Flash" ~ as.numeric(variable) - 0.20,
+      TRUE ~ as.numeric(variable) + 0.20
+    )
+  )
+ggplot(plot_data) +
+  geom_errorbarh(
+    data = filter(plot_data, !is.na(kappa)),
+    aes(
+      y = y,
+      xmin = kappa_lwr,
+      xmax = kappa_upr,
+      color = lk_cat
+    ),
+    height = 0,
+    linewidth = 0.8
+  ) +
+  geom_point(
+    aes(
+      x = kappa_plot,
+      y = y,
+      color = lk_cat,
+      shape = model
+    ),
+    size = 4
+  ) +
+  scale_y_continuous(
+    breaks = seq_along(var_order),
+    labels = var_order
+  ) +
+  scale_shape_manual(
+    values = c(
+      "Gemini 2.5 Flash" = 16,
+      "Gemini 2.5 Pro" = 17
+    )
   ) +
   scale_color_manual(
     values = c(
-      "Almost perfect" = "#1a9850",
-      "Substantial" = "#91cf60",
-      "Moderate" = "#d9ef8b",
-      "Fair" = "#fee08b",
-      "Slight" = "#fc8d59",
-      "Poor" = "#d73027"
+      "Almost perfect" = "#1B9E77",
+      "Substantial" = "#1F78B4",
+      "Moderate" = "#A6CEE3",
+      "Fair" = "#FFD92F",
+      "Slight" = "#FC8D62",
+      "Poor" = "#D73027",
+      "Not estimable" = "#7F7F7F"
     ),
     breaks = c(
       "Almost perfect",
@@ -255,15 +335,25 @@ ggplot(plot, aes(x = kappa, y = variable, color = lk_cat)) +
       "Moderate",
       "Fair",
       "Slight",
-      "Poor"
+      "Poor",
+      "Not estimable"
     )
   ) +
-  labs(
-    x = "\n Cohen's kappa (95% CI)",
-    y = "",
-    color = "Agreement level"
+  scale_x_continuous(
+    limits = c(-0.45, 1),
+    breaks = seq(-0.4, 1, by = 0.2)
   ) +
-  theme_minimal(base_size = 14)
+  labs(
+    x = "\nCohen's kappa (95% CI)",
+    y = "",
+    color = "Agreement level",
+    shape = "Model"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "right"
+  )
 ```
 
 ```{r}
@@ -272,66 +362,59 @@ ggplot(plot, aes(x = kappa, y = variable, color = lk_cat)) +
 #| fig-width: 12
 #| fig-height: 6
 #| out-width: 100%
-
-plot <- final_table %>%
-  filter(!is.na(kappa)) %>%
-  mutate(
-    lk_cat = case_when(
-      kappa < 0 ~ "Poor",
-      kappa < 0.21 ~ "Slight",
-      kappa < 0.41 ~ "Fair",
-      kappa < 0.61 ~ "Moderate",
-      kappa < 0.81 ~ "Substantial",
-      TRUE ~ "Almost perfect"
-    ),
-    lk_cat = factor(
-      lk_cat,
-      levels = c(
-        "Almost perfect",
-        "Substantial",
-        "Moderate",
-        "Fair",
-        "Slight",
-        "Poor"
-      )
-    )
+ggplot(
+  plot_data,
+  aes(
+    x = agreement,
+    y = kappa_plot
   )
-
-ggplot(plot, aes(x = agreement, y = kappa)) +
-  geom_point(aes(color = lk_cat), size = 3.5, alpha = 0.9) +
-  geom_text(aes(label = variable), hjust = -0.1, size = 4) +
-
+) +
+  geom_point(
+    aes(color = lk_cat),
+    size = 3.5,
+    alpha = 0.9
+  ) +
+  geom_text_repel(
+    aes(label = variable),
+    size = 3.5,
+    direction = "both",
+    box.padding = 0.5,
+    point.padding = 0.3,
+    force = 2,
+    max.overlaps = Inf,
+    segment.alpha = 0.5
+  ) +
+  facet_wrap(
+    ~model,
+    ncol = 2
+  ) +
   scale_color_manual(
     values = c(
-      "Almost perfect" = "#1a9850",
-      "Substantial" = "#91cf60",
-      "Moderate" = "#d9ef8b",
-      "Fair" = "#fee08b",
-      "Slight" = "#fc8d59",
-      "Poor" = "#d73027"
-    ),
-    breaks = c(
-      "Almost perfect",
-      "Substantial",
-      "Moderate",
-      "Fair",
-      "Slight",
-      "Poor"
+      "Almost perfect" = "#1B9E77",
+      "Substantial" = "#1F78B4",
+      "Moderate" = "#A6CEE3",
+      "Fair" = "#FFD92F",
+      "Slight" = "#FC8D62",
+      "Poor" = "#D73027",
+      "Not estimable" = "#7F7F7F"
     )
   ) +
-
+  coord_cartesian(
+    xlim = c(0, 100),
+    ylim = c(-0.45, 1),
+    clip = "off"
+  ) +
   labs(
-    x = "\n Observed agreement (%)",
-    y = "Cohen's kappa \n",
+    x = "\nObserved agreement (%)",
+    y = "Cohen's kappa\n",
     color = "Agreement level"
   ) +
-
-  coord_cartesian(clip = "off") +
-
   theme_minimal(base_size = 14) +
   theme(
+    panel.grid.minor = element_blank(),
     legend.position = "right",
-    plot.margin = margin(5.5, 80, 5.5, 5.5)
+    panel.spacing = unit(2, "cm"),
+    plot.margin = margin(10, 120, 10, 10)
   )
 ```
 
@@ -344,18 +427,12 @@ Positive predictive value (PPV), which indicates the probability that a feature 
 Similarly, F1-score, which summarizes the balance between sensitivity and positive predictive value, was higher for trees, sidewalks, and bus stops, intermediate for medians, traffic lights, pedestrian crossing signs, and crosswalks, and lower for the same lower-performing variables.
 
 ```{r}
-#| label: Diagnostic performance plots
-#| code-summary: Diagnostic performance plots
-#| warning: false
-#| message: false
-#| fig-width: 12
-#| fig-height: 12
-#| out-width: 100%
+#| label: Diagnostic performance data preparation
+#| code-summary: Diagnostic performance data preparation
 # Function to calculate all metrics
-
-calc_metrics <- function(var) {
-  ref <- df[[paste0(var, "_0")]]
-  test <- df[[paste0(var, "_1")]]
+calc_metrics <- function(data, var) {
+  ref <- data[[paste0(var, "_0")]]
+  test <- data[[paste0(var, "_1")]]
   valid <- !is.na(ref) & !is.na(test)
   ref <- ref[valid]
   test <- test[valid]
@@ -369,78 +446,142 @@ calc_metrics <- function(var) {
     specificity = ifelse((TN + FP) == 0, NA, TN / (TN + FP)),
     ppv = ifelse((TP + FP) == 0, NA, TP / (TP + FP)),
     npv = ifelse((TN + FN) == 0, NA, TN / (TN + FN)),
-    f1_score = ifelse((2 * TP + FP + FN) == 0, NA, 2 * TP / (2 * TP + FP + FN))
+    f1_score = ifelse(
+      (2 * TP + FP + FN) == 0,
+      NA,
+      2 * TP / (2 * TP + FP + FN)
+    )
   )
 }
+# Gemini 2.5 Flash
+metrics_flash <- map_dfr(
+  vars_base,
+  ~calc_metrics(df_legacy_2_5_flash, .x)
+) %>%
+  mutate(model = "Gemini 2.5 Flash")
+# Gemini 2.5 Pro
+metrics_pro <- map_dfr(
+  vars_base,
+  ~calc_metrics(df_legacy_2_5_pro, .x)
+) %>%
+  mutate(model = "Gemini 2.5 Pro")
+# Combined dataset
+metrics_long <- bind_rows(
+  metrics_flash,
+  metrics_pro
+) %>%
+  pivot_longer(
+    cols = c(
+      sensitivity,
+      specificity,
+      ppv,
+      npv,
+      f1_score
+    ),
+    names_to = "metric",
+    values_to = "value"
+  )
+# Plot function
+plot_metric <- function(metric_name, title_text) {
+  ggplot(
+    filter(metrics_long, metric == metric_name),
+    aes(
+      x = variable,
+      y = value,
+      fill = model
+    )
+  ) +
+    geom_col(
+      position = position_dodge(width = 0.8),
+      width = 0.7
+    ) +
+    scale_fill_manual(
+      values = c(
+        "Gemini 2.5 Flash" = "#1B9E77",
+        "Gemini 2.5 Pro" = "#1F78B4"
+      )
+    ) +
+    scale_y_continuous(
+      limits = c(0, 1),
+      breaks = seq(0, 1, 0.2)
+    ) +
+    labs(
+      title = title_text,
+      x = NULL,
+      y = "Value \n",
+      fill = NULL
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      panel.grid.minor = element_blank(),
+      legend.position = "bottom",
+      axis.text.x = element_text(
+        angle = 45,
+        hjust = 1,
+        vjust = 1
+      )
+    )
+}
+```
 
-# Build dataset
-metrics_results <- map_dfr(vars_base, calc_metrics)
+```{r}
+#| label: Sensitivity plot
+#| code-summary: Sensitivity plot
+#| fig-width: 16
+#| fig-height: 8
 
-# Shared colors
-metric_colors <- c(
-  "sensitivity" = "#1a9850",
-  "ppv" = "#1a9850",
-  "specificity" = "#fc8d59",
-  "npv" = "#fc8d59"
+plot_metric(
+  "sensitivity",
+  "Sensitivity"
 )
+```
 
-# Plot 1: Sensitivity + Specificity
-plot1_data <- metrics_results %>%
-  select(variable, sensitivity, specificity) %>%
-  pivot_longer(-variable, names_to = "metric", values_to = "value")
+```{r}
+#| label: Specificity plot
+#| code-summary: Specificity plot
+#| fig-width: 16
+#| fig-height: 8
 
-p1 <- ggplot(
-  plot1_data,
-  aes(x = value, y = reorder(variable, value), color = metric)
-) +
-  geom_point(size = 3) +
-  scale_color_manual(values = metric_colors) +
-  scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
-  labs(
-    title = "Sensitivity and Specificity",
-    x = "\n",
-    y = "",
-    color = ""
-  ) +
-  theme_minimal(base_size = 14)
+plot_metric(
+  "specificity",
+  "Specificity"
+)
+```
 
-# Plot 2: PPV + NPV
-plot2_data <- metrics_results %>%
-  select(variable, ppv, npv) %>%
-  pivot_longer(-variable, names_to = "metric", values_to = "value") %>%
-  mutate(metric = factor(metric, levels = c("ppv", "npv")))
+```{r}
+#| label: PPV plot
+#| code-summary: PPV plot
+#| fig-width: 16
+#| fig-height: 8
 
-p2 <- ggplot(
-  plot2_data,
-  aes(x = value, y = reorder(variable, value), color = metric)
-) +
-  geom_point(size = 3) +
-  scale_color_manual(values = metric_colors) +
-  scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
-  labs(
-    title = "PPV and NPV",
-    x = "\n",
-    y = "",
-    color = ""
-  ) +
-  theme_minimal(base_size = 14)
+plot_metric(
+  "ppv",
+  "Positive Predictive Value (PPV)"
+)
+```
 
-# Plot 3: F1-score
-p3 <- ggplot(
-  metrics_results,
-  aes(x = f1_score, y = reorder(variable, f1_score))
-) +
-  geom_point(size = 3, color = "#2C7FB8") +
-  scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
-  labs(
-    title = "F1-score",
-    x = "\nValue",
-    y = ""
-  ) +
-  theme_minimal(base_size = 14)
+```{r}
+#| label: NPV plot
+#| code-summary: NPV plot
+#| fig-width: 16
+#| fig-height: 8
 
-# Combine vertically
-p1 / p2 / p3
+plot_metric(
+  "npv",
+  "Negative Predictive Value (NPV)"
+)
+```
+
+```{r}
+#| label: F1-score plot
+#| code-summary: F1-score plot
+#| fig-width: 16
+#| fig-height: 8
+
+plot_metric(
+  "f1_score",
+  "F1-score"
+)
 ```
 
 ### ROC
@@ -449,7 +590,7 @@ Receiver operating characteristic (ROC) analyses, which evaluate discriminatory 
 
 ```{r}
 #| label: ROC panel
-#| code-summary: ROC panel
+#| code-summary: ROC panel comparing Gemini 2.5 Flash and Gemini 2.5 Pro
 #| warning: false
 #| message: false
 #| fig-width: 12
@@ -457,42 +598,93 @@ Receiver operating characteristic (ROC) analyses, which evaluate discriminatory 
 #| out-width: 100%
 
 # Function to calculate ROC object + AUC
-calc_roc_data <- function(var) {
-  ref <- df[[paste0(var, "_0")]]
-  pred <- df[[paste0(var, "_1")]]
+calc_roc_data <- function(data, var, model_name) {
+
+  ref <- data[[paste0(var, "_0")]]
+  pred <- data[[paste0(var, "_1")]]
+
   valid <- !is.na(ref) & !is.na(pred)
+
   ref <- ref[valid]
   pred <- pred[valid]
+
   if (length(unique(ref)) < 2) {
     return(NULL)
   }
-  roc_obj <- roc(ref, pred, quiet = TRUE)
-  coords_df <- tibble(
+
+  roc_obj <- roc(
+    ref,
+    pred,
+    quiet = TRUE
+  )
+
+  tibble(
     specificity = roc_obj$specificities,
     sensitivity = roc_obj$sensitivities
   ) %>%
     mutate(
       fpr = 1 - specificity,
       variable = var_labels[var],
-      auc = as.numeric(auc(roc_obj))
+      auc = as.numeric(auc(roc_obj)),
+      model = model_name
     )
-  coords_df
 }
 
-# Build dataset
-roc_panel <- map_dfr(vars_base, calc_roc_data)
+# Gemini 2.5 Flash
+roc_flash <- map_dfr(
+  vars_base,
+  ~ calc_roc_data(
+      df_legacy_2_5_flash,
+      .x,
+      "Gemini 2.5 Flash"
+    )
+)
+
+# Gemini 2.5 Pro
+roc_pro <- map_dfr(
+  vars_base,
+  ~ calc_roc_data(
+      df_legacy_2_5_pro,
+      .x,
+      "Gemini 2.5 Pro"
+    )
+)
+
+# Combined dataset
+roc_panel <- bind_rows(
+  roc_flash,
+  roc_pro
+)
 
 # Plot
-ggplot(roc_panel, aes(x = fpr, y = sensitivity)) +
-  geom_line(color = "#2C7FB8", linewidth = 1) +
+ggplot(
+  roc_panel,
+  aes(
+    x = fpr,
+    y = sensitivity,
+    color = model
+  )
+) +
+  geom_line(
+    linewidth = 1
+  ) +
   geom_abline(
     slope = 1,
     intercept = 0,
     linetype = 2,
     color = "gray60"
   ) +
-  facet_wrap(~variable, ncol = 4) +
+  facet_wrap(
+    ~variable,
+    ncol = 4
+  ) +
   coord_equal() +
+  scale_color_manual(
+    values = c(
+      "Gemini 2.5 Flash" = "#1f78b4",
+      "Gemini 2.5 Pro" = "#33a02c"
+    )
+  ) +
   scale_x_continuous(
     limits = c(0, 1),
     breaks = seq(0, 1, 0.5)
@@ -502,12 +694,14 @@ ggplot(roc_panel, aes(x = fpr, y = sensitivity)) +
     breaks = seq(0, 1, 0.5)
   ) +
   labs(
-    x = "\n False Positive Rate",
-    y = "True Positive Rate \n"
+    x = "\nFalse Positive Rate",
+    y = "True Positive Rate\n",
+    color = NULL
   ) +
   theme_minimal(base_size = 14) +
   theme(
-    panel.grid.minor = element_blank()
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom"
   )
 ```
 
@@ -519,29 +713,37 @@ In this step, discrepancies between human and AI assessments are examined for fe
 
 ```{r}
 #| label: Extract identifiers and create Street View tables with discrepancies
-#| code-summary: Extract identifiers and create Street View tables with discrepancies
+#| code-summary: Extract identifiers and create Street View tables with discrepancies for Gemini 2.5 Flash
 #| warning: false
 #| message: false
- 
-df <- df %>%
-  mutate(identificador = as.character(identificador))
+
+df_flash <- df_legacy_2_5_flash %>%
+  mutate(
+    identificador = as.character(identificador)
+  )
 
 # Function: capture both discrepancy types
 get_ids_discrepancy <- function(data, base_var) {
+
   var0 <- paste0(base_var, "_0")  # human
   var1 <- paste0(base_var, "_1")  # AI
-  
+
   data %>%
-    dplyr::filter(!is.na(.data[[var0]]),
-                  !is.na(.data[[var1]]),
-                  .data[[var0]] != .data[[var1]]) %>%
+    dplyr::filter(
+      !is.na(.data[[var0]]),
+      !is.na(.data[[var1]]),
+      .data[[var0]] != .data[[var1]]
+    ) %>%
     dplyr::mutate(
       discrepancy_type = dplyr::case_when(
         .data[[var0]] == 1 & .data[[var1]] == 0 ~ "human_1_ai_0",
         .data[[var0]] == 0 & .data[[var1]] == 1 ~ "human_0_ai_1"
       )
     ) %>%
-    dplyr::select(identificador, discrepancy_type) %>%
+    dplyr::select(
+      identificador,
+      discrepancy_type
+    ) %>%
     distinct()
 }
 
@@ -555,14 +757,19 @@ vars_to_use <- c(
 )
 
 # Apply function
-ids_list <- lapply(vars_to_use, function(v) {
-  get_ids_discrepancy(df, v)
-})
+ids_list <- lapply(
+  vars_to_use,
+  function(v) {
+    get_ids_discrepancy(df_flash, v)
+  }
+)
 
 names(ids_list) <- var_labels[vars_to_use]
 
 # Load coordinates
-coords <- read_excel("items_coordinates_belo_horizonte 5more.xlsx") %>%
+coords <- read_excel(
+  "items_coordinates_belo_horizonte 5more.xlsx"
+) %>%
   mutate(
     identificador = as.character(id),
     lat = as.numeric(lat),
@@ -575,16 +782,33 @@ views <- list()
 for (var_name in names(ids_list)) {
 
   df_view <- coords %>%
-    dplyr::inner_join(ids_list[[var_name]], by = "identificador") %>%
+    dplyr::inner_join(
+      ids_list[[var_name]],
+      by = "identificador"
+    ) %>%
     dplyr::mutate(
-      lat_lon = paste0(lat, ", ", lon),
+      lat_lon = paste0(
+        lat,
+        ", ",
+        lon
+      ),
       streetview_url = paste0(
         "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=",
-        lat, ",", lon
+        lat,
+        ",",
+        lon
       )
     ) %>%
-    dplyr::select(identificador, discrepancy_type, lat_lon, streetview_url) %>%
-    dplyr::arrange(discrepancy_type, as.numeric(identificador))
+    dplyr::select(
+      identificador,
+      discrepancy_type,
+      lat_lon,
+      streetview_url
+    ) %>%
+    dplyr::arrange(
+      discrepancy_type,
+      as.numeric(identificador)
+    )
 
   views[[var_name]] <- df_view
 }
