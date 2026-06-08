@@ -2,8 +2,9 @@
 *.xlsx
 *.dta
 *.png
+_freeze
+.quarto/
 \index_cache
 \index_files
 bepidl.py
-/.quarto/
 **/*.quarto_ipynb
