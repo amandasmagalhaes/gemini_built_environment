@@ -3,5 +3,4 @@
 *.dta
 *.png
 \index_cache
-\index_files
 bepidl.py
