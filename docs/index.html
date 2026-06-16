@@ -3705,7 +3705,7 @@ Friedman chi-squared = 4.6667, df = 2, p-value = 0.09697</code></pre>
 </section>
 <section id="review-spreadsheet" class="level2" data-number="7">
 <h2 data-number="7" class="anchored" data-anchor-id="review-spreadsheet"><span class="header-section-number">7</span> Review spreadsheet</h2>
-<p>The spreadsheet was created to support the qualitative review of segments containing at least two traffic-control features among crosswalks, speed bumps, traffic lights, stop signs, and pedestrian crossing signs. Each row represents a street segment identified by <code>identificador</code>, with the corresponding Street View image date (<code>data_imagens_1</code>) and geographic coordinates (<code>lat</code>, <code>lon</code>) used to facilitate manual inspection in Google Street View. The columns <code>audit_n</code> and <code>gemini_n</code> indicate the number of selected features identified by the field audit and by Gemini 3.1 Flash, respectively. The <code>source</code> column classifies segments according to whether at least two selected features were identified by both methods (<code>Both</code>), only by the audit (<code>Audit only</code>), or only by Gemini (<code>Gemini only</code>). For each traffic-control feature, separate columns report the audit classification (<code>*_audit</code>) and the Gemini classification (<code>*_gemini</code>), where a value of 1 indicates the presence of the feature and 0 indicates its absence. This structure enables direct comparison between human and AI classifications and facilitates the identification of segments with agreement, false positives, and false negatives during the qualitative assessment.</p>
+<p>The spreadsheet was created to support the qualitative review of street segments containing at least two traffic-control features among crosswalks, speed bumps, traffic lights, stop signs, and pedestrian crossing signs. Each row represents a street segment identified by <code>identificador</code>, together with the corresponding Street View image date (<code>data_imagens_1</code>) and the first and last coordinates of the segment (<code>first_coordinate</code> and <code>last_coordinate</code>), which facilitate manual inspection in Google Street View. The columns <code>audit_n</code> and <code>gemini_n</code> indicate the number of selected features identified by the field audit and by Gemini 3.1 Flash, respectively. The <code>source</code> column classifies segments according to whether at least two selected features were identified by both methods (<code>Both</code>), only by the audit (<code>Audit only</code>), or only by Gemini (<code>Gemini only</code>). For each traffic-control feature, separate columns report the audit classification (<code>*_audit</code>) and the Gemini classification (<code>*_gemini</code>), where a value of 1 indicates the presence of the feature and 0 indicates its absence. This structure enables direct comparison between human and AI classifications and facilitates the identification of agreement, false positives, and false negatives during the qualitative assessment.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Create spreadsheet with segments containing at least two selected traffic features</summary>
@@ -3852,15 +3852,14 @@ Friedman chi-squared = 4.6667, df = 2, p-value = 0.09697</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check number of segments</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>review_segments <span class="sc">%&gt;%</span></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_rows =</span> <span class="fu">n</span>(),</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_segments =</span> <span class="fu">n_distinct</span>(identificador)</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_segments =</span> <span class="fu">n_distinct</span>(identificador)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 2
-  n_rows n_segments
-   &lt;int&gt;      &lt;int&gt;
-1     43         43</code></pre>
+<pre><code># A tibble: 1 × 1
+  n_segments
+       &lt;int&gt;
+1         43</code></pre>
 </div>
 </div>
 </section>

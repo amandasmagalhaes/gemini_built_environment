@@ -1158,7 +1158,7 @@ The observed discrepancies are likely due to differences in how the measure was 
 
 ## Review spreadsheet
 
-The spreadsheet was created to support the qualitative review of segments containing at least two traffic-control features among crosswalks, speed bumps, traffic lights, stop signs, and pedestrian crossing signs. Each row represents a street segment identified by `identificador`, with the corresponding Street View image date (`data_imagens_1`) and geographic coordinates (`lat`, `lon`) used to facilitate manual inspection in Google Street View. The columns `audit_n` and `gemini_n` indicate the number of selected features identified by the field audit and by Gemini 3.1 Flash, respectively. The `source` column classifies segments according to whether at least two selected features were identified by both methods (`Both`), only by the audit (`Audit only`), or only by Gemini (`Gemini only`). For each traffic-control feature, separate columns report the audit classification (`*_audit`) and the Gemini classification (`*_gemini`), where a value of 1 indicates the presence of the feature and 0 indicates its absence. This structure enables direct comparison between human and AI classifications and facilitates the identification of segments with agreement, false positives, and false negatives during the qualitative assessment.
+The spreadsheet was created to support the qualitative review of street segments containing at least two traffic-control features among crosswalks, speed bumps, traffic lights, stop signs, and pedestrian crossing signs. Each row represents a street segment identified by `identificador`, together with the corresponding Street View image date (`data_imagens_1`) and the first and last coordinates of the segment (`first_coordinate` and `last_coordinate`), which facilitate manual inspection in Google Street View. The columns `audit_n` and `gemini_n` indicate the number of selected features identified by the field audit and by Gemini 3.1 Flash, respectively. The `source` column classifies segments according to whether at least two selected features were identified by both methods (`Both`), only by the audit (`Audit only`), or only by Gemini (`Gemini only`). For each traffic-control feature, separate columns report the audit classification (`*_audit`) and the Gemini classification (`*_gemini`), where a value of 1 indicates the presence of the feature and 0 indicates its absence. This structure enables direct comparison between human and AI classifications and facilitates the identification of agreement, false positives, and false negatives during the qualitative assessment.
 
 ```{r}
 #| label: Create review spreadsheet
@@ -1295,7 +1295,6 @@ review_segments %>%
 # Check number of segments
 review_segments %>%
   summarise(
-    n_rows = n(),
     n_segments = n_distinct(identificador)
   )
 ```
