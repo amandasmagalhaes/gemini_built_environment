@@ -21,7 +21,7 @@ A prompt-based approach was used to classify built environment characteristics u
 
 In addition to the characteristics comparable to the virtual audit, the automated approach also evaluated a broader set of characteristics, including: curbs, street lights, parked vehicles, yield signs, pedestrian signals, kiosks, bollards, median barriers, traffic signs, school zones, parking lanes, and BRT stations.
 
-However, for the present analyses, only characteristics comparable to the virtual audit were considered, resulting in a final sample of 60 street segments with complete data from both approaches.
+However, for the present analyses, only characteristics comparable to the virtual audit were considered.
 
 ## Statistical analysis
 
@@ -35,7 +35,6 @@ The automated assessment using Gemini was implemented in Python. Data management
 #| label: Packages
 #| code-summary: Packages
 rm(list = ls())
-
 library(pacman)
 p_load(
   # Data manipulation and wrangling
