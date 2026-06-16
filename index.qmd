@@ -45,6 +45,7 @@ p_load(
   # Data import
   haven,
   readxl,
+  writexl,
   # Descriptive statistics
   janitor,
   gtsummary,
@@ -87,9 +88,7 @@ prediction_datasets <- list(
 
 ## Results
 
-Agreement between the audit and the Gemini models ranged from slight to substantial. Gemini 2.5 Flash generally outperformed Gemini 2.5 Pro, yielding higher kappa values for most variables with estimable agreement. Substantial agreement was observed for median, traffic light, and bus stop in both models, although kappa values were consistently higher for Gemini 2.5 Flash. Moderate agreement was found for poor street condition (pothole), while fair agreement was observed for crosswalk, speed bumps, stop sign, lane markings, pedestrian crossing sign, and roundabout. Sidewalk obstruction showed slight agreement in Gemini 2.5 Flash and non-estimable kappa in Gemini 2.5 Pro.
-
-Kappa could not be estimated for sidewalk, bike lane, bus lane, and trees because of insufficient variability in ratings. Although observed agreement was generally high (>80% for most variables), kappa values were substantially lower for several characteristics, indicating that part of the agreement was attributable to chance and to the highly imbalanced prevalence of some features.
+Agreement between the audit and the Gemini models, measured using Cohen’s kappa (a statistic that quantifies agreement beyond what would be expected by chance), ranged from slight to substantial. Overall, Gemini 3.1 Flash showed the strongest agreement with the virtual audit, achieving the highest mean kappa (0.516) and the greatest number of variable-level wins (8 of 11). It performed particularly well for crosswalk, poor street condition, traffic light, bus stop, pedestrian crossing sign, and roundabout, whereas Gemini 2.5 Flash performed best for median and lane markings and Gemini 2.5 Pro for speed bumps. Kappa could not be estimated for sidewalk, bike lane, bus lane, and trees because of insufficient variability in ratings. Although observed agreement was generally high, kappa values were lower for several characteristics, suggesting that part of the agreement was attributable to chance and the imbalanced prevalence of some built-environment features. However, a Friedman test, which compares the overall performance of multiple related models across the same set of variables, did not detect statistically significant differences between models (χ² = 4.67, p = 0.097).
 
 ### Descriptive
 
@@ -674,13 +673,20 @@ kappa_table %>%
   )
 ```
 
+```{r}
+#| label: Friedman test
+#| code-summary: Friedman test
+
+friedman.test(
+  as.matrix(
+    kappa_wide_complete[, -1]
+  )
+)
+```
+
 ### Diagnostic performance
 
-Sensitivity and specificity, which reflect the ability to correctly identify the presence or absence of a characteristic using the field audit as the reference, were generally high for more visually distinctive features, including trees, sidewalks, traffic lights, roundabouts, medians, and bus stops. Both Gemini models achieved perfect or near-perfect sensitivity for sidewalks, trees, medians, and roundabouts, while specificity was particularly high for trees, traffic lights, speed bumps, and roundabouts. In contrast, lower sensitivity and/or specificity values were observed for speed bumps, stop signs, crosswalks, lane markings, and poor street condition (pothole), indicating greater difficulty in detecting or distinguishing these features consistently.
-
-Positive predictive value (PPV), which indicates the probability that a feature is truly present when classified as present, was highest for trees and sidewalks (PPV = 1.00), followed by lane markings, potholes, and bus stops. Lower PPV values were observed for roundabouts, crosswalks, pedestrian crossing signs, and traffic lights, suggesting a higher proportion of false-positive classifications for these characteristics. Negative predictive value (NPV), which indicates the probability that a feature is truly absent when classified as absent, was generally high across most variables, reaching 1.00 for trees, sidewalks, medians, and roundabouts. However, NPV was substantially lower for lane markings, stop signs, potholes, and sidewalk obstructions, particularly for Gemini 2.5 Pro.
-
-Similarly, F1-scores, which summarize the balance between sensitivity and PPV, were highest for trees and sidewalks (F1 = 1.00), followed by lane markings, potholes, medians, bus stops, traffic lights, and sidewalk obstructions. Lower F1-scores were observed for crosswalks, pedestrian crossing signs, stop signs, speed bumps, and roundabouts, reflecting the challenges in achieving both high detection rates and high classification precision for these features. Overall, performance was broadly similar between Gemini 2.5 Flash and Gemini 2.5 Pro, with Gemini 2.5 Flash showing slightly higher F1-scores for several variables, including medians, traffic lights, lane markings, bus stops, and stop signs.
+Sensitivity (the ability to correctly identify the presence of a feature), specificity (the ability to correctly identify its absence), positive predictive value (PPV; the probability that a detected feature is truly present), negative predictive value (NPV; the probability that a feature classified as absent is truly absent), and F1-score (a summary measure combining sensitivity and PPV) were generally high across models, particularly for visually distinctive characteristics such as sidewalks, trees, traffic lights, bus stops, and roundabouts. Gemini 3.1 Flash tended to achieve the best overall diagnostic performance, showing higher values for several characteristics including crosswalks, pedestrian crossing signs, traffic lights, stop signs, and roundabouts. Lower performance was observed for features that are more difficult to identify consistently, such as speed bumps, lane markings, stop signs, and sidewalk obstructions. Overall, these diagnostic metrics were consistent with the kappa results, indicating a modest advantage for Gemini 3.1 Flash, although performance varied according to the characteristic being evaluated.
 
 ```{r}
 #| label: Diagnostic performance data preparation
@@ -857,7 +863,7 @@ plot_metric(
 
 ### ROC
 
-Receiver operating characteristic (ROC) analyses, which evaluate discriminatory ability by comparing sensitivity with the false positive rate, generally supported the findings from the agreement and classification metrics. The highest discriminatory performance was observed for roundabouts, medians, traffic lights, bus stops, and pedestrian crossing signs. Crosswalks, lane markings, potholes, and stop signs showed moderate discrimination, while speed bumps and particularly sidewalk obstruction exhibited the weakest performance. Differences between Gemini 2.5 Flash and Gemini 2.5 Pro were generally small; Gemini 2.5 Flash showed slightly better discrimination for crosswalks, lane markings, stop signs, and potholes, whereas Gemini 2.5 Pro performed marginally better for speed bumps.
+Receiver operating characteristic (ROC) analyses, which evaluate a model's ability to distinguish between the presence and absence of a characteristic, were consistent with the agreement and diagnostic performance metrics. The highest discriminatory performance was observed for roundabouts, traffic lights, bus stops, medians, and pedestrian crossing signs, whereas speed bumps and sidewalk obstructions showed weaker performance. Overall, Gemini 3.1 Flash tended to achieve the best discrimination across characteristics, although differences between models were generally modest.
 
 ```{r}
 #| label: ROC panel
@@ -964,7 +970,7 @@ ggplot(
   )
 ```
 
-Overall, across agreement, classification, and discrimination metrics, Gemini 2.5 Flash generally performed slightly better than Gemini 2.5 Pro, although differences were modest. Both models achieved their best results for larger, permanent, and visually distinctive urban features, such as bus stops, medians, traffic lights, trees, and roundabouts. Performance was more variable for crosswalks, pedestrian crossing signs, stop signs, lane markings, potholes, and speed bumps, while sidewalk obstruction consistently showed the weakest results. These findings suggest that multimodal artificial intelligence may be a useful tool for automated urban audits of clearly visible built-environment characteristics, although caution is warranted when evaluating more ambiguous, context-dependent, or less visually salient street features.
+Overall, agreement, diagnostic performance, and ROC analyses consistently indicated that Gemini 3.1 Flash achieved the strongest performance, although differences between models were generally modest and not statistically significant. All models performed best for larger, permanent, and visually distinctive urban features, such as traffic lights, bus stops, medians, trees, and roundabouts, whereas performance was weaker for speed bumps, stop signs, lane markings, and particularly sidewalk obstructions. These findings suggest that multimodal large language models can support automated urban audits of clearly visible built-environment characteristics, although caution is warranted when assessing more ambiguous or context-dependent street features.
 
 ## Discrepancy analysis
 
@@ -1149,3 +1155,307 @@ The observed discrepancies are likely due to differences in how the measure was 
 “CANVAS Instructions: Indicate the presence of a crosswalk in the segment. Consider only crosswalks that are at the intersection closest to the green marker or in the midblock.”
 
 The observed discrepancies are likely due to differences in how the measure was applied, as we considered the crosswalk only at the starting point of the segment.
+
+## Review spreadsheet
+
+The spreadsheet was created to support the qualitative review of segments containing at least two traffic-control features among crosswalks, speed bumps, traffic lights, stop signs, and pedestrian crossing signs. Each row represents a street segment identified by `identificador`, with the corresponding Street View image date (`data_imagens_1`) and geographic coordinates (`lat`, `lon`) used to facilitate manual inspection in Google Street View. The columns `audit_n` and `gemini_n` indicate the number of selected features identified by the field audit and by Gemini 3.1 Flash, respectively. The `source` column classifies segments according to whether at least two selected features were identified by both methods (`Both`), only by the audit (`Audit only`), or only by Gemini (`Gemini only`). For each traffic-control feature, separate columns report the audit classification (`*_audit`) and the Gemini classification (`*_gemini`), where a value of 1 indicates the presence of the feature and 0 indicates its absence. This structure enables direct comparison between human and AI classifications and facilitates the identification of segments with agreement, false positives, and false negatives during the qualitative assessment.
+
+```{r}
+#| label: Create review spreadsheet
+#| code-summary: Create spreadsheet with segments containing at least two selected traffic features
+# Select Gemini 3.1 Flash dataset
+df_model <- prediction_datasets$legacy_3_1_flash %>%
+  mutate(
+    identificador = as.character(identificador)
+  )
+# Variables of interest
+vars_review <- c(
+  "str_cwalk",
+  "str_scont1",
+  "str_tcont3",
+  "str_tcont1",
+  "str_cstop_cat2"
+)
+# Create review dataset
+review_segments <- df_model %>%
+  mutate(
+    # Number of selected features present in audit
+    audit_n = rowSums(
+      across(
+        all_of(paste0(vars_review, "_0"))
+      ) == 1,
+      na.rm = TRUE
+    ),
+    # Number of selected features present in Gemini
+    gemini_n = rowSums(
+      across(
+        all_of(paste0(vars_review, "_1"))
+      ) == 1,
+      na.rm = TRUE
+    ),
+    # At least two selected features present
+    audit_present = audit_n >= 2,
+    gemini_present = gemini_n >= 2,
+    # Segment classification
+    source = case_when(
+      audit_present & gemini_present ~ "Both",
+      audit_present & !gemini_present ~ "Audit only",
+      !audit_present & gemini_present ~ "Gemini only",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(
+    !is.na(source)
+  ) %>%
+  select(
+    identificador,
+    data_imagens_1,
+    source,
+    audit_n,
+    gemini_n,
+    str_cwalk_0,
+    str_cwalk_1,
+    str_scont1_0,
+    str_scont1_1,
+    str_tcont3_0,
+    str_tcont3_1,
+    str_tcont1_0,
+    str_tcont1_1,
+    str_cstop_cat2_0,
+    str_cstop_cat2_1
+  )
+# Load first and last coordinates of each segment
+coords <- read_excel(
+  "virtual_audit/items_coordinates_belo_horizonte 5more.xlsx"
+) %>%
+  rename(
+    identificador = id
+  ) %>%
+  mutate(
+    identificador = as.character(identificador),
+    lat = as.numeric(lat),
+    lon = as.numeric(lon)
+  ) %>%
+  arrange(
+    identificador,
+    points
+  ) %>%
+  group_by(identificador) %>%
+  summarise(
+    first_coordinate = paste0(
+      first(lat),
+      ", ",
+      first(lon)
+    ),
+    last_coordinate = paste0(
+      last(lat),
+      ", ",
+      last(lon)
+    ),
+    .groups = "drop"
+  )
+# Add coordinates
+review_segments <- review_segments %>%
+  left_join(
+    coords,
+    by = "identificador"
+  ) %>%
+  relocate(
+    first_coordinate,
+    last_coordinate,
+    .after = source
+  )
+# Rename variables for readability
+review_segments <- review_segments %>%
+  rename(
+    crosswalk_audit = str_cwalk_0,
+    crosswalk_gemini = str_cwalk_1,
+    speed_bump_audit = str_scont1_0,
+    speed_bump_gemini = str_scont1_1,
+    traffic_light_audit = str_tcont3_0,
+    traffic_light_gemini = str_tcont3_1,
+    stop_sign_audit = str_tcont1_0,
+    stop_sign_gemini = str_tcont1_1,
+    crossing_sign_audit = str_cstop_cat2_0,
+    crossing_sign_gemini = str_cstop_cat2_1
+  ) %>%
+  arrange(
+    desc(audit_n + gemini_n),
+    source,
+    identificador
+  )
+# Save spreadsheet
+writexl::write_xlsx(
+  review_segments,
+  "review_segments_at_least_two_traffic_features.xlsx"
+)
+# Summary
+review_segments %>%
+  count(source)
+# Check number of segments
+review_segments %>%
+  summarise(
+    n_rows = n(),
+    n_segments = n_distinct(identificador)
+  )
+```
+
+## Within-segment variability analysis
+
+Within-segment consistency was generally high for bus lanes, roundabouts, bike lanes, speed bumps, and traffic lights, indicating stable classifications across points. In contrast, potholes, lane markings, sidewalks, and sidewalk obstruction showed the greatest variability, with mixed classifications observed in a substantial proportion of segments. Overall, these findings suggest that some built-environment features are consistently identified along street segments, whereas others vary according to the specific point captured in Street View imagery.
+
+```{r}
+#| label: Within-segment variability analysis
+#| code-summary: Within-segment variability analysis
+# Load Gemini 3.1 Flash point-level predictions
+df_points <- read_csv(
+  here(
+    "predictions",
+    "streetview_predictions_dates_legacy_3.1-flash.csv"
+  ),
+  show_col_types = FALSE
+)
+# Standardize column names
+names(df_points) <- tolower(names(df_points))
+# Keep valid observations and create segment identifier
+df_points <- df_points %>%
+  filter(
+    status == "ok"
+  ) %>%
+  mutate(
+    identificador = sub(
+      "_p.*$",
+      "",
+      id
+    )
+  )
+# Variables of interest
+vars <- c(
+  "sidewalks",
+  "crosswalks",
+  "speed_bumps",
+  "pothole",
+  "traffic_light",
+  "stop_sign",
+  "sidewalk_obstruction",
+  "bike_lane",
+  "trees",
+  "median",
+  "lane_markings",
+  "crossing_sign",
+  "bus_lane",
+  "bus_stop",
+  "roundabout"
+)
+# Variable labels
+var_labels <- c(
+  sidewalks = "Sidewalk",
+  crosswalks = "Crosswalk",
+  speed_bumps = "Speed bump",
+  pothole = "Poor street condition (pothole)",
+  traffic_light = "Traffic light",
+  stop_sign = "Stop sign",
+  sidewalk_obstruction = "Sidewalk obstruction",
+  bike_lane = "Bike lane",
+  trees = "Trees",
+  median = "Median",
+  lane_markings = "Lane markings",
+  crossing_sign = "Pedestrian crossing sign",
+  bus_lane = "Bus lane",
+  bus_stop = "Bus stop",
+  roundabout = "Roundabout"
+)
+# Classify each segment as always absent, always present, or mixed
+segment_patterns <- df_points %>%
+  group_by(identificador) %>%
+  summarise(
+    across(
+      all_of(vars),
+      ~ {
+        x <- .x[!is.na(.x)]
+        case_when(
+          length(x) == 0 ~ NA_character_,
+          all(x == 0) ~ "Always absent",
+          all(x == 1) ~ "Always present",
+          TRUE ~ "Mixed"
+        )
+      },
+      .names = "{.col}"
+    ),
+    .groups = "drop"
+  )
+# Create summary table
+consistency_table <- bind_rows(
+  lapply(vars, function(v) {
+    tab <- segment_patterns %>%
+      count(.data[[v]]) %>%
+      complete(
+        !!sym(v) := c(
+          "Always absent",
+          "Always present",
+          "Mixed"
+        ),
+        fill = list(n = 0)
+      )
+    total_segments <- sum(tab$n)
+    always_absent <-
+      100 * tab$n[tab[[v]] == "Always absent"] /
+      total_segments
+    always_present <-
+      100 * tab$n[tab[[v]] == "Always present"] /
+      total_segments
+    mixed <-
+      100 * tab$n[tab[[v]] == "Mixed"] /
+      total_segments
+    tibble(
+      Variable = var_labels[[v]],
+      `Consistent (%)` = always_absent + always_present,
+      `Always absent (%)` = always_absent,
+      `Always present (%)` = always_present,
+      `Mixed (%)` = mixed
+    )
+  })
+) %>%
+  arrange(
+    desc(`Mixed (%)`)
+  )
+# Display table
+consistency_table %>%
+  gt() %>%
+  cols_label(
+    Variable = "Characteristic",
+    `Consistent (%)` = "Consistent (%)",
+    `Always absent (%)` = "Always absent (%)",
+    `Always present (%)` = "Always present (%)",
+    `Mixed (%)` = "Mixed (%)"
+  ) %>%
+  fmt_number(
+    columns = c(
+      `Consistent (%)`,
+      `Always absent (%)`,
+      `Always present (%)`,
+      `Mixed (%)`
+    ),
+    decimals = 1
+  ) %>%
+  tab_header(
+    title = md(
+      "**Within-Segment Classification Patterns of Gemini 3.1 Flash**"
+    ),
+    subtitle = md(
+      "Percentage of segments with identical or varying classifications across points"
+    )
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = c(
+      `Consistent (%)`,
+      `Always absent (%)`,
+      `Always present (%)`,
+      `Mixed (%)`
+    )
+  ) %>%
+  cols_width(
+    Variable ~ px(300)
+  )
+```
