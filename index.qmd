@@ -11,15 +11,15 @@ To compare built environment characteristics collected through virtual audit and
 
 The ELSI-Urbe Virtual Audit subproject was conducted using a systematic observation method between April and October 2024, based on available Google Street View images. The audit was performed at the street-segment level, considering both sides of the street, and later aggregated into census tracts, which were defined as neighborhoods. The sampling process was carried out in stages, sequentially selecting municipalities (the most populous municipality participating in ELSI-Brazil from each federative unit, with 20 available), census tracts (with ELSI-Brazil interviews), and random street segments. Data collection was conducted by a single trained rater using a multidimensional instrument and a field manual.
 
-In the present analysis, we included only street segments from Belo Horizonte with at least five audited built environment characteristics available (n = 94 segments), namely: sidewalks, crosswalks, speed bumps, potholes, traffic lights, stop signs, sidewalk obstructions, bike lanes, trees, medians, lane markings, crossing signs, bus lanes, bus stops, and roundabouts.
+In the present analysis, we included only street segments from Belo Horizonte with at least five audited built environment characteristics available (n = 93 segments), namely: sidewalks, crosswalks, speed bumps, potholes, traffic lights, stop signs, sidewalk obstructions, bike lanes, trees, medians, lane markings, crossing signs, bus lanes, bus stops, and roundabouts.
 
 ## Gemini
 
 The same street segments and image dates included in the virtual audit were automatically processed using Google Street View images and a multimodal large language model (Gemini, Google) through a fully automated pipeline. For each coordinate, eight static images covering the full 360° view were selected within a 10-meter radius. These images were downloaded, preprocessed, and analyzed.
 
-A prompt-based approach was used to classify built environment characteristics under two classification schemes (binary and categorical) and with two multimodal large language models (Gemini 2.5 Flash and Gemini 2.5 Pro).
+A prompt-based approach was used to classify built environment characteristics under two classification schemes (binary and categorical) using four multimodal large language models: Gemini 2.5 Flash, Gemini 2.5 Pro, Gemini 3 Flash, and Gemini 3.1 Flash.
 
-In addition to the characteristics comparable to the virtual audit, the automated approach also evaluated a broader set of characteristics, including: curbs, streetlights, parked vehicles, yield signs, pedestrian signals, kiosks, bollards, median barriers, traffic signs, school zones, parking lanes, and BRT stations.
+In addition to the characteristics comparable to the virtual audit, the automated approach also evaluated a broader set of characteristics, including: curbs, street lights, parked vehicles, yield signs, pedestrian signals, kiosks, bollards, median barriers, traffic signs, school zones, parking lanes, and BRT stations.
 
 However, for the present analyses, only characteristics comparable to the virtual audit were considered, resulting in a final sample of 60 street segments with complete data from both approaches.
 
@@ -64,14 +64,26 @@ p_load(
 ```
 
 ```{r}
-#| label: Databases
-#| code-summary: Databases
-df_legacy_2_5_flash <- read_dta(here(
-  "streetview_predictions_dates_legacy_2.5-flash v3.dta"
-))
-df_legacy_2_5_pro <- read_dta(here(
-  "streetview_predictions_dates_legacy_2.5-pro v3.dta"
-))
+#| label: Load processed prediction datasets
+#| code-summary: Load processed prediction datasets
+prediction_datasets <- list(
+  legacy_2_5_flash = readRDS(here(
+    "predictions",
+    "streetview_predictions_dates_legacy_2.5-flash.rds"
+  )),
+  legacy_2_5_pro = readRDS(here(
+    "predictions",
+    "streetview_predictions_dates_legacy_2.5-pro.rds"
+  )),
+  #  legacy_3_flash = readRDS(here(
+  #    "predictions",
+  #    "streetview_predictions_dates_legacy_3-flash.rds"
+  #  )),
+  legacy_3_1_flash = readRDS(here(
+    "predictions",
+    "streetview_predictions_dates_legacy_3.1-flash.rds"
+  ))
+)
 ```
 
 ## Results
@@ -85,7 +97,7 @@ Kappa could not be estimated for sidewalk, bike lane, bus lane, and trees becaus
 ```{r}
 #| label: Descriptive table function
 #| code-summary: Descriptive table function
-# Variables
+# Define variables
 vars_base <- c(
   "swalk_pres_cat",
   "str_cwalk",
@@ -103,7 +115,8 @@ vars_base <- c(
   "trans_stop",
   "str_tcont2"
 )
-# Labels
+
+# Define variable labels
 var_labels <- c(
   swalk_pres_cat = "Sidewalk",
   str_cwalk = "Crosswalk",
@@ -121,17 +134,20 @@ var_labels <- c(
   trans_stop = "Bus stop",
   str_tcont2 = "Roundabout"
 )
-# Proportion
+
+# Calculate prevalence
 calc_prop <- function(data, var, suffix) {
   mean(data[[paste0(var, suffix)]], na.rm = TRUE)
 }
-# Observed agreement
+
+# Calculate observed agreement
 calc_agreement <- function(data, var) {
   x <- data[[paste0(var, "_0")]]
   y <- data[[paste0(var, "_1")]]
   mean(x == y, na.rm = TRUE)
 }
-# Kappa with CI
+
+# Calculate Cohen's kappa and confidence intervals
 calc_kappa <- function(data, var) {
   x <- data[[paste0(var, "_0")]]
   y <- data[[paste0(var, "_1")]]
@@ -139,7 +155,11 @@ calc_kappa <- function(data, var) {
   x <- x[valid]
   y <- y[valid]
   if (length(unique(x)) < 2 | length(unique(y)) < 2) {
-    return(c(kappa = NA, lwr = NA, upr = NA))
+    return(c(
+      kappa = NA,
+      lwr = NA,
+      upr = NA
+    ))
   }
   k <- psych::cohen.kappa(cbind(x, y))
   ci <- k$confid[1, ]
@@ -149,11 +169,12 @@ calc_kappa <- function(data, var) {
     upr = unname(ci["upper"])
   )
 }
-# Function to build table
+
+# Build descriptive agreement table
 build_table <- function(data) {
-  map_dfr(vars_base, function(v) {
+  purrr::map_dfr(vars_base, function(v) {
     k <- calc_kappa(data, v)
-    tibble(
+    tibble::tibble(
       variable = var_labels[v],
       audit = calc_prop(data, v, "_0"),
       gemini = calc_prop(data, v, "_1"),
@@ -163,65 +184,97 @@ build_table <- function(data) {
       kappa_upr = k["upr"]
     )
   }) %>%
-    mutate(
+    dplyr::mutate(
       audit = audit * 100,
       gemini = gemini * 100,
       agreement = agreement * 100
     )
 }
-# Create results
-table_legacy_2_5_flash <- build_table(df_legacy_2_5_flash)
-table_legacy_2_5_pro <- build_table(df_legacy_2_5_pro)
+
+# Create descriptive tables for all models
+tables <- purrr::map(
+  prediction_datasets,
+  build_table
+)
+
+# Format descriptive agreement tables
+format_gt_table <- function(data, title) {
+  data %>%
+    gt() %>%
+    fmt_number(
+      columns = c(audit, gemini, agreement),
+      decimals = 1
+    ) %>%
+    fmt_number(
+      columns = c(kappa, kappa_lwr, kappa_upr),
+      decimals = 2
+    ) %>%
+    cols_label(
+      variable = "Variable",
+      audit = "Audit (%)",
+      gemini = "Gemini (%)",
+      agreement = "Observed agreement (%)",
+      kappa = "Kappa",
+      kappa_lwr = "Lower CI",
+      kappa_upr = "Upper CI"
+    ) %>%
+    tab_header(
+      title = title
+    ) %>%
+    tab_source_note(
+      source_note = paste(
+        "Kappa was not estimated (NA) for variables with",
+        "insufficient variability (i.e., when one or both",
+        "raters had only one category)."
+      )
+    )
+}
+
+# Create formatted tables for all models
+gt_tables <- list(
+  "Gemini 2.5 Flash" = format_gt_table(
+    tables$legacy_2_5_flash,
+    "Gemini 2.5 Flash"
+  ),
+  "Gemini 2.5 Pro" = format_gt_table(
+    tables$legacy_2_5_pro,
+    "Gemini 2.5 Pro"
+  ),
+  #  "Gemini 3 Flash" =
+  #    format_gt_table(
+  #      tables$legacy_3_flash,
+  #      "Gemini 3 Flash"
+  #    ),
+  "Gemini 3.1 Flash" = format_gt_table(
+    tables$legacy_3_1_flash,
+    "Gemini 3.1 Flash"
+  )
+)
 ```
 
 ```{r}
-#| label: Descriptive table legacy 2.5 flash
-#| code-summary: Descriptive table legacy 2.5 flash
-# Flash table
-table_legacy_2_5_flash %>%
-  gt() %>%
-  fmt_number(columns = c(audit, gemini, agreement), decimals = 1) %>%
-  fmt_number(columns = c(kappa, kappa_lwr, kappa_upr), decimals = 2) %>%
-  cols_label(
-    variable = "Variable",
-    audit = "Audit (%)",
-    gemini = "Gemini (%)",
-    agreement = "Observed agreement (%)",
-    kappa = "Kappa",
-    kappa_lwr = "Lower CI",
-    kappa_upr = "Upper CI"
-  ) %>%
-  tab_header(
-    title = "Gemini 2.5 Flash"
-  ) %>%
-  tab_source_note(
-    source_note = "Kappa was not estimated (NA) for variables with insufficient variability (i.e., when one or both raters had only one category)."
-  )
+#| label: Gemini 2.5 Flash table
+#| code-summary: Gemini 2.5 Flash table
+gt_tables[["Gemini 2.5 Flash"]]
 ```
 
 ```{r}
-#| label: Descriptive table legacy 2.5 pro
-#| code-summary: Descriptive table legacy 2.5 pro
-# Pro table
-table_legacy_2_5_pro %>%
-  gt() %>%
-  fmt_number(columns = c(audit, gemini, agreement), decimals = 1) %>%
-  fmt_number(columns = c(kappa, kappa_lwr, kappa_upr), decimals = 2) %>%
-  cols_label(
-    variable = "Variable",
-    audit = "Audit (%)",
-    gemini = "Gemini (%)",
-    agreement = "Observed agreement (%)",
-    kappa = "Kappa",
-    kappa_lwr = "Lower CI",
-    kappa_upr = "Upper CI"
-  ) %>%
-  tab_header(
-    title = "Gemini 2.5 Pro"
-  ) %>%
-  tab_source_note(
-    source_note = "Kappa was not estimated (NA) for variables with insufficient variability (i.e., when one or both raters had only one category)."
-  )
+#| label: Gemini 2.5 Pro table
+#| code-summary: Gemini 2.5 Pro table
+gt_tables[["Gemini 2.5 Pro"]]
+```
+
+```{r}
+# #| label: Gemini 3 Flash table
+# #| code-summary: Gemini 3 Flash table
+
+# gt_tables[["Gemini 3 Flash"]]
+```
+
+```{r}
+#| label: Gemini 3.1 Flash table
+#| code-summary: Gemini 3.1 Flash table
+gt_tables[["Gemini 3.1 Flash"]]
 ```
 
 ### Kappa
@@ -231,15 +284,19 @@ table_legacy_2_5_pro %>%
 #| code-summary: Kappa plot
 #| fig-width: 12
 #| fig-height: 7
-#| out-width: 100%
-# Combine results from both models
-plot_data <- bind_rows(
-  table_legacy_2_5_flash %>%
-    mutate(model = "Gemini 2.5 Flash"),
-  table_legacy_2_5_pro %>%
-    mutate(model = "Gemini 2.5 Pro")
+# Combine descriptive tables from all models
+plot_data <- purrr::imap_dfr(
+  tables,
+  ~ dplyr::mutate(.x, model = .y)
 ) %>%
   mutate(
+    model = recode(
+      model,
+      legacy_2_5_flash = "Gemini 2.5 Flash",
+      legacy_2_5_pro = "Gemini 2.5 Pro",
+      legacy_3_flash = "Gemini 3 Flash",
+      legacy_3_1_flash = "Gemini 3.1 Flash"
+    ),
     kappa_plot = ifelse(is.na(kappa), -0.35, kappa),
     lk_cat = case_when(
       is.na(kappa) ~ "Not estimable",
@@ -272,14 +329,20 @@ var_order <- plot_data %>%
   ) %>%
   arrange(mean_kappa) %>%
   pull(variable)
+# Create vertical offsets for each model
+offsets <- c(
+  "Gemini 2.5 Flash" = -0.30,
+  "Gemini 2.5 Pro" = -0.10,
+  "Gemini 3 Flash" = 0.10,
+  "Gemini 3.1 Flash" = 0.30
+)
+# Prepare plotting coordinates
 plot_data <- plot_data %>%
   mutate(
     variable = factor(variable, levels = var_order),
-    y = case_when(
-      model == "Gemini 2.5 Flash" ~ as.numeric(variable) - 0.20,
-      TRUE ~ as.numeric(variable) + 0.20
-    )
+    y = as.numeric(variable) + offsets[model]
   )
+# Create kappa comparison plot
 ggplot(plot_data) +
   geom_errorbarh(
     data = filter(plot_data, !is.na(kappa)),
@@ -308,7 +371,9 @@ ggplot(plot_data) +
   scale_shape_manual(
     values = c(
       "Gemini 2.5 Flash" = 16,
-      "Gemini 2.5 Pro" = 17
+      "Gemini 2.5 Pro" = 17,
+      "Gemini 3 Flash" = 15,
+      "Gemini 3.1 Flash" = 18
     )
   ) +
   scale_color_manual(
@@ -350,10 +415,10 @@ ggplot(plot_data) +
 
 ```{r}
 #| label: Kappa and agreement plot
-#| code-summary: Kappa and agreement plot 
-#| fig-width: 12
-#| fig-height: 7
-#| out-width: 100%
+#| code-summary: Kappa and agreement plot
+#| fig-width: 14
+#| fig-height: 10
+# Create agreement versus kappa plot
 ggplot(
   plot_data,
   aes(
@@ -377,8 +442,7 @@ ggplot(
   ) +
   facet_wrap(
     ~model,
-    ncol = 2,
-    scales = "free"
+    ncol = 2
   ) +
   scale_color_manual(
     values = c(
@@ -408,7 +472,206 @@ ggplot(
     legend.position = "right",
     panel.spacing = unit(1, "cm"),
     plot.margin = margin(5, 20, 5, 5),
-    strip.text = element_text(size = 14, face = "bold")
+    strip.text = element_text(
+      size = 14,
+      face = "bold"
+    )
+  )
+```
+
+```{r}
+#| label: Friedman test data preparation
+#| code-summary: Friedman test data preparation
+# Create a long dataset with kappa values
+kappa_long <- purrr::imap_dfr(
+  tables,
+  ~ dplyr::transmute(
+    .x,
+    variable,
+    kappa,
+    model = .y
+  )
+) %>%
+  mutate(
+    model = recode(
+      model,
+      legacy_2_5_flash = "Gemini 2.5 Flash",
+      legacy_2_5_pro = "Gemini 2.5 Pro",
+      legacy_3_flash = "Gemini 3 Flash",
+      legacy_3_1_flash = "Gemini 3.1 Flash"
+    )
+  )
+# Keep variables with at least one estimable kappa
+kappa_long_analysis <- kappa_long %>%
+  group_by(variable) %>%
+  filter(any(!is.na(kappa))) %>%
+  ungroup()
+# Create a complete dataset for the Friedman test
+kappa_wide_complete <- kappa_long %>%
+  select(
+    variable,
+    model,
+    kappa
+  ) %>%
+  tidyr::pivot_wider(
+    names_from = model,
+    values_from = kappa
+  ) %>%
+  tidyr::drop_na()
+# Perform the Friedman test
+friedman_result <- friedman.test(
+  as.matrix(
+    kappa_wide_complete[, -1]
+  )
+)
+# Perform pairwise Wilcoxon signed-rank tests
+pairwise_results <- pairwise.wilcox.test(
+  x = kappa_long_analysis$kappa,
+  g = kappa_long_analysis$model,
+  paired = FALSE,
+  p.adjust.method = "holm"
+)
+# Summarize kappa performance by model
+kappa_summary <- kappa_long_analysis %>%
+  group_by(model) %>%
+  summarise(
+    mean_kappa = mean(kappa, na.rm = TRUE),
+    median_kappa = median(kappa, na.rm = TRUE),
+    min_kappa = min(kappa, na.rm = TRUE),
+    max_kappa = max(kappa, na.rm = TRUE),
+    n_variables = sum(!is.na(kappa)),
+    .groups = "drop"
+  ) %>%
+  arrange(
+    desc(mean_kappa)
+  )
+# Count the number of variables won by each model
+model_wins <- kappa_long_analysis %>%
+  filter(!is.na(kappa)) %>%
+  group_by(variable) %>%
+  slice_max(
+    kappa,
+    n = 1,
+    with_ties = FALSE
+  ) %>%
+  count(
+    model,
+    name = "wins"
+  ) %>%
+  arrange(
+    desc(wins)
+  )
+# Create a table of variables included in the Friedman test
+friedman_variables <- kappa_wide_complete %>%
+  select(variable) %>%
+  arrange(variable)
+```
+
+```{r}
+#| label: Kappa comparison table
+#| code-summary: Kappa comparison table
+# Create a wide kappa comparison table
+kappa_table <- kappa_long_analysis %>%
+  select(
+    variable,
+    model,
+    kappa
+  ) %>%
+  pivot_wider(
+    names_from = model,
+    values_from = kappa
+  ) %>%
+  mutate(
+    mean_kappa = rowMeans(
+      select(., -variable),
+      na.rm = TRUE
+    )
+  ) %>%
+  arrange(mean_kappa) %>%
+  select(-mean_kappa)
+# Calculate mean kappa for each model
+mean_row <- kappa_table %>%
+  summarise(
+    across(
+      -variable,
+      ~ mean(.x, na.rm = TRUE)
+    )
+  ) %>%
+  mutate(
+    variable = "Mean",
+    .before = 1
+  )
+# Calculate wins by model
+winner_vector <- apply(
+  kappa_table[, -1],
+  1,
+  function(x) {
+
+    x[is.na(x)] <- -Inf
+
+    names(x)[which.max(x)]
+
+  }
+)
+wins <- tibble(
+  winner = winner_vector
+) %>%
+  count(
+    winner,
+    name = "wins"
+  )
+# Create wins row
+wins_row <- tibble(
+  variable = "Wins"
+)
+for (model_name in names(kappa_table)[-1]) {
+
+  value <- wins %>%
+    filter(
+      winner == model_name
+    ) %>%
+    pull(wins)
+
+  wins_row[[model_name]] <- ifelse(
+    length(value) == 0,
+    0,
+    value
+  )
+
+}
+# Append summary rows
+kappa_table <- bind_rows(
+  kappa_table,
+  mean_row,
+  wins_row
+)
+# Display table
+kappa_table %>%
+  gt() %>%
+  fmt_number(
+    columns = -variable,
+    rows = variable != "Wins",
+    decimals = 3
+  ) %>%
+  fmt_number(
+    columns = -variable,
+    rows = variable == "Wins",
+    decimals = 0
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(
+      rows = variable %in% c(
+        "Mean",
+        "Wins"
+      )
+    )
+  ) %>%
+  cols_label(
+    variable = "Variable"
+  ) %>%
+  tab_header(
+    title = "Cohen's Kappa by Variable and Model"
   )
 ```
 
@@ -423,7 +686,7 @@ Similarly, F1-scores, which summarize the balance between sensitivity and PPV, w
 ```{r}
 #| label: Diagnostic performance data preparation
 #| code-summary: Diagnostic performance data preparation
-# Function to calculate all metrics
+# Calculate diagnostic performance metrics
 calc_metrics <- function(data, var) {
   ref <- data[[paste0(var, "_0")]]
   test <- data[[paste0(var, "_1")]]
@@ -436,10 +699,26 @@ calc_metrics <- function(data, var) {
   FN <- sum(ref == 1 & test == 0)
   tibble(
     variable = var_labels[var],
-    sensitivity = ifelse((TP + FN) == 0, NA, TP / (TP + FN)),
-    specificity = ifelse((TN + FP) == 0, NA, TN / (TN + FP)),
-    ppv = ifelse((TP + FP) == 0, NA, TP / (TP + FP)),
-    npv = ifelse((TN + FN) == 0, NA, TN / (TN + FN)),
+    sensitivity = ifelse(
+      (TP + FN) == 0,
+      NA,
+      TP / (TP + FN)
+    ),
+    specificity = ifelse(
+      (TN + FP) == 0,
+      NA,
+      TN / (TN + FP)
+    ),
+    ppv = ifelse(
+      (TP + FP) == 0,
+      NA,
+      TP / (TP + FP)
+    ),
+    npv = ifelse(
+      (TN + FN) == 0,
+      NA,
+      TN / (TN + FN)
+    ),
     f1_score = ifelse(
       (2 * TP + FP + FN) == 0,
       NA,
@@ -447,22 +726,24 @@ calc_metrics <- function(data, var) {
     )
   )
 }
-# Gemini 2.5 Flash
-metrics_flash <- map_dfr(
-  vars_base,
-  ~ calc_metrics(df_legacy_2_5_flash, .x)
-) %>%
-  mutate(model = "Gemini 2.5 Flash")
-# Gemini 2.5 Pro
-metrics_pro <- map_dfr(
-  vars_base,
-  ~ calc_metrics(df_legacy_2_5_pro, .x)
-) %>%
-  mutate(model = "Gemini 2.5 Pro")
-# Combined dataset
-metrics_long <- bind_rows(
-  metrics_flash,
-  metrics_pro
+# Calculate diagnostic performance metrics for all models
+metrics_long <- purrr::imap_dfr(
+  prediction_datasets,
+  function(data, model_name) {
+    purrr::map_dfr(
+      vars_base,
+      ~ calc_metrics(data, .x)
+    ) %>%
+      mutate(
+        model = recode(
+          model_name,
+          legacy_2_5_flash = "Gemini 2.5 Flash",
+          legacy_2_5_pro = "Gemini 2.5 Pro",
+          legacy_3_flash = "Gemini 3 Flash",
+          legacy_3_1_flash = "Gemini 3.1 Flash"
+        )
+      )
+  }
 ) %>%
   pivot_longer(
     cols = c(
@@ -475,7 +756,7 @@ metrics_long <- bind_rows(
     names_to = "metric",
     values_to = "value"
   )
-# Plot function
+# Create diagnostic performance plotting function
 plot_metric <- function(metric_name, title_text) {
   ggplot(
     filter(metrics_long, metric == metric_name),
@@ -492,7 +773,9 @@ plot_metric <- function(metric_name, title_text) {
     scale_fill_manual(
       values = c(
         "Gemini 2.5 Flash" = "#1B9E77",
-        "Gemini 2.5 Pro" = "#1F78B4"
+        "Gemini 2.5 Pro" = "#1F78B4",
+        "Gemini 3 Flash" = "#A6CEE3",
+        "Gemini 3.1 Flash" = "#6A3D9A"
       )
     ) +
     scale_y_continuous(
@@ -502,7 +785,7 @@ plot_metric <- function(metric_name, title_text) {
     labs(
       title = title_text,
       x = NULL,
-      y = "Value \n",
+      y = "Value\n",
       fill = NULL
     ) +
     theme_minimal(base_size = 14) +
@@ -521,8 +804,6 @@ plot_metric <- function(metric_name, title_text) {
 ```{r}
 #| label: Sensitivity plot
 #| code-summary: Sensitivity plot
-#| warning: false
-#| message: false
 #| fig-width: 16
 #| fig-height: 8
 plot_metric(
@@ -534,8 +815,6 @@ plot_metric(
 ```{r}
 #| label: Specificity plot
 #| code-summary: Specificity plot
-#| warning: false
-#| message: false
 #| fig-width: 16
 #| fig-height: 8
 plot_metric(
@@ -547,8 +826,6 @@ plot_metric(
 ```{r}
 #| label: PPV plot
 #| code-summary: PPV plot
-#| warning: false
-#| message: false
 #| fig-width: 16
 #| fig-height: 8
 plot_metric(
@@ -560,8 +837,6 @@ plot_metric(
 ```{r}
 #| label: NPV plot
 #| code-summary: NPV plot
-#| warning: false
-#| message: false
 #| fig-width: 16
 #| fig-height: 8
 plot_metric(
@@ -573,8 +848,6 @@ plot_metric(
 ```{r}
 #| label: F1-score plot
 #| code-summary: F1-score plot
-#| warning: false
-#| message: false
 #| fig-width: 16
 #| fig-height: 8
 plot_metric(
@@ -590,12 +863,9 @@ Receiver operating characteristic (ROC) analyses, which evaluate discriminatory 
 ```{r}
 #| label: ROC panel
 #| code-summary: ROC panel
-#| warning: false
-#| message: false
 #| fig-width: 12
 #| fig-height: 12
-#| out-width: 100%
-# Function to calculate ROC object + AUC
+# Calculate ROC curve data
 calc_roc_data <- function(data, var, model_name) {
   ref <- data[[paste0(var, "_0")]]
   pred <- data[[paste0(var, "_1")]]
@@ -605,7 +875,7 @@ calc_roc_data <- function(data, var, model_name) {
   if (length(unique(ref)) < 2) {
     return(NULL)
   }
-  roc_obj <- roc(
+  roc_obj <- pROC::roc(
     ref,
     pred,
     quiet = TRUE
@@ -617,34 +887,34 @@ calc_roc_data <- function(data, var, model_name) {
     mutate(
       fpr = 1 - specificity,
       variable = var_labels[var],
-      auc = as.numeric(auc(roc_obj)),
+      auc = as.numeric(
+        pROC::auc(roc_obj)
+      ),
       model = model_name
     )
 }
-# Gemini 2.5 Flash
-roc_flash <- map_dfr(
-  vars_base,
-  ~ calc_roc_data(
-    df_legacy_2_5_flash,
-    .x,
-    "Gemini 2.5 Flash"
-  )
+# Calculate ROC curves for all models
+roc_panel <- purrr::imap_dfr(
+  prediction_datasets,
+  function(data, model_name) {
+    model_label <- dplyr::recode(
+      model_name,
+      legacy_2_5_flash = "Gemini 2.5 Flash",
+      legacy_2_5_pro = "Gemini 2.5 Pro",
+      legacy_3_flash = "Gemini 3 Flash",
+      legacy_3_1_flash = "Gemini 3.1 Flash"
+    )
+    purrr::map_dfr(
+      vars_base,
+      ~ calc_roc_data(
+        data,
+        .x,
+        model_label
+      )
+    )
+  }
 )
-# Gemini 2.5 Pro
-roc_pro <- map_dfr(
-  vars_base,
-  ~ calc_roc_data(
-    df_legacy_2_5_pro,
-    .x,
-    "Gemini 2.5 Pro"
-  )
-)
-# Combined dataset
-roc_panel <- bind_rows(
-  roc_flash,
-  roc_pro
-)
-# Plot
+# Create ROC panel plot
 ggplot(
   roc_panel,
   aes(
@@ -670,7 +940,9 @@ ggplot(
   scale_color_manual(
     values = c(
       "Gemini 2.5 Flash" = "#1f78b4",
-      "Gemini 2.5 Pro" = "#33a02c"
+      "Gemini 2.5 Pro" = "#33a02c",
+      "Gemini 3 Flash" = "#ff7f00",
+      "Gemini 3.1 Flash" = "#6a3d9a"
     )
   ) +
   scale_x_continuous(
@@ -702,14 +974,15 @@ In this step, discrepancies between human and AI assessments are examined for fe
 ```{r}
 #| label: Extract identifiers and create Street View tables with discrepancies
 #| code-summary: Extract identifiers and create Street View tables with discrepancies
-df_flash <- df_legacy_2_5_flash %>%
+# Select Gemini 3.1 Flash dataset
+df_model <- prediction_datasets$legacy_3_1_flash %>%
   mutate(
     identificador = as.character(identificador)
   )
-# Function: capture both discrepancy types
+# Function to identify disagreement cases
 get_ids_discrepancy <- function(data, base_var) {
-  var0 <- paste0(base_var, "_0") # human
-  var1 <- paste0(base_var, "_1") # AI
+  var0 <- paste0(base_var, "_0") # Human audit
+  var1 <- paste0(base_var, "_1") # Gemini prediction
   data %>%
     dplyr::filter(
       !is.na(.data[[var0]]),
@@ -718,8 +991,10 @@ get_ids_discrepancy <- function(data, base_var) {
     ) %>%
     dplyr::mutate(
       discrepancy_type = dplyr::case_when(
-        .data[[var0]] == 1 & .data[[var1]] == 0 ~ "human_1_ai_0",
-        .data[[var0]] == 0 & .data[[var1]] == 1 ~ "human_0_ai_1"
+        .data[[var0]] == 1 &
+          .data[[var1]] == 0 ~ "human_1_ai_0",
+        .data[[var0]] == 0 &
+          .data[[var1]] == 1 ~ "human_0_ai_1"
       )
     ) %>%
     dplyr::select(
@@ -728,6 +1003,7 @@ get_ids_discrepancy <- function(data, base_var) {
     ) %>%
     distinct()
 }
+# Variables selected for qualitative review
 vars_to_use <- c(
   "swalk_cont_cat2",
   "str_lanevis_cat2",
@@ -736,24 +1012,27 @@ vars_to_use <- c(
   "str_tcont1",
   "str_cwalk"
 )
-# Apply function
+# Extract discrepant identifiers
 ids_list <- lapply(
   vars_to_use,
   function(v) {
-    get_ids_discrepancy(df_flash, v)
+    get_ids_discrepancy(
+      df_model,
+      v
+    )
   }
 )
 names(ids_list) <- var_labels[vars_to_use]
 # Load coordinates
 coords <- read_excel(
-  "items_coordinates_belo_horizonte 5more.xlsx"
+  "virtual_audit/items_coordinates_belo_horizonte 5more.xlsx"
 ) %>%
   mutate(
     identificador = as.character(id),
     lat = as.numeric(lat),
     lon = as.numeric(lon)
   )
-# Create final tables
+# Create Street View review tables
 views <- list()
 for (var_name in names(ids_list)) {
   df_view <- coords %>%
@@ -795,12 +1074,6 @@ Items marked as present by the AI but absent by human raters are likely due to o
 ```{r}
 #| echo: false
 #| results: asis
-View(views[["Sidewalk obstruction"]])
-```
-
-```{r}
-#| echo: false
-#| results: asis
 cat(
   '[![](31062001071_2.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.9353500964683,-43.9310052796472)<br>
   <span>human_0_ai_1</span><br><br>'
@@ -815,12 +1088,6 @@ cat(
 ### Lane markings 
 
 Are items marked as present by the AI but absent by human raters due to crosswalk markings or differences in pavement color? Conversely, cases marked as absent by the AI but present by human raters were likely due to the markings being clearly visible in the images.
-
-```{r}
-#| echo: false
-#| results: asis
-View(views[["Lane markings"]])
-```
 
 ```{r}
 #| echo: false
@@ -843,12 +1110,6 @@ We assessed “What is the apparent condition of the roadway?” and, for this a
 ```{r}
 #| echo: false
 #| results: asis
-View(views[["Poor street condition (pothole)"]])
-```
-
-```{r}
-#| echo: false
-#| results: asis
 cat(
   '[![](310620023101_10.png)](https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=-19.893311404363,-43.9940116495973)<br>
   <span>human_0_ai_1</span><br><br>'
@@ -863,12 +1124,6 @@ cat(
 ### Speed bumps
 
 The discrepancies observed were only cases in which the human rater identified the feature while the AI did not, likely due to differences in speed bump structures in Brazil.
-
-```{r}
-#| echo: false
-#| results: asis
-View(views[["Speed bumps"]])
-```
 
 ```{r}
 #| echo: false
@@ -889,12 +1144,6 @@ cat(
 “CANVAS Instructions: Indicate the presence of a device to direct or control traffic with regard to the intersection closest to the green marker. The traffic control device may be located outside the segment as long as it controls the green marker intersection—for example, a stop sign that controls entry into a one-way segment may be on the opposite side of the intersection as the segment but would still be indicated by this item.”
 
 The observed discrepancies are likely due to differences in how the measure was applied, as we considered the stop sign only at the starting point of the segment.
-
-```{r}
-#| echo: false
-#| results: asis
-View(views[["Stop sign"]])
-```
 
 ### Crosswalks
 
