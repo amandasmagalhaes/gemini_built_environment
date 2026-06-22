@@ -5,7 +5,7 @@ date: today
 
 ## Aim
 
-To compare built environment characteristics collected through virtual audit and automated assessment using Gemini in a subsample of street segments from Belo Horizonte.
+To compare built environment characteristics collected through virtual audit and automated assessment using Gemini in a subsample of street segments from Belo Horizonte, Brazil.
 
 ## Virtual audit
 
@@ -66,7 +66,7 @@ p_load(
 ```{r}
 #| label: Load processed prediction datasets
 #| code-summary: Load processed prediction datasets
-# Load legacy prediction datasets
+# Legacy datasets
 legacy_predictions <- list(
   flash_2_5 = readRDS(here(
     "predictions",
@@ -93,7 +93,7 @@ legacy_predictions <- list(
     "streetview_predictions_dates_legacy_3.5-flash.rds"
   ))
 )
-# Load canvas prediction datasets
+# Canvas datasets
 canvas_predictions <- list(
   flash_2_5 = readRDS(here(
     "predictions",
@@ -124,7 +124,7 @@ canvas_predictions <- list(
 
 ## Results
 
-Agreement between the audit and the Gemini models, measured using Cohen’s kappa (a statistic that quantifies agreement beyond what would be expected by chance), ranged from slight to substantial. Overall, Gemini 3.1 Flash showed the strongest agreement with the virtual audit, achieving the highest mean kappa (0.516) and the greatest number of variable-level wins (8 of 11). It performed particularly well for crosswalk, poor street condition, traffic light, bus stop, pedestrian crossing sign, and roundabout, whereas Gemini 2.5 Flash performed best for median and lane markings and Gemini 2.5 Pro for speed bumps. Kappa could not be estimated for sidewalk, bike lane, bus lane, and trees because of insufficient variability in ratings. Although observed agreement was generally high, kappa values were lower for several characteristics, suggesting that part of the agreement was attributable to chance and the imbalanced prevalence of some built-environment features. However, a Friedman test, which compares the overall performance of multiple related models across the same set of variables, did not detect statistically significant differences between models (χ² = 4.67, p = 0.097).
+Agreement between the audit and the Gemini models, measured using Cohen’s kappa (a statistic that quantifies agreement beyond what would be expected by chance), ranged from slight to substantial. Overall, Gemini 3.1 Flash showed the strongest agreement with the virtual audit, achieving the highest mean kappa (0.516) and the greatest number of variable-level wins (8 of 11). It performed particularly well for crosswalk, poor street condition, traffic light, bus stop, pedestrian crossing sign, and roundabout, whereas Gemini 2.5 Flash performed best for median and lane markings and Gemini 2.5 Pro for speed bumps. Kappa could not be estimated for sidewalk, bike lane, bus lane, and trees because of insufficient variability in ratings. Although observed agreement was generally high, kappa values were lower for several characteristics, suggesting that part of the agreement was attributable to chance and the imbalanced prevalence of some built-environment features.
 
 ### Legacy descriptive
 
@@ -285,20 +285,20 @@ gt_tables <- purrr::imap(
 ```
 
 ```{r}
-#| label: Gemini 2.5 Flash table
-#| code-summary: Gemini 2.5 Flash table
+#| label: Gemini 2.5 Flash legacy table
+#| code-summary: Gemini 2.5 Flash legacy table
 gt_tables$flash_2_5
 ```
 
 ```{r}
-#| label: Gemini 2.5 Pro table
-#| code-summary: Gemini 2.5 Pro table
+#| label: Gemini 2.5 Pro legacy table
+#| code-summary: Gemini 2.5 Pro legacy table
 gt_tables$pro_2_5
 ```
 
 ```{r}
-# #| label: Gemini 3 Flash table
-# #| code-summary: Gemini 3 Flash table
+#| label: Gemini 3 Flash legacy table
+#| code-summary: Gemini 3 Flash legacy table
 
 gt_tables$flash_3
 ```
@@ -319,6 +319,139 @@ gt_tables$pro_3_1
 #| label: Gemini 3.5 Flash legacy table
 #| code-summary: Gemini 3.5 Flash legacy table
 gt_tables$flash_3_5
+```
+
+```{r}
+#| label: Kappa comparison legacy table
+#| code-summary: Kappa comparison legacy table
+# Create long kappa dataset
+kappa_long_analysis <- purrr::imap_dfr(
+  tables,
+  function(df, model_name) {
+    df %>%
+      select(
+        variable,
+        kappa
+      ) %>%
+      mutate(
+        model = model_name
+      )
+  }
+)
+
+# Create wide kappa comparison table
+kappa_table <- kappa_long_analysis %>%
+  select(
+    variable,
+    model,
+    kappa
+  ) %>%
+  pivot_wider(
+    names_from = model,
+    values_from = kappa
+  ) %>%
+  mutate(
+    mean_kappa = rowMeans(
+      select(., -variable),
+      na.rm = TRUE
+    )
+  ) %>%
+  arrange(
+    desc(mean_kappa)
+  ) %>%
+  select(
+    -mean_kappa
+  )
+
+# Calculate mean kappa for each model
+mean_row <- kappa_table %>%
+  summarise(
+    across(
+      -variable,
+      ~ mean(.x, na.rm = TRUE)
+    )
+  ) %>%
+  mutate(
+    variable = "Mean",
+    .before = 1
+  )
+
+# Calculate wins by model
+winner_vector <- apply(
+  kappa_table[, -1],
+  1,
+  function(x) {
+    x[is.na(x)] <- -Inf
+    names(x)[which.max(x)]
+  }
+)
+wins <- tibble(
+  winner = winner_vector
+) %>%
+  count(
+    winner,
+    name = "wins"
+  )
+
+# Create wins row
+wins_row <- tibble(
+  variable = "Wins"
+)
+for (model_name in names(kappa_table)[-1]) {
+  value <- wins %>%
+    filter(
+      winner == model_name
+    ) %>%
+    pull(wins)
+  wins_row[[model_name]] <- ifelse(
+    length(value) == 0,
+    0,
+    value
+  )
+}
+
+# Append summary rows
+kappa_table <- bind_rows(
+  kappa_table,
+  mean_row,
+  wins_row
+)
+
+# Display table
+kappa_table %>%
+  gt() %>%
+  fmt_number(
+    columns = -variable,
+    rows = variable != "Wins",
+    decimals = 3
+  ) %>%
+  fmt_number(
+    columns = -variable,
+    rows = variable == "Wins",
+    decimals = 0
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(
+      rows = variable %in%
+        c(
+          "Mean",
+          "Wins"
+        )
+    )
+  ) %>%
+  cols_label(
+    variable = "Variable",
+    flash_2_5 = "2.5 Flash",
+    pro_2_5 = "2.5 Pro",
+    flash_3 = "3 Flash",
+    flash_3_1 = "3.1 Flash",
+    pro_3_1 = "3.1 Pro",
+    flash_3_5 = "3.5 Flash"
+  ) %>%
+  tab_header(
+    title = "Legacy: Cohen's Kappa by Variable and Model"
+  )
 ```
 
 ### Canvas descriptive
@@ -561,8 +694,8 @@ gt_tables_canvas$pro_2_5
 ```
 
 ```{r}
-# #| label: Gemini 3 Flash canvas table
-# #| code-summary: Gemini 3 Flash canvas table
+#| label: Gemini 3 Flash canvas table
+#| code-summary: Gemini 3 Flash canvas table
 
 gt_tables_canvas$flash_3
 ```
@@ -583,303 +716,6 @@ gt_tables_canvas$pro_3_1
 #| label: Gemini 3.5 Flash canvas table
 #| code-summary: Gemini 3.5 Flash canvas table
 gt_tables_canvas$flash_3_5
-```
-
-
-### Kappa
-
-```{r}
-#| label: Kappa and agreement plot
-#| code-summary: Kappa and agreement plot
-#| fig-width: 14
-#| fig-height: 10
-# Create plot data - Legacy
-plot_data_legacy <- purrr::imap_dfr(
-  tables,
-  function(df, model_name) {
-    df %>%
-      transmute(
-        variable,
-        agreement,
-        kappa,
-        model = model_name,
-        prompt_type = "Legacy"
-      )
-  }
-)
-
-# Create plot data - Canvas
-plot_data_canvas <- purrr::imap_dfr(
-  tables_canvas,
-  function(df, model_name) {
-    df %>%
-      filter(row_type == "variable") %>%
-      transmute(
-        variable,
-        agreement,
-        kappa,
-        model = model_name,
-        prompt_type = "Canvas"
-      )
-  }
-)
-
-# Combine datasets
-plot_data <- bind_rows(
-  plot_data_legacy,
-  plot_data_canvas
-)
-
-# Format variables
-plot_data <- plot_data %>%
-  mutate(
-    model = factor(
-      model,
-      levels = c(
-        "flash_2_5",
-        "pro_2_5",
-        "flash_3",
-        "flash_3_1",
-        "pro_3_1",
-        "flash_3_5"
-      ),
-      labels = c(
-        "2.5 Flash",
-        "2.5 Pro",
-        "3 Flash",
-        "3.1 Flash",
-        "3.1 Pro",
-        "3.5 Flash"
-      )
-    ),
-    prompt_type = factor(
-      prompt_type,
-      levels = c(
-        "Legacy",
-        "Canvas"
-      )
-    ),
-    kappa_plot = ifelse(
-      is.na(kappa),
-      -0.35,
-      kappa
-    ),
-    lk_cat = case_when(
-      is.na(kappa) ~ "Not estimable",
-      kappa < 0.00 ~ "Poor",
-      kappa < 0.20 ~ "Slight",
-      kappa < 0.40 ~ "Fair",
-      kappa < 0.60 ~ "Moderate",
-      kappa < 0.80 ~ "Substantial",
-      TRUE ~ "Almost perfect"
-    )
-  )
-
-# Agreement vs Kappa plot
-ggplot(
-  plot_data,
-  aes(
-    x = agreement,
-    y = kappa_plot
-  )
-) +
-  geom_point(
-    aes(color = lk_cat),
-    size = 3
-  ) +
-  geom_text_repel(
-    aes(label = variable),
-    size = 2.5,
-    box.padding = 0.20,
-    point.padding = 0.10,
-    force = 0.8,
-    max.overlaps = Inf,
-    segment.alpha = 0.3,
-    min.segment.length = 0
-  ) +
-  facet_grid(
-    rows = vars(model),
-    cols = vars(prompt_type),
-    scales = "fixed"
-  ) +
-  scale_color_manual(
-    values = c(
-      "Almost perfect" = "#1B9E77",
-      "Substantial" = "#1F78B4",
-      "Moderate" = "#A6CEE3",
-      "Fair" = "#FFD92F",
-      "Slight" = "#FC8D62",
-      "Poor" = "#D73027",
-      "Not estimable" = "#7F7F7F"
-    )
-  ) +
-  scale_x_continuous(
-    limits = c(50, 100),
-    expand = expansion(mult = c(0.01, 0.01))
-  ) +
-  scale_y_continuous(
-    limits = c(-0.45, 1.05),
-    expand = expansion(mult = c(0.01, 0.01))
-  ) +
-  labs(
-    x = "\nObserved agreement (%)",
-    y = "Cohen's kappa\n",
-    color = "Agreement level"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    panel.grid.minor = element_blank(),
-    legend.position = "right",
-    strip.text.x = element_text(
-      size = 14,
-      face = "bold"
-    ),
-    strip.text.y = element_text(
-      size = 12,
-      face = "bold"
-    ),
-    panel.spacing.x = unit(1.2, "cm"),
-    panel.spacing.y = unit(0.6, "cm"),
-    axis.title = element_text(
-      size = 14
-    ),
-    axis.text = element_text(
-      size = 10
-    )
-  )
-```
-
-```{r}
-#| label: Kappa comparison legacy table
-#| code-summary: Kappa comparison legacy table
-# Create long kappa dataset
-kappa_long_analysis <- purrr::imap_dfr(
-  tables,
-  function(df, model_name) {
-    df %>%
-      select(
-        variable,
-        kappa
-      ) %>%
-      mutate(
-        model = model_name
-      )
-  }
-)
-
-# Create wide kappa comparison table
-kappa_table <- kappa_long_analysis %>%
-  select(
-    variable,
-    model,
-    kappa
-  ) %>%
-  pivot_wider(
-    names_from = model,
-    values_from = kappa
-  ) %>%
-  mutate(
-    mean_kappa = rowMeans(
-      select(., -variable),
-      na.rm = TRUE
-    )
-  ) %>%
-  arrange(
-    desc(mean_kappa)
-  ) %>%
-  select(
-    -mean_kappa
-  )
-
-# Calculate mean kappa for each model
-mean_row <- kappa_table %>%
-  summarise(
-    across(
-      -variable,
-      ~ mean(.x, na.rm = TRUE)
-    )
-  ) %>%
-  mutate(
-    variable = "Mean",
-    .before = 1
-  )
-
-# Calculate wins by model
-winner_vector <- apply(
-  kappa_table[, -1],
-  1,
-  function(x) {
-    x[is.na(x)] <- -Inf
-    names(x)[which.max(x)]
-  }
-)
-wins <- tibble(
-  winner = winner_vector
-) %>%
-  count(
-    winner,
-    name = "wins"
-  )
-
-# Create wins row
-wins_row <- tibble(
-  variable = "Wins"
-)
-for (model_name in names(kappa_table)[-1]) {
-  value <- wins %>%
-    filter(
-      winner == model_name
-    ) %>%
-    pull(wins)
-  wins_row[[model_name]] <- ifelse(
-    length(value) == 0,
-    0,
-    value
-  )
-}
-
-# Append summary rows
-kappa_table <- bind_rows(
-  kappa_table,
-  mean_row,
-  wins_row
-)
-
-# Display table
-kappa_table %>%
-  gt() %>%
-  fmt_number(
-    columns = -variable,
-    rows = variable != "Wins",
-    decimals = 3
-  ) %>%
-  fmt_number(
-    columns = -variable,
-    rows = variable == "Wins",
-    decimals = 0
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(
-      rows = variable %in%
-        c(
-          "Mean",
-          "Wins"
-        )
-    )
-  ) %>%
-  cols_label(
-    variable = "Variable",
-    flash_2_5 = "2.5 Flash",
-    pro_2_5 = "2.5 Pro",
-    flash_3 = "3 Flash",
-    flash_3_1 = "3.1 Flash",
-    pro_3_1 = "3.1 Pro",
-    flash_3_5 = "3.5 Flash"
-  ) %>%
-  tab_header(
-    title = "Legacy: Cohen's Kappa by Variable and Model"
-  )
 ```
 
 ```{r}
@@ -1412,7 +1248,6 @@ ggplot(
 ```
 
 Overall, agreement, diagnostic performance, and ROC analyses consistently indicated that Gemini 3.1 Flash achieved the strongest performance, although differences between models were generally modest and not statistically significant. All models performed best for larger, permanent, and visually distinctive urban features, such as traffic lights, bus stops, medians, trees, and roundabouts, whereas performance was weaker for speed bumps, stop signs, lane markings, and particularly sidewalk obstructions. These findings suggest that multimodal large language models can support automated urban audits of clearly visible built-environment characteristics, although caution is warranted when assessing more ambiguous or context-dependent street features.
-
 
 ## Within-segment variability analysis
 
