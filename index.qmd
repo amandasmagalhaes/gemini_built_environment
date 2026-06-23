@@ -1626,11 +1626,69 @@ The spreadsheet was created to support the qualitative review of street segments
 ```{r}
 #| label: Create review spreadsheet
 #| code-summary: Create spreadsheet with segments containing at least two selected traffic features
-# Select Gemini 3.1 Flash dataset
-df_model <- legacy_predictions$flash_3_1 %>%
+
+# Load Gemini 3.1 Flash point-level predictions
+df_points <- read_csv(
+  here(
+    "predictions",
+    "streetview_predictions_dates_legacy_3.1-flash.csv"
+  ),
+  show_col_types = FALSE
+)
+
+# Standardize column names
+names(df_points) <- tolower(names(df_points))
+
+# Keep valid observations and extract point number
+df_points <- df_points %>%
+  filter(
+    status == "ok"
+  ) %>%
+  rename(
+    identificador_raw = id,
+    data_imagens_1 = pano_date,
+    str_cwalk_1 = crosswalks,
+    str_scont1_1 = speed_bumps,
+    str_tcont3_1 = traffic_light,
+    str_tcont1_1 = stop_sign,
+    str_cstop_cat2_1 = crossing_sign
+  ) %>%
+  mutate(
+    point = as.numeric(
+      str_extract(
+        identificador_raw,
+        "(?<=_p)\\d+$"
+      )
+    ),
+    identificador = sub(
+      "_p.*$",
+      "",
+      identificador_raw
+    )
+  ) %>%
+  select(
+    identificador,
+    point,
+    data_imagens_1,
+    str_cwalk_1,
+    str_scont1_1,
+    str_tcont3_1,
+    str_tcont1_1,
+    str_cstop_cat2_1
+  ) %>%
   mutate(
     identificador = as.character(identificador)
   )
+
+# Audit data at segment level
+base_principal <- read_dta(
+  "virtual_audit/Auditoria Virtual Amostra Total - Belo Horizonte v2.dta"
+)
+df_audit <- base_principal %>%
+  mutate(
+    identificador = as.character(identificador)
+  )
+
 # Variables of interest
 vars_review <- c(
   "str_cwalk",
@@ -1639,45 +1697,49 @@ vars_review <- c(
   "str_tcont1",
   "str_cstop_cat2"
 )
-# Create review dataset
-review_segments <- df_model %>%
+
+# Select segments with at least two traffic features in the audit
+segments_selected <- df_audit %>%
   mutate(
-    # Number of selected features present in audit
     audit_n = rowSums(
       across(
-        all_of(paste0(vars_review, "_0"))
-      ) ==
-        1,
+        all_of(
+          paste0(
+            vars_review,
+            "_0"
+          )
+        )
+      ) == 1,
       na.rm = TRUE
-    ),
-    # Number of selected features present in Gemini
-    gemini_n = rowSums(
-      across(
-        all_of(paste0(vars_review, "_1"))
-      ) ==
-        1,
-      na.rm = TRUE
-    ),
-    # At least two selected features present
-    audit_present = audit_n >= 2,
-    gemini_present = gemini_n >= 2,
-    # Segment classification
-    source = case_when(
-      audit_present & gemini_present ~ "Both",
-      audit_present & !gemini_present ~ "Audit only",
-      !audit_present & gemini_present ~ "Gemini only",
-      TRUE ~ NA_character_
     )
   ) %>%
   filter(
-    !is.na(source)
+    audit_n >= 2
   ) %>%
   select(
     identificador,
-    data_imagens_1,
-    source,
     audit_n,
-    gemini_n,
+    str_cwalk_0,
+    str_scont1_0,
+    str_tcont3_0,
+    str_tcont1_0,
+    str_cstop_cat2_0
+  )
+
+# Keep all Gemini points belonging to selected segments
+review_segments <- segments_selected %>%
+  left_join(
+    df_points,
+    by = "identificador"
+  ) %>%
+  filter(
+    !is.na(point)
+  ) %>%
+  select(
+    identificador,
+    point,
+    data_imagens_1,
+    audit_n,
     str_cwalk_0,
     str_cwalk_1,
     str_scont1_0,
@@ -1689,6 +1751,7 @@ review_segments <- df_model %>%
     str_cstop_cat2_0,
     str_cstop_cat2_1
   )
+
 # Load first and last coordinates of each segment
 coords <- read_excel(
   "virtual_audit/items_coordinates_belo_horizonte 5more.xlsx"
@@ -1697,7 +1760,9 @@ coords <- read_excel(
     identificador = id
   ) %>%
   mutate(
-    identificador = as.character(identificador),
+    identificador = as.character(
+      identificador
+    ),
     lat = as.numeric(lat),
     lon = as.numeric(lon)
   ) %>%
@@ -1705,7 +1770,9 @@ coords <- read_excel(
     identificador,
     points
   ) %>%
-  group_by(identificador) %>%
+  group_by(
+    identificador
+  ) %>%
   summarise(
     first_coordinate = paste0(
       first(lat),
@@ -1719,6 +1786,7 @@ coords <- read_excel(
     ),
     .groups = "drop"
   )
+
 # Add coordinates
 review_segments <- review_segments %>%
   left_join(
@@ -1728,8 +1796,9 @@ review_segments <- review_segments %>%
   relocate(
     first_coordinate,
     last_coordinate,
-    .after = source
+    .after = point
   )
+
 # Rename variables for readability
 review_segments <- review_segments %>%
   rename(
@@ -1745,21 +1814,28 @@ review_segments <- review_segments %>%
     crossing_sign_gemini = str_cstop_cat2_1
   ) %>%
   arrange(
-    desc(audit_n + gemini_n),
-    source,
-    identificador
+    desc(audit_n),
+    identificador,
+    point
   )
+
 # Save spreadsheet
 writexl::write_xlsx(
   review_segments,
   "review_segments_at_least_two_traffic_features.xlsx"
 )
-# Summary
-review_segments %>%
-  count(source)
-# Check number of segments
+
+# Number of segments
 review_segments %>%
   summarise(
-    n_segments = n_distinct(identificador)
+    n_segments = n_distinct(
+      identificador
+    )
+  )
+
+# Number of points
+review_segments %>%
+  summarise(
+    n_points = n()
   )
 ```
