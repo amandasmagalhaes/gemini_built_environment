@@ -128,9 +128,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">5</span> Results</a>
   <ul class="collapse">
   <li><a href="#legacy-descriptive" id="toc-legacy-descriptive" class="nav-link" data-scroll-target="#legacy-descriptive"><span class="header-section-number">5.1</span> Legacy descriptive</a></li>
-  <li><a href="#canvas-descriptive" id="toc-canvas-descriptive" class="nav-link" data-scroll-target="#canvas-descriptive"><span class="header-section-number">5.2</span> Canvas descriptive</a></li>
-  <li><a href="#diagnostic-performance" id="toc-diagnostic-performance" class="nav-link" data-scroll-target="#diagnostic-performance"><span class="header-section-number">5.3</span> Diagnostic performance</a></li>
-  <li><a href="#roc" id="toc-roc" class="nav-link" data-scroll-target="#roc"><span class="header-section-number">5.4</span> ROC</a></li>
+  <li><a href="#kappa-comparison-legacy-table" id="toc-kappa-comparison-legacy-table" class="nav-link" data-scroll-target="#kappa-comparison-legacy-table"><span class="header-section-number">5.2</span> Kappa comparison legacy table</a></li>
+  <li><a href="#canvas-descriptive" id="toc-canvas-descriptive" class="nav-link" data-scroll-target="#canvas-descriptive"><span class="header-section-number">5.3</span> Canvas descriptive</a></li>
+  <li><a href="#kappa-comparison-canvas-table" id="toc-kappa-comparison-canvas-table" class="nav-link" data-scroll-target="#kappa-comparison-canvas-table"><span class="header-section-number">5.4</span> Kappa comparison canvas table</a></li>
+  <li><a href="#diagnostic-performance" id="toc-diagnostic-performance" class="nav-link" data-scroll-target="#diagnostic-performance"><span class="header-section-number">5.5</span> Diagnostic performance</a></li>
+  <li><a href="#roc" id="toc-roc" class="nav-link" data-scroll-target="#roc"><span class="header-section-number">5.6</span> ROC</a></li>
   </ul></li>
   <li><a href="#within-segment-variability-analysis" id="toc-within-segment-variability-analysis" class="nav-link" data-scroll-target="#within-segment-variability-analysis"><span class="header-section-number">6</span> Within-segment variability analysis</a></li>
   <li><a href="#discrepancy-analysis" id="toc-discrepancy-analysis" class="nav-link" data-scroll-target="#discrepancy-analysis"><span class="header-section-number">7</span> Discrepancy analysis</a>
@@ -4160,8 +4162,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<section id="kappa-comparison-legacy-table" class="level4" data-number="5.1.1">
-<h4 data-number="5.1.1" class="anchored" data-anchor-id="kappa-comparison-legacy-table"><span class="header-section-number">5.1.1</span> Kappa comparison legacy table</h4>
+</section>
+<section id="kappa-comparison-legacy-table" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="kappa-comparison-legacy-table"><span class="header-section-number">5.2</span> Kappa comparison legacy table</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Kappa comparison legacy table</summary>
@@ -4921,9 +4924,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-</section>
-<section id="canvas-descriptive" class="level3" data-number="5.2">
-<h3 data-number="5.2" class="anchored" data-anchor-id="canvas-descriptive"><span class="header-section-number">5.2</span> Canvas descriptive</h3>
+<section id="canvas-descriptive" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="canvas-descriptive"><span class="header-section-number">5.3</span> Canvas descriptive</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Descriptive canvas table function</summary>
@@ -5185,8 +5187,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#gt_tables_canvas$flash_3_5</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<section id="kappa-comparison-canvas-table" class="level4" data-number="5.2.1">
-<h4 data-number="5.2.1" class="anchored" data-anchor-id="kappa-comparison-canvas-table"><span class="header-section-number">5.2.1</span> Kappa comparison canvas table</h4>
+</section>
+<section id="kappa-comparison-canvas-table" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="kappa-comparison-canvas-table"><span class="header-section-number">5.4</span> Kappa comparison canvas table</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Kappa comparison canvas table</summary>
@@ -6318,9 +6321,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-</section>
-<section id="diagnostic-performance" class="level3" data-number="5.3">
-<h3 data-number="5.3" class="anchored" data-anchor-id="diagnostic-performance"><span class="header-section-number">5.3</span> Diagnostic performance</h3>
+<section id="diagnostic-performance" class="level3" data-number="5.5">
+<h3 data-number="5.5" class="anchored" data-anchor-id="diagnostic-performance"><span class="header-section-number">5.5</span> Diagnostic performance</h3>
 <p>Sensitivity (the ability to correctly identify the presence of a feature), specificity (the ability to correctly identify its absence), positive predictive value (PPV; the probability that a detected feature is truly present), negative predictive value (NPV; the probability that a feature classified as absent is truly absent), and F1-score (a summary measure combining sensitivity and PPV) were generally high across models, particularly for visually distinctive characteristics such as sidewalks, trees, traffic lights, bus stops, and roundabouts. Gemini 3.1 Flash tended to achieve the best overall diagnostic performance, showing higher values for several characteristics including crosswalks, pedestrian crossing signs, traffic lights, stop signs, and roundabouts. Lower performance was observed for features that are more difficult to identify consistently, such as speed bumps, lane markings, stop signs, and sidewalk obstructions. Overall, these diagnostic metrics were consistent with the kappa results, indicating a modest advantage for Gemini 3.1 Flash, although performance varied according to the characteristic being evaluated.</p>
 <div class="cell">
 <details class="code-fold">
@@ -6574,8 +6576,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="roc" class="level3" data-number="5.4">
-<h3 data-number="5.4" class="anchored" data-anchor-id="roc"><span class="header-section-number">5.4</span> ROC</h3>
+<section id="roc" class="level3" data-number="5.6">
+<h3 data-number="5.6" class="anchored" data-anchor-id="roc"><span class="header-section-number">5.6</span> ROC</h3>
 <p>Receiver operating characteristic (ROC) analyses, which evaluate a model’s ability to distinguish between the presence and absence of a characteristic, were consistent with the agreement and diagnostic performance metrics. The highest discriminatory performance was observed for roundabouts, traffic lights, bus stops, medians, and pedestrian crossing signs, whereas speed bumps and sidewalk obstructions showed weaker performance. Overall, Gemini 3.1 Flash tended to achieve the best discrimination across characteristics, although differences between models were generally modest.</p>
 <div class="cell">
 <details class="code-fold">

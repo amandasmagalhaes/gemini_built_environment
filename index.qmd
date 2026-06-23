@@ -124,7 +124,7 @@ canvas_predictions <- list(
 
 ## Results
 
-Agreement between the audit and the Gemini models, measured using Cohen’s kappa (a statistic that quantifies agreement beyond what would be expected by chance), ranged from slight to substantial. Overall, Gemini 3.1 Flash showed the strongest agreement with the virtual audit, achieving the highest mean kappa (0.516) and the greatest number of variable-level wins (8 of 11). It performed particularly well for crosswalk, poor street condition, traffic light, bus stop, pedestrian crossing sign, and roundabout, whereas Gemini 2.5 Flash performed best for median and lane markings and Gemini 2.5 Pro for speed bumps. Kappa could not be estimated for sidewalk, bike lane, bus lane, and trees because of insufficient variability in ratings. Although observed agreement was generally high, kappa values were lower for several characteristics, suggesting that part of the agreement was attributable to chance and the imbalanced prevalence of some built-environment features.
+Agreement between the audit and the Gemini models ranged from slight to almost perfect. Overall, Gemini 3.1 Flash showed the highest mean kappa (0.516) for binary variables, indicating the strongest agreement with the virtual audit, while Gemini 2.5 Flash achieved the same number of variable-level wins (5). Agreement was substantially lower for categorical variables, with mean kappa values ranging from 0.156 to 0.287 across models, suggesting that Gemini performed better when identifying the presence or absence of features than when classifying them into multiple categories. Kappa could not be estimated for some variables because of insufficient variability in ratings. Lower kappa values for several characteristics likely reflect chance agreement and the low prevalence of certain features.
 
 ### Legacy descriptive
 
@@ -321,7 +321,7 @@ gt_tables$pro_3_1
 gt_tables$flash_3_5
 ```
 
-#### Kappa comparison legacy table
+### Kappa comparison legacy table
 
 ```{r}
 #| label: Kappa comparison legacy table
@@ -719,7 +719,7 @@ gt_tables_canvas <- purrr::imap(
 #gt_tables_canvas$flash_3_5
 ```
 
-#### Kappa comparison canvas table
+### Kappa comparison canvas table
 
 ```{r}
 #| label: Kappa comparison canvas table
@@ -1417,10 +1417,11 @@ In this step, discrepancies between human and AI assessments are examined for fe
 #| label: Extract identifiers and create Street View tables with discrepancies
 #| code-summary: Extract identifiers and create Street View tables with discrepancies
 # Select Gemini 3.1 Flash dataset
-df_model <- prediction_datasets$legacy_3_1_flash %>%
+df_model <- legacy_predictions$flash_3_1 %>%
   mutate(
     identificador = as.character(identificador)
   )
+
 # Function to identify disagreement cases
 get_ids_discrepancy <- function(data, base_var) {
   var0 <- paste0(base_var, "_0") # Human audit
@@ -1445,6 +1446,7 @@ get_ids_discrepancy <- function(data, base_var) {
     ) %>%
     distinct()
 }
+
 # Variables selected for qualitative review
 vars_to_use <- c(
   "swalk_cont_cat2",
@@ -1454,6 +1456,17 @@ vars_to_use <- c(
   "str_tcont1",
   "str_cwalk"
 )
+
+# Labels for review tables
+var_labels_review <- c(
+  swalk_cont_cat2 = "Sidewalk obstruction",
+  str_lanevis_cat2 = "Lane markings",
+  str_cond_cat2 = "Poor street condition (pothole)",
+  str_scont1 = "Speed bumps",
+  str_tcont1 = "Stop sign",
+  str_cwalk = "Crosswalk"
+)
+
 # Extract discrepant identifiers
 ids_list <- lapply(
   vars_to_use,
@@ -1464,7 +1477,8 @@ ids_list <- lapply(
     )
   }
 )
-names(ids_list) <- var_labels[vars_to_use]
+names(ids_list) <- var_labels_review[vars_to_use]
+
 # Load coordinates
 coords <- read_excel(
   "virtual_audit/items_coordinates_belo_horizonte 5more.xlsx"
@@ -1474,15 +1488,16 @@ coords <- read_excel(
     lat = as.numeric(lat),
     lon = as.numeric(lon)
   )
+
 # Create Street View review tables
 views <- list()
 for (var_name in names(ids_list)) {
   df_view <- coords %>%
-    dplyr::inner_join(
+    inner_join(
       ids_list[[var_name]],
       by = "identificador"
     ) %>%
-    dplyr::mutate(
+    mutate(
       lat_lon = paste0(
         lat,
         ", ",
@@ -1495,13 +1510,13 @@ for (var_name in names(ids_list)) {
         lon
       )
     ) %>%
-    dplyr::select(
+    select(
       identificador,
       discrepancy_type,
       lat_lon,
       streetview_url
     ) %>%
-    dplyr::arrange(
+    arrange(
       discrepancy_type,
       as.numeric(identificador)
     )
