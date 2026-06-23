@@ -29,7 +29,7 @@ Descriptive frequencies were calculated for each characteristic in both approach
 
 Kappa values were not estimated for characteristics with insufficient variability (i.e., when one or both approaches classified all observations into a single category), and were therefore reported as not applicable (NA).
 
-The automated assessment using Gemini was implemented in Python. Data management and dataset organization were conducted in Stata, and all statistical analyses were performed in R.
+The automated assessment using Gemini was implemented in Python. Data management, dataset organization, and all statistical analyses were performed in R.
 
 ```{r}
 #| label: Packages
@@ -64,9 +64,9 @@ p_load(
 ```
 
 ```{r}
-#| label: Load processed prediction datasets
-#| code-summary: Load processed prediction datasets
-# Legacy datasets
+#| label: Load datasets
+#| code-summary: Load datasets
+# Legacy datasets (binary variables)
 legacy_predictions <- list(
   flash_2_5 = readRDS(here(
     "predictions",
@@ -93,7 +93,7 @@ legacy_predictions <- list(
     "streetview_predictions_dates_legacy_3.5-flash.rds"
   ))
 )
-# Canvas datasets
+# Canvas datasets (categorical variables)
 canvas_predictions <- list(
   flash_2_5 = readRDS(here(
     "predictions",
@@ -225,7 +225,7 @@ build_table <- function(data) {
     )
 }
 
-# Create descriptive tables for all legacy models
+# Create descriptive tables
 tables <- purrr::map(
   legacy_predictions,
   build_table
@@ -320,6 +320,8 @@ gt_tables$pro_3_1
 #| code-summary: Gemini 3.5 Flash legacy table
 gt_tables$flash_3_5
 ```
+
+#### Kappa comparison legacy table
 
 ```{r}
 #| label: Kappa comparison legacy table
@@ -684,39 +686,40 @@ gt_tables_canvas <- purrr::imap(
 ```{r}
 #| label: Gemini 2.5 Flash canvas table
 #| code-summary: Gemini 2.5 Flash canvas table
-gt_tables_canvas$flash_2_5
+#gt_tables_canvas$flash_2_5
 ```
 
 ```{r}
 #| label: Gemini 2.5 Pro canvas table
 #| code-summary: Gemini 2.5 Pro canvas table
-gt_tables_canvas$pro_2_5
+#gt_tables_canvas$pro_2_5
 ```
 
 ```{r}
 #| label: Gemini 3 Flash canvas table
 #| code-summary: Gemini 3 Flash canvas table
-
-gt_tables_canvas$flash_3
+#gt_tables_canvas$flash_3
 ```
 
 ```{r}
 #| label: Gemini 3.1 Flash canvas table
 #| code-summary: Gemini 3.1 Flash canvas table
-gt_tables_canvas$flash_3_1
+#gt_tables_canvas$flash_3_1
 ```
 
 ```{r}
 #| label: Gemini 3.1 Pro canvas table
 #| code-summary: Gemini 3.1 Pro canvas table
-gt_tables_canvas$pro_3_1
+#gt_tables_canvas$pro_3_1
 ```
 
 ```{r}
 #| label: Gemini 3.5 Flash canvas table
 #| code-summary: Gemini 3.5 Flash canvas table
-gt_tables_canvas$flash_3_5
+#gt_tables_canvas$flash_3_5
 ```
+
+#### Kappa comparison canvas table
 
 ```{r}
 #| label: Kappa comparison canvas table
@@ -1203,7 +1206,7 @@ ggplot(
     color = "gray60"
   ) +
   facet_wrap(
-    ~ variable,
+    ~variable,
     ncol = 4
   ) +
   coord_equal() +
